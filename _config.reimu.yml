@@ -22,6 +22,18 @@ favicon: "/images/favicon.ico" # themes/reimu/source/images/favicon.ico
 # favicon: "https://example.com"
 avatar: "avatar.webp" # source/_data/avatar/avatar.webp
 
+# Open Graph
+# see https://hexo.io/docs/helpers#open-graph
+open_graph:
+  enable: true
+  options:
+    #twitter_card: <twitter:card>
+    #twitter_id: <twitter:creator>
+    #twitter_site: <twitter:site>
+    #twitter_image: <twitter:image>
+    #google_plus: <g+:profile_link>
+    #fb_admins: <fb:admin_id>
+    #fb_app_id: <fb:app_id>
 
 # Content
 excerpt_link: Read More
@@ -211,6 +223,10 @@ preloader:
   text: 少女祈祷中...
   # text: Loading...
 
+# https://github.com/CodeByZach/pace
+pace:
+  enable: true
+
 clipboard:
   success: 复制成功(*^▽^*)
   fail: 复制失败 (ﾟ⊿ﾟ)ﾂ
@@ -219,8 +235,31 @@ clipboard:
     count: 50 # The number of characters when the copyright is displayed
     content: 本文版权：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
 
+# see https://github.com/D-Sketon/aos.js
 animation:
   enable: true
+  options:
+    header:
+      title: slide-up
+      subTitle: slide-down
+    home:
+      post: fade-up
+      widget: fade-up
+      sidebar: fade-up
+    article:
+      whole: fade-up
+      date: zoom-in
+      category: zoom-in
+      tag: zoom-in
+      comment: zoom-in
+      reading: zoom-in
+      nav: fade-up
+    archive:
+      whole: fade-up
+      tag: zoom-in
+      category: zoom-in
+      section: fade-up
+      nav: fade-up
 
 dark_mode:
   enable: false
@@ -285,6 +324,16 @@ outdate:
 
 icon_font: 4552607_tq6stt6tcg
 
+# https://fonts.google.com/
+font:
+  article:
+    - Mulish
+    - Noto Serif SC
+  code:
+    # - Ubuntu Mono
+    # - Source Code Pro
+    # - JetBrains Mono
+
 # Dependent cdn links
 vendor:
   cdn_jsdelivr_gh: https://cdn.jsdelivr.net/gh/
@@ -296,8 +345,8 @@ vendor:
   js:
     clipboard: webcache|clipboard@2.0.11/dist/clipboard.min.js
     lazysizes: webcache|lazysizes@5.3.2/lazysizes.min.js
-    photoswipe: webcache|photoswipe@5.4.4/dist/photoswipe.esm.js
-    photoswipe_lightbox: webcache|photoswipe@5.4.4/dist/photoswipe-lightbox.esm.js
+    photoswipe: webcache|photoswipe@5.4.4/dist/photoswipe.esm.min.js
+    photoswipe_lightbox: webcache|photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js
     valine: webcache|valine@1.5.1/dist/Valine.min.js
     waline: webcache|@waline/client@2.15.8/dist/waline.mjs
     twikoo: webcache|twikoo@1.6.16/dist/twikoo.all.min.js
@@ -307,7 +356,6 @@ vendor:
     instantsearch: webcache|instantsearch.js@4.56.1/dist/instantsearch.production.min.js
     pace: webcache|pace-js@1.2.4/pace.min.js
     mermaid: webcache|mermaid@9.4.3/dist/mermaid.min.js
-    wow: webcache|wowjs@1.1.3/dist/wow.min.js
     firework: webcache|mouse-firework@0.0.4/dist/index.umd.js
     pjax: webcache|theme-shokax-pjax@0.0.3/dist/index.umd.js
     live2d:
@@ -328,4 +376,4 @@ vendor:
         - webcache|@fortawesome/fontawesome-free@6.5.1/css/brands.min.css
         - webcache|@fortawesome/fontawesome-free@6.5.1/css/v5-font-face.min.css
         - webcache|@fortawesome/fontawesome-free@6.5.1/css/v4-font-face.min.css
-    animate: webcache|wowjs@1.1.3/css/libs/animate.css
+    aos: webcache|@reimujs/aos@0.0.1/dist/aos.css
