@@ -34,6 +34,7 @@ open_graph:
     #google_plus: <g+:profile_link>
     #fb_admins: <fb:admin_id>
     #fb_app_id: <fb:app_id>
+    default_og_image: /images/banner.webp # the default og:image for Open Graph, support absolute path
 
 # Content
 excerpt_link: Read More
@@ -338,6 +339,15 @@ icp:
   icpnumber: # ICP备案号
   beian:  # 网安备案号
   recordcode: # 网安备案链接中的recordcode参数
+
+sponsor:
+  enable: false
+  tip: 请作者喝杯咖啡吧！
+  qr:
+    # - name: 支付宝
+    #   src: "/sponsor/alipay.jpg"
+    # - name: 微信
+    #   src: "/sponsor/wechat.png"
 
 # Dependent cdn links
 vendor:
