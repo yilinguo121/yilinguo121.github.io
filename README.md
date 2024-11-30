@@ -18,7 +18,7 @@ hexo server
 
 The following features are pre-supported:
 
-- support katex (hexo-renderer-markdown-it-plus)
+- support katex (@reimujs/hexo-renderer-markdown-it-plus)
 - support mermaid (hexo-filter-mermaid-diagrams)
 - support git (hexo-deployer-git)
 - support rss (hexo-generator-feed)
