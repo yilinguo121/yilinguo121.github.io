@@ -116,3 +116,13 @@ feed:
   icon: icon.png
   autodiscovery: true
   template:
+
+markdown_it_plus:
+  html: true
+  xhtmlOut: true
+  breaks: true
+  langPrefix:
+  linkify: true
+  typographer:
+  quotes: “”‘’
+  rawLaTeX: false # newly added
