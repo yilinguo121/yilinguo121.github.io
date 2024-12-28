@@ -458,6 +458,7 @@ article_copyright:
 # Back To Top
 top:
   enable: true
+  position: right # left or right
   icon:
     url: "../images/taichi.png" # this path is relative to the css/style.css, so it needs to go up one level to reach the images folder
     rotate: true
@@ -495,6 +496,40 @@ service_worker:
 # Experimental
 live2d:
   enable: false
+  position: left # left or right
+
+# Experimental
+live2d_widgets:
+  enable: false
+  position: left # left or right
+
+# Experimental
+# Please turn on pjax to use this feature
+player:
+  # if you enable meting, you must enable aplayer first
+  aplayer:
+    # https://github.com/DIYgod/APlayer
+    enable: false
+    options:
+      audio: []
+      fixed:
+      autoplay:
+      loop:
+      order:
+      preload: 
+      volume:
+      mutex:
+      listFolded:
+  meting:
+    # https://github.com/metowolf/MetingJS
+    # if you want to use meting, please enable aplayer first
+    enable: false
+    meting_api: # custom api
+    options:
+      id: 2265921590
+      server: netease
+      type: playlist
+      auto:
 
 ########################################
 # Vendor
@@ -558,6 +593,9 @@ vendor:
     live2d:
       base: fastly_jsdelivr_gh|D-Sketon/plugin-live2d/
       js: fastly_jsdelivr_gh|D-Sketon/plugin-live2d/js/live2d-autoload.js
+    live2d_widgets:
+      src: webcache|live2d-widgets@0.9.0/autoload.js
+      integrity: sha384-poTN7wN/SqNhQqo3jdFeX20ikddWeFGkUkDEzsKjgH/ez8aQLn81oI0Cw6q5xNyB
     md5:
       src: webcache|blueimp-md5@2.19.0/js/md5.min.js
       integrity: sha384-JmVtRz6RWiXnA14QbIOJzPuU3MidULOpBP66deeLLyyoF4Tr/gZlbkHkL6vTthxH
@@ -573,6 +611,12 @@ vendor:
     mathjax:
       src: webcache|mathjax@3.2.2/es5/tex-mml-chtml.js
       integrity: sha384-Wuix6BuhrWbjDBs24bXrjf4ZQ5aFeFWBuKkFekO2t8xFU0iNaLQfp2K6/1Nxveei
+    aplayer:
+      src: webcache|aplayer@1.10.1/dist/APlayer.min.js
+      integrity: sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr+h5UfruuRL/aORyw+5+HZoU6e
+    meting:
+      src: webcache|meting@2.0.1/dist/Meting.min.js
+      integrity: sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8+0maanw1S/IyB+Y4JG+ZDU7GpKE8
   css:
     photoswipe: webcache|photoswipe@5.4.4/dist/photoswipe.css
     katex: webcache|katex@0.16.11/dist/katex.min.css
@@ -587,3 +631,4 @@ vendor:
         - webcache|@fortawesome/fontawesome-free@6.5.1/css/v5-font-face.min.css
         - webcache|@fortawesome/fontawesome-free@6.5.1/css/v4-font-face.min.css
     aos: webcache|@reimujs/aos@0.1.0/dist/aos.css
+    aplayer: webcache|aplayer@1.10.1/dist/APlayer.min.css
