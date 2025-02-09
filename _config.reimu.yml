@@ -1,7 +1,8 @@
 ########################################
 # Basic Configuration
 ########################################
-
+theme_version_check: true
+theme_config_check: true
 # main menu navigation
 # for more icon information, please visit https://github.com/D-Sketon/hexo-theme-reimu/issues/30
 menu:
@@ -596,8 +597,8 @@ vendor:
       src: webcache|mermaid@9.4.3/dist/mermaid.min.js
       integrity: sha384-aG3Gai4tbCHF0iXo48HwLoOZyut7mBl50oMC9GD1m75xyHfJDv6w8hD/kZRD47aJ
     firework:
-      src: webcache|mouse-firework@0.0.6/dist/index.umd.js
-      integrity: sha384-vkGvf25gm1C1PbcoD5dNfc137HzNL/hr1RKA5HniJOaawtvUmH5lTVFgFAruE9Ge
+      src: webcache|mouse-firework@0.1.0/dist/index.umd.js
+      integrity: sha384-KM6i7tu43nYd6e0beIljxHMC5tZc58XBDu7pPA58w50h18Jsx7gLdimfS09RXlKv
     pjax:
       src: webcache|theme-shokax-pjax@0.0.3/dist/index.umd.js
       integrity: sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD+jAPU55x/jj3wlf
@@ -634,6 +635,9 @@ vendor:
     html2image:
       src: webcache|html-to-image@1.11.11/dist/html-to-image.js
       integrity: sha384-UbfRVKN3/elS1r7JcK2FhmPP+KlJ4CvYwbyYD7tH+uTkbT9bNJr9eJeQ0FoFbAgz
+    dompurify:
+      src: webcache|dompurify@3.2.4/dist/purify.min.js
+      integrity: sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu
   css:
     photoswipe: webcache|photoswipe@5.4.4/dist/photoswipe.css
     katex: webcache|katex@0.16.11/dist/katex.min.css
