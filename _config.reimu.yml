@@ -61,12 +61,20 @@ excerpt_link: Read More
 # need https://github.com/hexojs/hexo-generator-feed
 rss: atom.xml
 
+# a very simple alternative for https://hexo.io/api/injector
+injector:
+  head_begin: # Inject code snippet right after <head>
+  head_end: # Inject code snippet right before </head>
+  body_begin: # Inject code snippet right after <body>
+  body_end: # Inject code snippet right before </body>
+  sidebar_begin: # Inject code snippet right after <aside>
+  sidebar_end: # Inject code snippet right before </aside>
+
 # Footer copyright
-copyright:
+copyright: # Inject code snippet right in the footer copyright
 # Need help choosing? Please see...
 # https://creativecommons.org/choose/
 # https://choosealicense.com/
-# You can use pug like below...
 # copyright: |-
 #   <div style="flex-direction:column;align-items: center;"><a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
 #   All website licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a></div>
@@ -315,7 +323,7 @@ giscus:
 # Search
 ########################################
 
-# need https://github.com/LouisBarranqueiro/hexo-algoliasearch
+# need https://github.com/D-Sketon/hexo-algoliasearch
 # please add the following config in your _config.yml
 # algolia:
 #   appId: 'your applicationID'
@@ -341,14 +349,10 @@ algolia_search:
     hits_empty: "未发现与 「${query}」相关内容"
     hits_stats: "找到${hits}条结果（用时 ${time} ms）"
 
-# need https://github.com/wzpan/hexo-generator-search
-# please add the following config in your _config.yml
-# search:
-#   path: search.json # The filename must be search.json
-#   field: post
-#   content: true
 generator_search:
   enable: false
+  field: post
+  content: true
 
 ########################################
 # Animation
