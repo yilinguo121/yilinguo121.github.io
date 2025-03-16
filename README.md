@@ -22,6 +22,7 @@ The following features are pre-supported:
 - support mermaid (hexo-filter-mermaid-diagrams)
 - support git (hexo-deployer-git)
 - support rss (hexo-generator-feed)
+- support Algolia search (@reimujs/hexo-algoliasearch)
 
 ## How to use
 

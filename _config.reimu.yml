@@ -40,6 +40,15 @@ favicon: "/images/favicon.ico" # which means themes/reimu/source/images/favicon.
 
 avatar: "avatar.webp" # which means source/_data/avatar/avatar.webp
 
+# Control the display of the post cover
+# If not set, the banner image will be displayed by default
+# Its priority is lower than the cover in the Front-matter
+cover: # https://example.com / false / rgb(255,117,117)
+
+# Control the display of the post toc
+# Its priority is lower than the toc in the Front-matter
+toc: true
+
 # Open Graph
 # see https://hexo.io/docs/helpers#open-graph
 open_graph:
@@ -129,7 +138,12 @@ widgets:
 # Widget behavior
 archive_type: "monthly"
 show_count: false
+tag_limits:
 recent_posts_limits: 5
+tagcloud_limits:
+
+# Archive behavior
+only_show_capsule_in_index: false # If you have hugo amounts of tags and categories, you can set this to true to only show the capsule in the index page for better performance
 
 i18n:
   enable: false
@@ -562,6 +576,14 @@ player:
       auto:
 
 ########################################
+# pangu.js
+########################################
+
+pangu:
+  # more information: https://github.com/vinta/pangu.js 
+  enable: false  # enable pangu.js to add space between Chinese and English
+
+########################################
 # Vendor
 ########################################
 
@@ -656,6 +678,9 @@ vendor:
     dompurify:
       src: webcache|dompurify@3.2.4/dist/purify.min.js
       integrity: sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu
+    pangu:
+      src: webcache|pangu@4.0.7/dist/browser/pangu.min.js
+      integrity: sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm
   css:
     photoswipe: webcache|photoswipe@5.4.4/dist/photoswipe.css
     katex: webcache|katex@0.16.11/dist/katex.min.css
