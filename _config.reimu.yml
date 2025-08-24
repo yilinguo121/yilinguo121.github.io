@@ -149,6 +149,9 @@ tagcloud_limits:
 # Archive behavior
 only_show_capsule_in_index: false # If you have hugo amounts of tags and categories, you can set this to true to only show the capsule in the index page for better performance
 
+show_update_time: false # If you want to show the update time, please set this to true
+
+# Internationalization
 i18n:
   enable: false
   type: [page, post]
@@ -169,7 +172,7 @@ reimu_cursor:
     text: ../images/cursor/reimu-cursor-text.png
 
 # set to false to enable fontawesome
-icon_font: 4552607_0khxww3tj3q9
+icon_font: 4552607_4k4bc36ef96
 
 # Font loading strategy
 # Custom Font -> Google Fonts -> Local FallBack Font
@@ -288,6 +291,7 @@ comment:
     zh-CN: 说些什么吧！
     zh-TW: 說些什麼吧！
     ja: コメントを残す
+    pt-BR: Deixe um comentário
   default: waline # default comment system, when you enable multiple comment systems
 
 # valine comment system. https://valine.js.org
@@ -406,6 +410,7 @@ preloader:
     zh-TW: 少女祈禱中...
     en: Loading...
     ja: 少女祈祷中...
+    pt-BR: Carregando...
   icon: # default use inline svg for fast speed, you can use a image url, like '/images/taichi.png'
   rotate: true # whether to rotate the icon
 
@@ -472,11 +477,13 @@ clipboard:
     zh-CN: 复制成功 (*^▽^*)
     zh-TW: 複製成功 (*^▽^*)
     ja: コピー成功 (*^▽^*)
+    pt-BR: Copiado com sucesso (*^▽^*)
   fail:
     en: Copy failed (ﾟ⊿ﾟ)ﾂ
     zh-CN: 复制失败 (ﾟ⊿ﾟ)ﾂ
     zh-TW: 複製失敗 (ﾟ⊿ﾟ)ﾂ
     ja: コピー失敗 (ﾟ⊿ﾟ)ﾂ
+    pt-BR: Falha ao copiar (ﾟ⊿ﾟ)ﾂ
   copyright: # whether to add a copyright for the clipped content
     enable: false
     count: 50 # The number of characters when the copyright is displayed
@@ -500,6 +507,7 @@ outdate:
     zh-CN: 本文最后更新于 {time}，请注意文中内容可能已不适用。
     zh-TW: 本文最後更新於 {time}，請注意文中內容可能已不適用。
     ja: この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。
+    pt-BR: Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.
 
 # Sponsor
 sponsor:
@@ -509,6 +517,7 @@ sponsor:
     zh-TW: 請作者喝杯咖啡吧
     en: Buy me a coffee
     ja: コーヒーを買ってください
+    pt-BR: Compre-me um café
   icon:
     url: "../images/taichi.png" # this path is relative to the css/style.css, so it needs to go up one level to reach the images folder
     rotate: true
@@ -524,6 +533,10 @@ icp:
   icpnumber: # ICP备案号
   beian: # 网安备案号
   recordcode: # 网安备案链接中的recordcode参数
+
+# 萌国 ICP 备案
+moe_icp:
+  icpnumber: # 萌国ICP备案号
 
 # show the copyright below each article
 article_copyright:
@@ -597,6 +610,7 @@ live2d_widgets:
 # Experimental
 # Please turn on pjax to use this feature
 player:
+  position: before_sidebar # before_sidebar / after_sidebar / after_widget
   # if you enable meting, you must enable aplayer first
   aplayer:
     # https://github.com/DIYgod/APlayer
@@ -742,8 +756,8 @@ vendor:
       src: webcache|pace-js@1.2.4/pace.min.js
       integrity: sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8
     mermaid:
-      src: webcache|mermaid@11.6.0/dist/mermaid.min.js
-      integrity: sha384-zkWMJO4sgpPUzyuOgDx8HB/K55glbAwajEpk1Go2NWRuPkPA/wIhoEJTuSkmOYrV
+      src: webcache|mermaid@11.10.1/dist/mermaid.min.js
+      integrity: sha384-7nxfNsXzOEcSwk+tzfq6tbjmfg0P2Gqmi7JTnRjv9Ll3gFWNro6lI7hPtZPM5ZLD
     firework:
       src: webcache|mouse-firework@0.1.1/dist/index.umd.js
       integrity: sha384-8LyaidD9GPxQQgLJO/WRw/O2h3BoNq/ApI/ecpvM6RsrCz2qP2ppBXUKihP4V/2d
@@ -778,20 +792,20 @@ vendor:
       src: webcache|meting@2.0.1/dist/Meting.min.js
       integrity: sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8+0maanw1S/IyB+Y4JG+ZDU7GpKE8
     qrcode:
-      src: webcache|qrcode@1.4.4/build/qrcode.min.js
-      integrity: sha384-0RsG1yo/crf/1Qc14sho26SXXOTngNCjgJw7fuvXBt9W/OChF/Ijx+aUuBDqQwEk
-    html2image:
-      src: webcache|html-to-image@1.11.11/dist/html-to-image.js
-      integrity: sha384-UbfRVKN3/elS1r7JcK2FhmPP+KlJ4CvYwbyYD7tH+uTkbT9bNJr9eJeQ0FoFbAgz
+      src: webcache|qrcode@1.5.1/build/qrcode.js
+      integrity: sha384-VT1EeewTCEXgndcPMQ0PzV+uVFYjxFIjmAA7s5gcMX9t4Dt5TD+OVQIn7NJWIXn7
     dompurify:
-      src: webcache|dompurify@3.2.4/dist/purify.min.js
-      integrity: sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu
+      src: webcache|dompurify@3.2.6/dist/purify.min.js
+      integrity: sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla+3
     pangu:
       src: webcache|pangu@4.0.7/dist/browser/pangu.min.js
       integrity: sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm
     material_theme:
       src: webcache|material-theme@1.0.0/dist/material-theme.umd.js
       integrity: sha384-vLev0II0HKFaxkcm+/7kX5IGwVFBASkGchU311wmU/veIj2bB0UcBkQbW6yw2asK
+    snapdom:
+      src: webcache|@zumer/snapdom@1.9.9/dist/snapdom.min.js
+      integrity: sha384-taz9Bq0wPqLsuiB4ix4blTozt/y84cjbMX5ZWkfPPjpVBme8M/jWopanNBcdH/qp
   css:
     photoswipe:
       src: webcache|photoswipe@5.4.4/dist/photoswipe.css
@@ -807,20 +821,20 @@ vendor:
       integrity: sha384-X7z7PUv2B67D8sPJyzDyGZSco1ADwmdI7ed4eCGtTKkClfyDFpPL9WgAn9XVr/Io
     fontawesome:
       high_priority:
-        - src: webcache|@fortawesome/fontawesome-free@6.5.1/css/regular.min.css
-          integrity: sha384-k5640LgghgAohDLPwSqVWa96yQwWouT6wsAL+J1g0CFJVITNKYkIh1XpPLYKQe7Y
-        - src: webcache|@fortawesome/fontawesome-free@6.5.1/css/solid.min.css
-          integrity: sha384-8yO/A/BtltnG0hDxdwmmkza8UAleyDoAD1FhXiH6rsOQQsCho1P6WZP9TpBBH3YP
+        - src: webcache|@fortawesome/fontawesome-free@7.0.0/css/regular.min.css
+          integrity: sha384-PmxfVzUpFiyj5ZqzN3upnv7G4x9YAlMQar/qCBLEYSaWr/DUQ9f/8ITCT0aN7byC
+        - src: webcache|@fortawesome/fontawesome-free@7.0.0/css/solid.min.css
+          integrity: sha384-HMy1VqP4zke4zzaS+hmFgbW3QXDYD+qtueW3unq30MTgdOnarIgANSya8s5qKRh5
       low_priority:
-        - src: webcache|@fortawesome/fontawesome-free@6.5.1/css/brands.min.css
-          integrity: sha384-/BRyRRN0wxxRgh/DAXU621go9pdoMHl6LFPiX5Pp8PZYZlKBQCDXj9X9DHx6LOud
-        - src: webcache|@fortawesome/fontawesome-free@6.5.1/css/v5-font-face.min.css
-          integrity: sha384-/mBKnLlGtog8q2qQrgugURRDV+iHWHAPvM5KulYXT1C2ErKOKkBI0vbff8ZPq7rL
-        - src: webcache|@fortawesome/fontawesome-free@6.5.1/css/v4-font-face.min.css
-          integrity: sha384-d2Yn1/9Iw78r3oqwk5B+EcpRcmepXR5LyhmRF2a+WoSe9mpRGvVk0ZviFwDGDOTO
+        - src: webcache|@fortawesome/fontawesome-free@7.0.0/css/brands.min.css
+          integrity: sha384-IzIkDWjFFaoFz413tu2x9R4cMiJ3EGuxOf/7Q8X0LFhqz9fU5zT2go7BgenYdKgN
+        - src: webcache|@fortawesome/fontawesome-free@7.0.0/css/v5-font-face.min.css
+          integrity: sha384-691KBFHHuy2pnDTyR36VZ90jy7dXWBfC5D1nzy5rkDlqQQ/vRs/nmmK++LBfAp/C
+        - src: webcache|@fortawesome/fontawesome-free@7.0.0/css/v4-font-face.min.css
+          integrity: sha384-7c0mz5ReY2wCEDKNNEdrKdbtS/6+5dEgNsz/dU3e9m7xldAdTFwNTAuX+s4sJHJl
     aos:
-      src: webcache|@reimujs/aos@0.1.0/dist/aos.css
-      integrity: sha384-4NN3fZ5AokFyHuoihl7A9qWaCt+HsAtOaUsXwJGRb4/SMBtFr2vcNSHR5E8dg0Wk
+      src: webcache|@reimujs/aos@0.1.2/dist/aos.css
+      integrity: sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa
     aplayer:
       src: webcache|aplayer@1.10.1/dist/APlayer.min.css
       integrity: sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj+vDDLIL+xBGQU/voDBY5XE2lVh
