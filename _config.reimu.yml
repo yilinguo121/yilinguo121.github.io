@@ -151,6 +151,11 @@ only_show_capsule_in_index: false # If you have hugo amounts of tags and categor
 
 show_update_time: false # If you want to show the update time, please set this to true
 
+# Summary content
+summary:
+  enable: false
+  style: 'subtitle' # 'subtitle' or 'blockquote'
+
 # Internationalization
 i18n:
   enable: false
