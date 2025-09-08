@@ -9,8 +9,8 @@ menu:
   - name: 首頁
     url: /
     icon:
-  - name: 經歷
-    url: /經歷/
+  - name: 關於我
+    url: /關於我/
     icon:
   - name: 歸檔
     url: /archives
