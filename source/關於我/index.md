@@ -61,6 +61,5 @@ comments: false
 ---
 ## 聯絡方式
 - Email：[guovinn@gmail.com](mailto:guovinn@gmail.com)
-- Phone：[0900-181-587](tel:+886900181587)
 - Discord：**yilin._.0121**
 - IG：[@yilin._.0121](https://instagram.com/yilin._.0121)
