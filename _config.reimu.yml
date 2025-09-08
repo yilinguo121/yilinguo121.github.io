@@ -408,7 +408,7 @@ generator_search:
 
 # Loader animation
 preloader:
-  enable: true
+  enable: false
   text:
     zh-CN: 少女祈祷中...
     zh-TW: 少女祈禱中...
@@ -420,7 +420,7 @@ preloader:
 
 # see https://github.com/D-Sketon/aos.js
 animation:
-  enable: true
+  enable: false
   options:
     header:
       title: slide-up
@@ -446,7 +446,7 @@ animation:
 
 # see https://github.com/D-Sketon/mouse-firework
 firework:
-  enable: true
+  enable: false
   options:
     excludeElements: ["a", "button"]
     particles:
@@ -722,7 +722,7 @@ vendor:
   fastly_jsdelivr_gh: https://fastly.jsdelivr.net/gh/
   fastly_jsdelivr_npm: https://fastly.jsdelivr.net/npm/
   unpkg: https://unpkg.com/
-  webcache: https://npm.webcache.cn/
+  webcache: https://cdn.jsdelivr.net/npm/
   js:
     clipboard:
       src: webcache|clipboard@2.0.11/dist/clipboard.min.js
