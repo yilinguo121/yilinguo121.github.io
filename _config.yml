@@ -104,7 +104,7 @@ deploy:
   type: ''
 
 feed:
-  enable: true
+  enable: false
   type: atom
   path: atom.xml
   limit: 20
