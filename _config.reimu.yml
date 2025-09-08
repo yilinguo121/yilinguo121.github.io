@@ -6,16 +6,16 @@ theme_config_check: true
 # main menu navigation
 # for more icon information, please visit https://github.com/D-Sketon/hexo-theme-reimu/issues/30
 menu:
-  - name: home
+  - name: 首頁
     url: /
-    icon: # default use taichi icon, you can use a hexadecimal representation of fontawesome or icon_font, like 'f0c1'
-  - name: archives
+    icon:
+  - name: 歸檔
     url: /archives
     icon:
-  - name: about
+  - name: 關於
     url: /about
     icon:
-  - name: friend
+  - name: 友鏈
     url: /friend
     icon:
 
@@ -68,7 +68,11 @@ open_graph:
     default_og_image: /images/banner.webp # the default og:image for Open Graph, support absolute path
 
 # Content
-excerpt_link: Read More
+excerpt_link: 閱讀全文
+
+# === 開啟中英之間自動加空白，中文排版更易讀 ===
+pangu:
+  enable: true
 
 # RSS
 # need https://github.com/hexojs/hexo-generator-feed
@@ -195,19 +199,18 @@ custom_font:
 font:
   enable: true
   article:
-    - Mulish
-    - Noto Serif SC
+    - Noto Sans TC      # 內文字型（建議）
+    - Noto Serif TC     # 需要襯線風格可調到最前面
   code:
-    # - Ubuntu Mono
-    # - Source Code Pro
-    # - JetBrains Mono
+    - JetBrains Mono
 
 # Local FallBack Font
 local_font:
   article:
     - "-apple-system"
-    - PingFang SC
-    - Microsoft YaHei
+    - PingFang TC
+    - "Microsoft JhengHei"
+    - "Noto Sans TC"
     - sans-serif
   code:
     - Menlo
