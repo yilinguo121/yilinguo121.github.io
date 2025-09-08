@@ -408,10 +408,10 @@ generator_search:
 
 # Loader animation
 preloader:
-  enable: false
+  enable: true
   text:
     zh-CN: 少女祈祷中...
-    zh-TW: 少女祈禱中...
+    zh-TW: 載入中啊啊啊...
     en: Loading...
     ja: 少女祈祷中...
     pt-BR: Carregando...
@@ -420,7 +420,7 @@ preloader:
 
 # see https://github.com/D-Sketon/aos.js
 animation:
-  enable: false
+  enable: true
   options:
     header:
       title: slide-up
@@ -446,7 +446,7 @@ animation:
 
 # see https://github.com/D-Sketon/mouse-firework
 firework:
-  enable: false
+  enable: true
   options:
     excludeElements: ["a", "button"]
     particles:
