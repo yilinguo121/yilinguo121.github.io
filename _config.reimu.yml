@@ -72,7 +72,7 @@ excerpt_link: 閱讀全文
 
 # RSS
 # need https://github.com/hexojs/hexo-generator-feed
-rss: atom.xml
+rss: ""
 
 # a very simple alternative for https://hexo.io/api/injector
 injector:
