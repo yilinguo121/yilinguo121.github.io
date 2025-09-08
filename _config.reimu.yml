@@ -15,9 +15,6 @@ menu:
   - name: 歸檔
     url: /archives
     icon:
-  - name: 關於
-    url: /about
-    icon:
   - name: 友鏈
     url: /friend
     icon:
