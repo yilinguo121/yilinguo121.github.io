@@ -70,10 +70,6 @@ open_graph:
 # Content
 excerpt_link: 閱讀全文
 
-# === 開啟中英之間自動加空白，中文排版更易讀 ===
-pangu:
-  enable: true
-
 # RSS
 # need https://github.com/hexojs/hexo-generator-feed
 rss: atom.xml
@@ -649,9 +645,10 @@ player:
 # pangu.js
 ########################################
 
+
+# === （可選）開啟中英之間自動加空白，中文排版更易讀 ===
 pangu:
-  # more information: https://github.com/vinta/pangu.js
-  enable: false # enable pangu.js to add space between Chinese and English
+  enable: true
 
 ########################################
 # Theme
