@@ -722,7 +722,7 @@ vendor:
   fastly_jsdelivr_gh: https://fastly.jsdelivr.net/gh/
   fastly_jsdelivr_npm: https://fastly.jsdelivr.net/npm/
   unpkg: https://unpkg.com/
-  webcache: https://cdn.jsdelivr.net/npm/
+  webcache: https://npm.webcache.cn/
   js:
     clipboard:
       src: webcache|clipboard@2.0.11/dist/clipboard.min.js
