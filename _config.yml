@@ -125,4 +125,4 @@ markdown_it_plus:
   linkify: true
   typographer:
   quotes: “”‘’
-  rawLaTeX: false # newly added
+  rawLaTeX: true # newly added
