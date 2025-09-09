@@ -4,6 +4,12 @@ comments: true
 ---
 
 ## 本站信息
+```yml
+- name: 郭10
+  url: https://yilinguo121.github.io/
+  desc: 觀念考不到5級的115特選生
+  image: https://yilinguo121.github.io/avatar/avatar.webp
+```
 
 ## 申请方法
 - 添加本站后，在本页留言，格式如下
