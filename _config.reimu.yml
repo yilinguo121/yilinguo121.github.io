@@ -318,8 +318,8 @@ valine:
 # https://waline.js.org/
 # version 2.15.8
 waline:
-  enable: false
-  serverURL:
+  enable: true
+  serverURL: https://waline-br5ezjwai-guovinn-2963s-projects.vercel.app/
   # lang: zh-CN # deprecated, use html.lang instead
   locale: {} # https://waline.js.org/guide/features/i18n.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80
   emoji:
