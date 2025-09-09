@@ -19,7 +19,7 @@ menu:
     url: /friend
     icon:
 
-banner: "/images/banner.webp" # which means themes/reimu/source/images/banner.webp
+banner: "/images/banner-bridge.webp" # which means themes/reimu/source/images/banner.webp
 # You can also write it in the form of the following url
 # banner: "https://example.com"
 
@@ -31,7 +31,7 @@ banner_srcset:
       media: "(max-width: 479px)"
     - src: "/images/banner-800w.webp"
       media: "(max-width: 799px)"
-    - src: "/images/banner.webp"
+    - src: "/images/banner-bridge.webp"
       media: "(min-width: 800px)"
 
 favicon: "/images/favicon.ico" # which means themes/reimu/source/images/favicon.ico
