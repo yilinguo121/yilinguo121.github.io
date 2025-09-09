@@ -13,7 +13,7 @@ menu:
     url: /關於我/
     icon:
   - name: 文章彙整
-    url: /文章彙整
+    url: /文章彙整/
     icon:
   - name: 友鏈
     url: /friend
