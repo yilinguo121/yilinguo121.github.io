@@ -16,9 +16,9 @@ comments: true
 
 ~~~yml
 - name: #您的名字
-  url: #您的网址
-  desc: #简短描述
-  image: #一张图片
+  url: #您的網址
+  desc: #簡單的自我介紹
+  image: #一張圖片
 ~~~
 
 ## 小伙伴们
