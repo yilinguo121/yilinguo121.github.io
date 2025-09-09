@@ -1,5 +1,5 @@
 ---
-title: 友情链接
+title: 友情連結
 comments: true
 ---
 
@@ -11,8 +11,8 @@ comments: true
   image: https://yilinguo121.github.io/avatar/avatar.webp
 ```
 
-## 申请方法
-- 添加本站后，在本页留言，格式如下
+## 申請方式
+- 添加本站後，在本頁留言，格式如下
 
 ~~~yml
 - name: #您的名字
@@ -21,5 +21,5 @@ comments: true
   image: #一張圖片
 ~~~
 
-## 小伙伴们
+## 朋友們
 {% friendsLink friend/_data.yml %}
