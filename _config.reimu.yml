@@ -12,8 +12,8 @@ menu:
   - name: 關於我
     url: /關於我/
     icon:
-  - name: 歸檔
-    url: /archives
+  - name: 文章彙整
+    url: /文章彙整
     icon:
   - name: 友鏈
     url: /friend
