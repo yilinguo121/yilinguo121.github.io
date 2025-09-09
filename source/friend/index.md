@@ -4,7 +4,7 @@ comments: true
 ---
 
 ## 本站信息
-```
+```yml
 - name: 郭10
   url: https://yilinguo121.github.io/
   desc: 觀念考不到5級的115特選生
