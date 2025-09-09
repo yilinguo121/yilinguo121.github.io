@@ -12,7 +12,7 @@ menu:
   - name: 關於我
     url: /關於我/
     icon:
-  - name: 文章彙整
+  - name: 歸檔
     url: /archives
     icon:
   - name: 友鏈
