@@ -1,6 +1,6 @@
 name: Build and Deploy Hexo to Pages
 on:
-  push: { branches: [ main ] }
+  push: { branches: [ main ] }   # 若你的預設分支不是 main，改成對應名稱
   workflow_dispatch:
 
 permissions:
@@ -27,7 +27,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: { name: github-pages, url: ${{ steps.deployment.outputs.page_url }} }
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
