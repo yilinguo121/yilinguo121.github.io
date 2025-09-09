@@ -77,7 +77,42 @@ rss: ""
 # a very simple alternative for https://hexo.io/api/injector
 injector:
   head_begin: # Inject code snippet right after <head>
-  head_end: # Inject code snippet right before </head>
+  head_end: |
+    <style>
+      /* —— 站點主色：藍色層級（深→淺），對應主題用到的 --red-* 變數 —— */
+      :root{
+        --red-0: #1d4ed8;   /* 深藍 */
+        --red-1: #2563eb;
+        --red-2: #3b82f6;
+        --red-3: #60a5fa;
+        --red-4: #93c5fd;
+        --red-5: #dbeafe;
+        --red-5-5:#eff6ff;
+        --red-6: #f6faff;
+        --color-red-6-shadow: rgba(37, 99, 235, .6);
+        --color-red-3-shadow: rgba(59, 130, 246, .3);
+      }
+      /* 深色模式下的透明層級（讓效果不會過亮） */
+      [data-theme="dark"]{
+        --red-4: rgba(147, 197, 253, .50);
+        --red-5: rgba(191, 219, 254, .15);
+        --red-5-5: rgba(219, 234, 254, .05);
+        --red-6: rgba(239, 246, 255, .20);
+      }
+
+      /* 保險：少數未用變數的元件也統一成藍色 */
+      .btn, button, .button,
+      .page-number.current,
+      .toc .active > a,
+      .timeline .dot,
+      .pace .pace-progress {
+        background: var(--red-1) !important;
+        border-color: var(--red-1) !important;
+        color: #fff !important;
+      }
+      a { color: var(--red-1); }
+      a:hover { color: var(--red-0); }
+    </style>
   body_begin: # Inject code snippet right after <body>
   body_end: # Inject code snippet right before </body>
   sidebar_begin: # Inject code snippet right after <aside>
