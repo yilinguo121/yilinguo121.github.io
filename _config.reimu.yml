@@ -79,9 +79,9 @@ injector:
   head_begin: # Inject code snippet right after <head>
   head_end: |
     <style>
-      /* —— 站點主色：藍色層級（深→淺），對應主題用到的 --red-* 變數 —— */
+      /* —— 藍色層級（深→淺）對應主題的 --red-* —— */
       :root{
-        --red-0: #1d4ed8;   /* 深藍 */
+        --red-0: #1d4ed8;  /* 深藍 */
         --red-1: #2563eb;
         --red-2: #3b82f6;
         --red-3: #60a5fa;
@@ -92,7 +92,6 @@ injector:
         --color-red-6-shadow: rgba(37, 99, 235, .6);
         --color-red-3-shadow: rgba(59, 130, 246, .3);
       }
-      /* 深色模式下的透明層級（讓效果不會過亮） */
       [data-theme="dark"]{
         --red-4: rgba(147, 197, 253, .50);
         --red-5: rgba(191, 219, 254, .15);
@@ -100,10 +99,9 @@ injector:
         --red-6: rgba(239, 246, 255, .20);
       }
 
-      /* 保險：少數未用變數的元件也統一成藍色 */
+      /* 只針對按鈕/重點元件上底色，不碰 TOC */
       .btn, button, .button,
       .page-number.current,
-      .toc .active > a,
       .timeline .dot,
       .pace .pace-progress {
         background: var(--red-1) !important;
@@ -112,6 +110,21 @@ injector:
       }
       a { color: var(--red-1); }
       a:hover { color: var(--red-0); }
+
+      /* —— TOC 修正：不加底色，僅改主動項的左線與字色 —— */
+      .toc a, .toc .toc-link{
+        background: transparent !important;
+        color: inherit !important;     /* 跟隨主題原本文字色 */
+      }
+      .toc .active > a,
+      .toc .is-active > a,
+      .toc .active > .toc-link,
+      .toc .is-active > .toc-link{
+        background: transparent !important;
+        color: var(--red-1) !important;
+        border-left: 2px solid var(--red-1);
+        padding-left: .5rem;
+      }
     </style>
   body_begin: # Inject code snippet right after <body>
   body_end: # Inject code snippet right before </body>
