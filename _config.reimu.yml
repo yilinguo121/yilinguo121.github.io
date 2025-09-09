@@ -98,9 +98,9 @@ injector:
         --red-5-5: rgba(219, 234, 254, .05);
         --red-6: rgba(239, 246, 255, .20);
       }
-
-      /* 只針對按鈕/重點元件上底色，不碰 TOC */
-      .btn, button, .button,
+  
+      /* —— 站內主要元件（不要套用到所有 <button>，避免影響 Waline） —— */
+      .btn, .button,
       .page-number.current,
       .timeline .dot,
       .pace .pace-progress {
@@ -110,11 +110,11 @@ injector:
       }
       a { color: var(--red-1); }
       a:hover { color: var(--red-0); }
-
-      /* —— TOC 修正：不加底色，僅改主動項的左線與字色 —— */
+  
+      /* —— TOC：不加底色，只強調當前項 —— */
       .toc a, .toc .toc-link{
         background: transparent !important;
-        color: inherit !important;     /* 跟隨主題原本文字色 */
+        color: inherit !important;
       }
       .toc .active > a,
       .toc .is-active > a,
@@ -125,26 +125,32 @@ injector:
         border-left: 2px solid var(--red-1);
         padding-left: .5rem;
       }
-      /* —— Waline：移除工具列圖標的底色／邊框 —— */
-      #waline .wl-actions button,
+  
+      /* —— Waline：工具列圖標透明，僅保留送出鍵為藍色 —— */
+      #waline button{
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: inherit !important;
+      }
+      /* 工具列/反應列的 a 也清底色 */
       #waline .wl-actions a,
-      #waline .wl-action button,
       #waline .wl-action a,
-      #waline .wl-reaction button,
+      #waline .wl-reaction a,
       #waline .wl-icon {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        color: inherit;        /* 跟著文字色 */
-        padding: .25rem .35rem;
+        color: inherit !important;
       }
-      /* 滑過時只改字色，不加底 */
+      /* 滑過圖示只變字色 */
       #waline .wl-actions button:hover,
-      #waline .wl-actions a:hover {
-        color: var(--red-1);
+      #waline .wl-actions a:hover,
+      #waline .wl-reaction button:hover,
+      #waline .wl-reaction a:hover {
+        color: var(--red-1) !important;
       }
-
-      /* —— 送出鍵維持藍色主題 —— */
+      /* 送出鍵維持藍色主題 */
       #waline .wl-editor .wl-submit button,
       #waline .wl-btn-primary,
       #waline .wl-btn[type="submit"] {
