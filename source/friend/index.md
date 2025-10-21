@@ -3,6 +3,9 @@ title: 友情連結
 comments: true
 ---
 
+## 朋友們
+{% friendsLink friend/_data.yml %}
+
 ## 本站信息
 ```yml
 - name: 郭10
@@ -20,6 +23,3 @@ comments: true
   desc: #簡單的自我介紹
   image: #一張圖片
 ~~~
-
-## 朋友們
-{% friendsLink friend/_data.yml %}
