@@ -1,4 +1,8 @@
+- name: D-Sketon
+  url: https://d-sketon.github.io/
+  desc: 一个车万人
+  image: https://d-sketon.github.io/avatar/avatar.webp
 - name: 蘿莉控
-   url: "https://ldn970110.github.io/"
-   desc: 佬都說自己不是蘿莉控
-   image: https://ldn970110.github.io/img/avatar/LDN.JPEG
+  url: https://ldn970110.github.io/
+  desc: 佬都說自己不是蘿莉控
+  image: https://ldn970110.github.io/img/avatar/LDN.JPEG
