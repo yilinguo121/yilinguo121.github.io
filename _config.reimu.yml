@@ -342,7 +342,7 @@ copyright: # Inject code snippet right in the footer copyright
 footer:
   since: 2025 # 2020-current year
   powered: true
-  count: false # show word count and reading time
+  count: true # show word count and reading time
   busuanzi: true
   icon:
     url: "../images/taichi.png" # this path is relative to the css/style.css, so it needs to go up one level to reach the images folder
