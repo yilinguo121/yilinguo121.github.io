@@ -10,10 +10,10 @@ hexo.extend.generator.register('site-stats-data', function(locals) {
     const content = post.content || '';
     // 移除 HTML 標籤
     const text = content.replace(/<[^>]+>/g, '');
-    // 計算中文字符和英文單詞
-    const chineseChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
-    const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
-    return total + chineseChars + englishWords;
+    // 移除所有空白字符（空格、換行、制表符等）
+    const textWithoutSpaces = text.replace(/\s+/g, '');
+    // 計算所有字符（包括中文、英文、數字、標點符號等）
+    return total + textWithoutSpaces.length;
   }, 0);
 
   // 格式化字數（14.4k 格式）
