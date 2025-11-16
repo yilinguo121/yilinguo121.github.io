@@ -244,7 +244,7 @@ injector:
     </div>
     <style>
       /* 隱藏 footer 中的不蒜子統計 */
-      #footer .busuanzi {
+      #footer > div:has([id^="busuanzi_container"]) {
         display: none !important;
       }
 
