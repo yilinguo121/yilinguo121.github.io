@@ -215,7 +215,115 @@ injector:
       })();
     </script>
   sidebar_begin: # Inject code snippet right after <aside>
-  sidebar_end: # Inject code snippet right before </aside>
+  sidebar_end: |
+    <script src="/js/site-stats.js"></script>
+    <div class="widget site-stats-widget">
+      <h3 class="widget-title">網站統計</h3>
+      <div class="site-stats-content">
+        <div class="stat-item">
+          <span class="stat-label">文章數目 :</span>
+          <span class="stat-value" id="stat-posts">-</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">已執行時間 :</span>
+          <span class="stat-value" id="stat-runtime">-</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">本站總字數 :</span>
+          <span class="stat-value" id="stat-words">-</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">本站訪客數 :</span>
+          <span class="stat-value"><span id="busuanzi_value_site_uv">-</span></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">本站總訪問量 :</span>
+          <span class="stat-value"><span id="busuanzi_value_site_pv">-</span></span>
+        </div>
+      </div>
+    </div>
+    <style>
+      .site-stats-widget {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--red-5-5);
+        border-radius: 8px;
+        box-shadow: var(--shadow-meta);
+        transition: 0.3s;
+      }
+      .site-stats-widget:hover {
+        box-shadow: var(--shadow-meta-hover);
+      }
+      .site-stats-widget .widget-title {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        color: var(--red-1);
+      }
+      .site-stats-content .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--red-5);
+      }
+      .site-stats-content .stat-item:last-child {
+        border-bottom: none;
+      }
+      .stat-label {
+        font-weight: normal;
+        color: inherit;
+      }
+      .stat-value {
+        font-weight: bold;
+        color: var(--red-1);
+      }
+    </style>
+    <script>
+      (function() {
+        function updateStats() {
+          if (window.siteStats) {
+            // 更新文章數目
+            document.getElementById('stat-posts').textContent = window.siteStats.postCount;
+
+            // 更新總字數
+            document.getElementById('stat-words').textContent = window.siteStats.totalWords;
+          }
+        }
+
+        function updateRuntime() {
+          if (window.siteStats) {
+            var startDate = new Date(window.siteStats.siteStartDate);
+            var now = new Date();
+            var diff = now - startDate;
+
+            // 計算天、小時、分鐘、秒
+            var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            // 格式化顯示
+            var runtimeText = days + ' 天 ' + hours + ' 小時 ' + minutes + ' 分 ' + seconds + ' 秒';
+            document.getElementById('stat-runtime').textContent = runtimeText;
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateRuntime();
+            // 每秒更新一次運行時間
+            setInterval(updateRuntime, 1000);
+          });
+        } else {
+          updateStats();
+          updateRuntime();
+          // 每秒更新一次運行時間
+          setInterval(updateRuntime, 1000);
+        }
+      })();
+    </script>
 
 # Footer copyright
 copyright: # Inject code snippet right in the footer copyright
@@ -229,8 +337,8 @@ copyright: # Inject code snippet right in the footer copyright
 footer:
   since: 2025 # 2020-current year
   powered: true
-  count: true # show word count and reading time
-  busuanzi: true
+  count: false # show word count and reading time
+  busuanzi: false
   icon:
     url: "../images/taichi.png" # this path is relative to the css/style.css, so it needs to go up one level to reach the images folder
     rotate: true
