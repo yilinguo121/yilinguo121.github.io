@@ -160,7 +160,60 @@ injector:
       }
     </style>
   body_begin: # Inject code snippet right after <body>
-  body_end: # Inject code snippet right before </body>
+  body_end: |
+    <style>
+      #nav-random-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer;
+      }
+      #nav-random-btn::before {
+        content: '';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background-color: currentColor;
+        -webkit-mask: url('/images/1194690-200.png') no-repeat center / contain;
+        mask: url('/images/1194690-200.png') no-repeat center / contain;
+      }
+    </style>
+    <script src="/js/random-posts.js"></script>
+    <script>
+      (function() {
+        document.addEventListener('DOMContentLoaded', function() {
+          var subNav = document.getElementById('sub-nav');
+          if (subNav) {
+            var randomBtn = document.createElement('a');
+            randomBtn.id = 'nav-random-btn';
+            randomBtn.className = 'nav-icon';
+            randomBtn.title = '隨機文章';
+            randomBtn.href = 'javascript:void(0);';
+            randomBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              if (window.randomPostsPaths && window.randomPostsPaths.length > 0) {
+                // 获取当前页面路径
+                var currentPath = window.location.pathname;
+                // 过滤掉当前文章
+                var availablePosts = window.randomPostsPaths.filter(function(path) {
+                  return path !== currentPath;
+                });
+
+                // 如果有可用的文章，随机跳转
+                if (availablePosts.length > 0) {
+                  var randomIndex = Math.floor(Math.random() * availablePosts.length);
+                  window.location.href = availablePosts[randomIndex];
+                } else {
+                  // 如果没有其他文章，可以选择不跳转或跳转到首页
+                  console.log('没有其他文章可以跳转');
+                }
+              }
+            });
+            subNav.appendChild(randomBtn);
+          }
+        });
+      })();
+    </script>
   sidebar_begin: # Inject code snippet right after <aside>
   sidebar_end: # Inject code snippet right before </aside>
 
