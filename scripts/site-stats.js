@@ -7,13 +7,21 @@ hexo.extend.generator.register('site-stats-data', function(locals) {
 
   // 計算總字數
   const totalWords = posts.reduce((total, post) => {
-    const content = post.content || '';
-    // 移除 HTML 標籤
-    const text = content.replace(/<[^>]+>/g, '');
+    // 使用原始 markdown 內容，而不是渲染後的 HTML
+    const content = post._content || post.raw || post.content || '';
+    // 移除代碼塊（包括 ``` 和縮進代碼）
+    let text = content.replace(/```[\s\S]*?```/g, '');
+    text = text.replace(/`[^`]+`/g, '');
+    // 移除圖片語法 ![](url)
+    text = text.replace(/!\[.*?\]\(.*?\)/g, '');
+    // 移除鏈接 URL 部分 [text](url) -> [text]
+    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    // 移除 markdown 標記符號
+    text = text.replace(/[#*_\->`]/g, '');
     // 移除所有空白字符（空格、換行、制表符等）
-    const textWithoutSpaces = text.replace(/\s+/g, '');
-    // 計算所有字符（包括中文、英文、數字、標點符號等）
-    return total + textWithoutSpaces.length;
+    text = text.replace(/\s+/g, '');
+    // 計算所有字符
+    return total + text.length;
   }, 0);
 
   // 格式化字數（14.4k 格式）
