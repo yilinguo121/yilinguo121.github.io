@@ -124,5 +124,12 @@ markdown_it_plus:
   langPrefix:
   linkify: true
   typographer:
-  quotes: “”‘’
+  quotes: '""'''
   rawLaTeX: true # newly added
+
+symbols_count_time:
+  symbols: true
+  time: true
+  total_symbols: true
+  total_time: true
+  exclude_codeblock: false
