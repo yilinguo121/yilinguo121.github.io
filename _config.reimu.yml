@@ -161,6 +161,8 @@ injector:
     </style>
   body_begin: # Inject code snippet right after <body>
   body_end: |
+    <link rel="stylesheet" href="/css/custom-search.css">
+    <script src="/js/custom-search.js"></script>
     <style>
       #nav-random-btn {
         display: inline-flex !important;
