@@ -34,3 +34,19 @@ if (fs.existsSync(headerFile)) {
   fs.writeFileSync(headerFile, content, 'utf8');
   console.log('✓ Theme header.ejs patched successfully');
 }
+
+// Patch common-sidebar.ejs to use mask-image for icons
+const sidebarFile = path.join(__dirname, '../node_modules/hexo-theme-reimu/layout/_partial/sidebar/common-sidebar.ejs');
+
+if (fs.existsSync(sidebarFile)) {
+  let content = fs.readFileSync(sidebarFile, 'utf8');
+
+  // Replace sidebar <img> tags with <span> tags that use mask-image
+  content = content.replace(
+    /<img src="<%- url_for\(item\.icon, \{relative: false\}\) %>" alt="<%= item\.name %> icon" style="width: 1em;">/g,
+    `<span class="nav-icon-img" style="mask-image: url('<%- url_for(item.icon, {relative: false}) %>'); -webkit-mask-image: url('<%- url_for(item.icon, {relative: false}) %>');" aria-label="<%= item.name %> icon"></span>`
+  );
+
+  fs.writeFileSync(sidebarFile, content, 'utf8');
+  console.log('✓ Theme common-sidebar.ejs patched successfully');
+}
