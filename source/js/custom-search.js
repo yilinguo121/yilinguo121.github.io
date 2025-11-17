@@ -270,14 +270,23 @@
     }
   }
 
-  // 在已渲染的數學公式中高亮關鍵字
+  // 在已渲染的數學公式中高亮關鍵字（跨節點匹配）
   function highlightInRenderedMath(element, query) {
     if (!query) return;
 
     const escapedQuery = escapeRegExp(query);
+
+    // 獲取整個元素的文本內容
+    const fullText = element.textContent;
     const regex = new RegExp(escapedQuery, 'gi');
 
-    // 遍歷所有文本節點
+    // 如果文本中沒有匹配，直接返回
+    if (!regex.test(fullText)) {
+      return;
+    }
+
+    // 收集所有文本節點
+    const textNodes = [];
     const walker = document.createTreeWalker(
       element,
       NodeFilter.SHOW_TEXT,
@@ -285,18 +294,79 @@
       false
     );
 
-    const textNodes = [];
     let node;
     while (node = walker.nextNode()) {
-      textNodes.push(node);
+      textNodes.push({
+        node: node,
+        text: node.textContent,
+        startIndex: 0
+      });
     }
 
-    textNodes.forEach(textNode => {
-      const text = textNode.textContent;
-      if (regex.test(text)) {
+    // 計算每個文本節點在完整文本中的起始位置
+    let currentIndex = 0;
+    textNodes.forEach(item => {
+      item.startIndex = currentIndex;
+      currentIndex += item.text.length;
+    });
+
+    // 找到所有匹配的位置
+    const matches = [];
+    let match;
+    const searchRegex = new RegExp(escapedQuery, 'gi');
+    while ((match = searchRegex.exec(fullText)) !== null) {
+      matches.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        text: match[0]
+      });
+    }
+
+    // 為每個匹配項插入 <mark> 標籤
+    matches.reverse().forEach(matchInfo => {
+      // 找到匹配範圍內的所有文本節點
+      const affectedNodes = textNodes.filter(item => {
+        const nodeEnd = item.startIndex + item.text.length;
+        return (matchInfo.start < nodeEnd && matchInfo.end > item.startIndex);
+      });
+
+      if (affectedNodes.length === 0) return;
+
+      if (affectedNodes.length === 1) {
+        // 匹配在單個節點內
+        const nodeInfo = affectedNodes[0];
+        const localStart = matchInfo.start - nodeInfo.startIndex;
+        const localEnd = matchInfo.end - nodeInfo.startIndex;
+
+        const before = nodeInfo.text.substring(0, localStart);
+        const matched = nodeInfo.text.substring(localStart, localEnd);
+        const after = nodeInfo.text.substring(localEnd);
+
         const span = document.createElement('span');
-        span.innerHTML = text.replace(regex, match => '<mark>' + match + '</mark>');
-        textNode.parentNode.replaceChild(span, textNode);
+        span.innerHTML = before + '<mark>' + matched + '</mark>' + after;
+
+        nodeInfo.node.parentNode.replaceChild(span, nodeInfo.node);
+      } else {
+        // 匹配跨多個節點 - 簡單處理：在每個節點中高亮其包含的部分
+        affectedNodes.forEach((nodeInfo, index) => {
+          const nodeStart = nodeInfo.startIndex;
+          const nodeEnd = nodeStart + nodeInfo.text.length;
+
+          const overlapStart = Math.max(matchInfo.start, nodeStart);
+          const overlapEnd = Math.min(matchInfo.end, nodeEnd);
+
+          const localStart = overlapStart - nodeStart;
+          const localEnd = overlapEnd - nodeStart;
+
+          const before = nodeInfo.text.substring(0, localStart);
+          const matched = nodeInfo.text.substring(localStart, localEnd);
+          const after = nodeInfo.text.substring(localEnd);
+
+          const span = document.createElement('span');
+          span.innerHTML = before + '<mark>' + matched + '</mark>' + after;
+
+          nodeInfo.node.parentNode.replaceChild(span, nodeInfo.node);
+        });
       }
     });
   }
