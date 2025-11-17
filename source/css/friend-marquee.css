@@ -192,10 +192,18 @@
 
 .friend-marquee-container::before {
   left: 0;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0));
 }
 
 .friend-marquee-container::after {
   right: 0;
-  background: linear-gradient(to left, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0));
+}
+
+[data-theme-mode="dark"] .friend-marquee-container::before {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+}
+
+[data-theme-mode="dark"] .friend-marquee-container::after {
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
 }
