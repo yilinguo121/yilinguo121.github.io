@@ -19,9 +19,15 @@ const headerFile = path.join(__dirname, '../node_modules/hexo-theme-reimu/layout
 if (fs.existsSync(headerFile)) {
   let content = fs.readFileSync(headerFile, 'utf8');
 
-  // Replace <img> tags with <span> tags that use mask-image
+  // Replace main navigation <img> tags with <span> tags that use mask-image
   content = content.replace(
     /<img src="<%- url_for\(item\.icon, \{relative: false\}\) %>" alt="<%= item\.name %> icon" style="height: 1em;">/g,
+    `<span class="nav-icon-img" style="mask-image: url('<%- url_for(item.icon, {relative: false}) %>'); -webkit-mask-image: url('<%- url_for(item.icon, {relative: false}) %>');" aria-label="<%= item.name %> icon"></span>`
+  );
+
+  // Replace sidebar <img> tags with <span> tags that use mask-image
+  content = content.replace(
+    /<img src="<%- url_for\(item\.icon, \{relative: false\}\) %>" alt="<%= item\.name %> icon" style="width: 1em;">/g,
     `<span class="nav-icon-img" style="mask-image: url('<%- url_for(item.icon, {relative: false}) %>'); -webkit-mask-image: url('<%- url_for(item.icon, {relative: false}) %>');" aria-label="<%= item.name %> icon"></span>`
   );
 
