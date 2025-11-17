@@ -159,93 +159,19 @@ injector:
         color: #fff !important;
       }
 
-      /* —— 導航菜單圖片圖標樣式（使用mask讓圖標採用文字顏色） —— */
-      #header-nav #main-nav .main-nav-link-wrap,
-      #header-nav .main-nav-link-wrap {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 0.5em !important;
-        height: 50px !important;
-        line-height: 50px !important;
-      }
-      #header-nav #main-nav .main-nav-icon,
-      .sidebar-menu .sidebar-menu-icon,
-      #header-nav .main-nav-icon {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 1.5em !important;
-        min-width: 1.5em !important;
-        height: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
       /* 圖標樣式 - 使用mask讓圖標跟隨文字顏色 */
       .nav-icon-img {
-        display: inline-block !important;
-        width: 1.2em !important;
-        height: 1.2em !important;
-        background-color: currentColor !important;
-        mask-size: contain !important;
-        -webkit-mask-size: contain !important;
-        mask-repeat: no-repeat !important;
-        -webkit-mask-repeat: no-repeat !important;
-        mask-position: center !important;
-        -webkit-mask-position: center !important;
-        vertical-align: middle !important;
-      }
-
-      /* 頂部導航圖標容器 */
-      #header-nav .main-nav-icon,
-      .main-nav-icon {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 1.5em !important;
-        height: 1.5em !important;
-      }
-
-      /* 頂部導航 hover 狀態 - 跟隨文字變深 */
-      .main-nav-link-wrap:hover .main-nav-icon,
-      #header-nav .main-nav-link-wrap:hover .main-nav-icon {
-        opacity: 1 !important;
-      }
-
-      /* 側邊欄圖標容器 */
-      .sidebar-menu-icon {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 2em !important;
-        height: 1.5em !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        vertical-align: middle !important;
-      }
-
-      /* 側邊欄圖標樣式 - 跟隨文字顏色 */
-      .sidebar-menu-icon .nav-icon-img {
-        width: 1.2em !important;
-        height: 1.2em !important;
-        background-color: currentColor !important;
-      }
-
-      /* 側邊欄連結包裝器 - 確保對齊 */
-      .sidebar-menu-link-wrap {
-        display: flex !important;
-        align-items: center !important;
-      }
-
-      /* 側邊欄連結文字對齊 */
-      .sidebar-menu-link {
-        vertical-align: middle !important;
-        line-height: 1.5em !important;
-      }
-
-      /* 側邊選單hover效果 */
-      .sidebar-menu .sidebar-menu-link-wrap:hover {
-        opacity: 1 !important;
+        display: inline-block;
+        width: 1.2em;
+        height: 1.2em;
+        background-color: currentColor;
+        mask-size: contain;
+        -webkit-mask-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        mask-position: center;
+        -webkit-mask-position: center;
+        vertical-align: middle;
       }
     </style>
   body_begin: # Inject code snippet right after <body>
@@ -270,7 +196,6 @@ injector:
         -webkit-mask: url('/images/1194690-200.png') no-repeat center / contain;
         mask: url('/images/1194690-200.png') no-repeat center / contain;
       }
-
     </style>
     <script src="/js/random-posts.js"></script>
     <script>
