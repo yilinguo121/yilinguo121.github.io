@@ -163,6 +163,8 @@ injector:
   body_end: |
     <link rel="stylesheet" href="/css/custom-search.css">
     <script src="/js/custom-search.js"></script>
+    <link rel="stylesheet" href="/css/friend-marquee.css">
+    <script src="/js/friend-marquee.js"></script>
     <style>
       #nav-random-btn {
         display: inline-flex !important;
