@@ -1,15 +1,15 @@
 - name: 蘿莉控
   url: https://ldn970110.github.io/
   desc: 佬都說自己不是蘿莉控
-  image: https://ldn970110.github.io/img/avatar/LDN.JPEG
+  image: /images/蘿莉控.jpeg
 - name: Raymond Weng
   url: https://rwc.dpdns.org
   desc: 什麼都沾一點的怪人
-  image: https://avatars.githubusercontent.com/u/87399369
+  image: /images/raymond_weng.jpeg
 - name: 閔捷
   url: https://www.xieserver.com/
   desc: 大帥哥
-  image: https://github.com/yilinguo121/yilinguo121.github.io/blob/main/images/%E5%A4%A7%E4%BE%BF%E9%A0%AD.webp?raw=true
+  image: /images/閔捷.webp
 - name: 匿名的貓貓
   url: https://qwo877.github.io/me/
   desc: 井底的笨貓 被電爛了
