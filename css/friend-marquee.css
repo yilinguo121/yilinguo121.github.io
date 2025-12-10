@@ -1,0 +1,209 @@
+/* 友鏈跑馬燈容器 */
+.friend-marquee-container {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 40px;
+  background: rgba(100, 100, 100, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 40px 0;
+  position: relative;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 30px;
+  min-height: 200px;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* 深色模式下的背景 */
+[data-theme-mode="dark"] .friend-marquee-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 淺色模式下的背景 */
+[data-theme-mode="light"] .friend-marquee-container {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* 每一排跑馬燈 */
+.friend-marquee-row {
+  width: 100%;
+  overflow: visible;
+  padding: 20px 0;
+  position: relative;
+}
+
+/* 跑馬燈軌道 */
+.friend-marquee-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* 第一排：從右向左滾動 */
+.friend-marquee-row.row1 .friend-marquee-track {
+  animation: marquee-left 40s linear infinite;
+}
+
+/* 第二排：從左向右滾動 */
+.friend-marquee-row.row2 .friend-marquee-track {
+  animation: marquee-right 40s linear infinite;
+}
+
+/* 滾動動畫 - 向左 */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-20%);
+  }
+}
+
+/* 滾動動畫 - 向右 */
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* 單個友鏈項目 */
+.friend-marquee-item {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  display: block !important;
+  border-radius: 50%;
+  padding: 0;
+  margin: 10px 0;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 移除連結圖標 */
+.friend-marquee-item::before,
+.friend-marquee-item::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* 懸停效果 */
+.friend-marquee-item:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* 暫停動畫當懸停在整個跑馬燈上 */
+.friend-marquee-row:hover .friend-marquee-track {
+  animation-play-state: paused;
+}
+
+/* 頭像圖片 */
+.friend-marquee-item img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: none;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* 名稱 - 默認隱藏 */
+.friend-marquee-name {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  visibility: hidden;
+}
+
+/* 懸停時顯示名稱 */
+.friend-marquee-item:hover .friend-marquee-name {
+  opacity: 1 !important;
+  visibility: visible !important;
+  bottom: -40px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .friend-marquee-item {
+    width: 80px;
+    height: 80px;
+  }
+
+  .friend-marquee-item img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .friend-marquee-name {
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+
+  .friend-marquee-track {
+    gap: 15px;
+  }
+}
+
+/* 添加漸變遮罩效果在兩側 */
+.friend-marquee-container::before,
+.friend-marquee-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.friend-marquee-container::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0));
+}
+
+.friend-marquee-container::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0));
+}
+
+[data-theme-mode="dark"] .friend-marquee-container::before {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+}
+
+[data-theme-mode="dark"] .friend-marquee-container::after {
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+}

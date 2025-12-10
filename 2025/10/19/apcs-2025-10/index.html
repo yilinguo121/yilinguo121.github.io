@@ -1,0 +1,1560 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-TW"  
+    
+      data-theme-mode="auto"
+    
+  >
+  <head>
+  
+  <meta charset="utf-8">
+  
+
+  
+
+  
+
+  <script>window.REIMU_CONFIG = {};window.REIMU_CONFIG.clipboard_tips = {"success":{"en":"Copy successfully (*^▽^*)","zh-CN":"复制成功 (*^▽^*)","zh-TW":"複製成功 (*^▽^*)","ja":"コピー成功 (*^▽^*)","pt-BR":"Copiado com sucesso (*^▽^*)"},"fail":{"en":"Copy failed (ﾟ⊿ﾟ)ﾂ","zh-CN":"复制失败 (ﾟ⊿ﾟ)ﾂ","zh-TW":"複製失敗 (ﾟ⊿ﾟ)ﾂ","ja":"コピー失敗 (ﾟ⊿ﾟ)ﾂ","pt-BR":"Falha ao copiar (ﾟ⊿ﾟ)ﾂ"},"copyright":{"enable":false,"count":50,"license_type":"by-nc-sa"}};window.REIMU_CONFIG.clipboard_tips.copyright.content = '本部落格所有文章除特別聲明外，均採用 BY-NC-SA 授權協議。轉載請註明出處！';window.REIMU_CONFIG.code_block = {"expand":true};window.REIMU_CONFIG.base = 'https://yilinguo121.github.io';</script>
+  
+  <title>
+    APCS 2025/10 解題紀錄（C++） |
+    
+    郭10的Blog
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CNoto%20Sans%20TC:400,400italic,700,700italic%7CNoto%20Serif%20TC:400,400italic,700,700italic%7CJetBrains%20Mono:400,400italic,700,700italic&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CNoto%20Sans%20TC:400,400italic,700,700italic%7CNoto%20Serif%20TC:400,400italic,700,700italic%7CJetBrains%20Mono:400,400italic,700,700italic&display=swap" media="print" onload="this.media&#x3D;&#39;all&#39;">
+  
+  
+    
+<link rel="stylesheet" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@7.0.0/css/regular.min.css" integrity="sha384-PmxfVzUpFiyj5ZqzN3upnv7G4x9YAlMQar&#x2F;qCBLEYSaWr&#x2F;DUQ9f&#x2F;8ITCT0aN7byC" crossorigin="anonymous">
+<link rel="stylesheet" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@7.0.0/css/solid.min.css" integrity="sha384-HMy1VqP4zke4zzaS+hmFgbW3QXDYD+qtueW3unq30MTgdOnarIgANSya8s5qKRh5" crossorigin="anonymous">
+
+    <link rel="preload" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@7.0.0/css/brands.min.css" integrity="sha384-IzIkDWjFFaoFz413tu2x9R4cMiJ3EGuxOf&#x2F;7Q8X0LFhqz9fU5zT2go7BgenYdKgN" crossorigin="anonymous">
+<link rel="preload" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@7.0.0/css/v5-font-face.min.css" integrity="sha384-691KBFHHuy2pnDTyR36VZ90jy7dXWBfC5D1nzy5rkDlqQQ&#x2F;vRs&#x2F;nmmK++LBfAp&#x2F;C" crossorigin="anonymous">
+<link rel="preload" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@7.0.0/css/v4-font-face.min.css" integrity="sha384-7c0mz5ReY2wCEDKNNEdrKdbtS&#x2F;6+5dEgNsz&#x2F;dU3e9m7xldAdTFwNTAuX+s4sJHJl" crossorigin="anonymous">
+  
+  
+    
+<link rel="stylesheet" href="/css/loader.css">
+
+  
+  
+    <meta name="description" content="中級  彗星撞擊 題目連結  思路 模擬並逐格更新。初始化 v 為大小 n×m、每格值為 x，並用 have 標記先給定的目標格。對每一個操作（程式中第二個 k 讀入的那批查詢，參數為 a,b,s,d），計算正方形區域 $$i\in\left[a-\frac{s-1}{2},a+\frac{s-1}{2}\right],\qquad j\in\left[b-\frac{s-1}{2},b+\fr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APCS 2025&#x2F;10 解題紀錄（C++）">
+<meta property="og:url" content="https://yilinguo121.github.io/2025/10/19/apcs-2025-10/index.html">
+<meta property="og:site_name" content="郭10的Blog">
+<meta property="og:description" content="中級  彗星撞擊 題目連結  思路 模擬並逐格更新。初始化 v 為大小 n×m、每格值為 x，並用 have 標記先給定的目標格。對每一個操作（程式中第二個 k 讀入的那批查詢，參數為 a,b,s,d），計算正方形區域 $$i\in\left[a-\frac{s-1}{2},a+\frac{s-1}{2}\right],\qquad j\in\left[b-\frac{s-1}{2},b+\fr">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-10-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-18T16:00:00.000Z">
+<meta property="article:author" content="郭10">
+<meta property="article:tag" content="APCS">
+<meta property="article:tag" content="解題">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="alternate" href="/atom.xml" title="郭10的Blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="preload" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;" href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css" integrity="sha384-IfxC36XL&#x2F;toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx&#x2F;1oA&#x2F;0l8ysE" crossorigin="anonymous">
+  
+    
+      
+        
+<link rel="stylesheet" href="https://npm.webcache.cn/katex@0.16.22/dist/katex.min.css" integrity="sha384-5TcZemv2l&#x2F;9On385z&#x2F;&#x2F;&#x2F;+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+
+      
+    
+  
+  
+    
+      
+<link rel="stylesheet" href="https://npm.webcache.cn/@waline/client@2.15.8/dist/waline.css" integrity="sha384-vltfZtesCdl6NYVcFVcjEaIi5RpNvZe9t7fXvq8twVtcoy+Ub9QgnxUYJmwOhYCK" crossorigin="anonymous">
+
+    
+  
+  
+  
+    
+<script src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js" integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script>
+
+  
+  
+    
+<link rel="stylesheet" href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css" integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous">
+
+  
+  
+  
+    <style>
+  /* —— 藍色層級（深→淺）對應主題的 --red-* —— */
+  :root{
+    --red-0: #1d4ed8;  /* 深藍 */
+    --red-1: #2563eb;
+    --red-2: #3b82f6;
+    --red-3: #60a5fa;
+    --red-4: #93c5fd;
+    --red-5: #dbeafe;
+    --red-5-5:#eff6ff;
+    --red-6: #f6faff;
+    --color-red-6-shadow: rgba(37, 99, 235, .6);
+    --color-red-3-shadow: rgba(59, 130, 246, .3);
+  }
+  [data-theme="dark"]{
+    --red-4: rgba(147, 197, 253, .50);
+    --red-5: rgba(191, 219, 254, .15);
+    --red-5-5: rgba(219, 234, 254, .05);
+    --red-6: rgba(239, 246, 255, .20);
+  }
+
+  /* —— 站內主要元件（不要套用到所有 <button>，避免影響 Waline） —— */
+  .btn, .button,
+  .page-number.current,
+  .timeline .dot,
+  .pace .pace-progress {
+    background: var(--red-1) !important;
+    border-color: var(--red-1) !important;
+    color: #fff !important;
+  }
+  a { color: var(--red-1); }
+  a:hover { color: var(--red-0); }
+
+  /* —— TOC：不加底色，只強調當前項 —— */
+  .toc a, .toc .toc-link{
+    background: transparent !important;
+    color: inherit !important;
+  }
+  .toc .active > a,
+  .toc .is-active > a,
+  .toc .active > .toc-link,
+  .toc .is-active > .toc-link{
+    background: transparent !important;
+    color: var(--red-1) !important;
+    border-left: 2px solid var(--red-1);
+    padding-left: .5rem;
+  }
+
+  /* —— Waline：工具列圖標透明，僅保留送出鍵為藍色 —— */
+  #waline button{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
+  }
+  /* 工具列/反應列的 a 也清底色 */
+  #waline .wl-actions a,
+  #waline .wl-action a,
+  #waline .wl-reaction a,
+  #waline .wl-icon {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
+  }
+  /* 滑過圖示只變字色 */
+  #waline .wl-actions button:hover,
+  #waline .wl-actions a:hover,
+  #waline .wl-reaction button:hover,
+  #waline .wl-reaction a:hover {
+    color: var(--red-1) !important;
+  }
+  /* 送出鍵維持藍色主題 */
+  #waline .wl-editor .wl-submit button,
+  #waline .wl-btn-primary,
+  #waline .wl-btn[type="submit"] {
+    background: var(--red-1) !important;
+    border-color: var(--red-1) !important;
+    color: #fff !important;
+  }
+
+  /* —— 導航菜單圖片圖標樣式（使用mask讓圖標採用文字顏色） —— */
+  #header-nav #main-nav .main-nav-link-wrap,
+  #header-nav .main-nav-link-wrap {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.5em !important;
+    height: 50px !important;
+    line-height: 50px !important;
+  }
+  #header-nav #main-nav .main-nav-icon,
+  .sidebar-menu .sidebar-menu-icon,
+  #header-nav .main-nav-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 1.5em !important;
+    min-width: 1.5em !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  /* 圖標樣式 - 使用mask讓圖標跟隨文字顏色 */
+  .nav-icon-img {
+    display: inline-block !important;
+    width: 1.2em !important;
+    height: 1.2em !important;
+    background-color: currentColor !important;
+    mask-size: contain !important;
+    -webkit-mask-size: contain !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-position: center !important;
+    -webkit-mask-position: center !important;
+    vertical-align: middle !important;
+  }
+
+  /* 頂部導航圖標容器 */
+  #header-nav .main-nav-icon,
+  .main-nav-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 1.5em !important;
+    height: 1.5em !important;
+  }
+
+  /* 頂部導航 hover 狀態 - 跟隨文字變深 */
+  .main-nav-link-wrap:hover .main-nav-icon,
+  #header-nav .main-nav-link-wrap:hover .main-nav-icon {
+    opacity: 1 !important;
+  }
+
+  /* 側邊欄圖標樣式 - 跟隨文字顏色 */
+  .sidebar-menu-icon .nav-icon-img {
+    width: 1.2em !important;
+    height: 1.2em !important;
+    background-color: currentColor !important;
+  }
+
+  /* 側邊欄連結包裝器 - 確保對齊 */
+  .sidebar-menu-link-wrap {
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* 側邊欄連結文字對齊 */
+  .sidebar-menu-link {
+    vertical-align: middle !important;
+    line-height: 1.5em !important;
+  }
+
+  /* 側邊選單hover效果 */
+  .sidebar-menu .sidebar-menu-link-wrap:hover {
+    opacity: 1 !important;
+  }
+</style>
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+  <body>
+    
+    
+  <div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate">
+        
+          <svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+           M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg>
+        
+      </div>
+      
+      
+        
+      
+      <div class="loading-word">載入中啊啊啊...</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var startLoading = () => {
+      time = Date.now();
+      document.getElementById('loader').classList.remove("loading");
+    }
+    var endLoading = () => {
+      if (!time) {
+        document.body.style.overflow = 'auto';
+        document.getElementById('loader').classList.add("loading");
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          document.body.style.overflow = 'auto';
+          document.getElementById('loader').classList.add("loading");
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    document.getElementById('loader').addEventListener('click', endLoading);
+  </script>
+
+<div id="copy-tooltip" style="pointer-events: none; opacity: 0; transition: all 0.2s ease; position: fixed;top: 50%;left: 50%;z-index: 999;transform: translate(-50%, -50%);color: white;background: rgba(0, 0, 0, 0.5);padding: 10px 15px;border-radius: 10px;">
+</div>
+<div id="heatmap-tooltip"></div>
+
+
+    <div id="container">
+      <div id="wrap">
+        <div id="header-nav">
+  <nav id="main-nav">
+    
+      
+        <span class="main-nav-link-wrap">
+          <div class="main-nav-icon icon ">
+             
+              
+              
+                <span class="nav-icon-img" style="mask-image: url('/images/home.png'); -webkit-mask-image: url('/images/home.png');" aria-label="首頁 icon"></span>
+              
+             
+          </div>
+          <a class="main-nav-link" href="/">首頁</a>
+        </span>
+      
+        <span class="main-nav-link-wrap">
+          <div class="main-nav-icon icon ">
+             
+              
+              
+                <span class="nav-icon-img" style="mask-image: url('/images/person.png'); -webkit-mask-image: url('/images/person.png');" aria-label="關於我 icon"></span>
+              
+             
+          </div>
+          <a class="main-nav-link" href="/%E9%97%9C%E6%96%BC%E6%88%91/">關於我</a>
+        </span>
+      
+        <span class="main-nav-link-wrap">
+          <div class="main-nav-icon icon ">
+             
+              
+              
+                <span class="nav-icon-img" style="mask-image: url('/images/floder.png'); -webkit-mask-image: url('/images/floder.png');" aria-label="文章 icon"></span>
+              
+             
+          </div>
+          <a class="main-nav-link" href="/archives">文章</a>
+        </span>
+      
+        <span class="main-nav-link-wrap">
+          <div class="main-nav-icon icon ">
+             
+              
+              
+                <span class="nav-icon-img" style="mask-image: url('/images/friend.png'); -webkit-mask-image: url('/images/friend.png');" aria-label="友鏈 icon"></span>
+              
+             
+          </div>
+          <a class="main-nav-link" href="/friend">友鏈</a>
+        </span>
+      
+    
+    <a id="main-nav-toggle" class="nav-icon"></a>
+  </nav>
+  <nav id="sub-nav">
+    
+    
+    
+  </nav>
+  
+</div>
+<header id="header">
+  
+    <picture></picture>
+    <img  fetchpriority="high" src="https://apcs.csie.ntnu.edu.tw/wp-content/themes/APCS-201908/img/APCS.png" alt="APCS 2025/10 解題紀錄（C++）">
+  
+  <div id="header-outer">
+    <div id="header-title">
+      
+        
+        
+          <span id="logo">
+            <h1 data-aos="slide-up">APCS 2025/10 解題紀錄（C++）</h1>
+          </span>
+        
+      
+      
+        
+        <h2 id="subtitle-wrap" data-aos="slide-down">
+          
+        </h2>
+      
+    </div>
+  </div>
+</header>
+
+        <div id="content"  class="sidebar-right" >
+          <aside id="sidebar">
+  
+  <div class="sidebar-wrapper-container sticky">
+  
+    
+    
+  
+ 
+  <div class="sidebar-wrapper">
+    <div class="sidebar-wrap" data-aos="fade-up">
+      
+        
+          <div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目錄</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+  
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E7%B4%9A"><span class="toc-number">1.</span> <span class="toc-text"> 中級</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%97%E6%98%9F%E6%92%9E%E6%93%8A"><span class="toc-number">1.1.</span> <span class="toc-text"> 彗星撞擊</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 程式碼</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%88%AA%E7%A9%BA%E6%8B%8D%E7%85%A7%E5%9C%96"><span class="toc-number">1.2.</span> <span class="toc-text"> 航空拍照圖</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-2"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC-2"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 程式碼</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%95%86%E5%93%81%E5%8C%85%E8%A3%9D%E5%9C%B0"><span class="toc-number">1.3.</span> <span class="toc-text"> 商品包裝地</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-3"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC-3"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 程式碼</span></a></li></ol></li></ol></li></ol>
+  
+</div>
+</div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img data-src="/avatar/avatar.webp" data-sizes="auto" alt="郭10" class="lazyload">
+  <div class="sidebar-author-name">郭10</div>
+  <div class="sidebar-description"></div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div>
+    <div class="sidebar-state-number">12</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>分類</div>
+    <div class="sidebar-state-number">2</div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>標籤</div>
+    <div class="sidebar-state-number">13</div>
+  </div>
+</div>
+<div class="sidebar-social">
+  
+</div>
+<div class="sidebar-menu">
+  
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/" aria-label="首頁"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/home.png'); -webkit-mask-image: url('/images/home.png');" aria-label="首頁 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">首頁</div>
+      </div>
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/%E9%97%9C%E6%96%BC%E6%88%91/" aria-label="關於我"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/person.png'); -webkit-mask-image: url('/images/person.png');" aria-label="關於我 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">關於我</div>
+      </div>
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/archives" aria-label="文章"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/floder.png'); -webkit-mask-image: url('/images/floder.png');" aria-label="文章 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">文章</div>
+      </div>
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/friend" aria-label="友鏈"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/friend.png'); -webkit-mask-image: url('/images/friend.png');" aria-label="友鏈 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">友鏈</div>
+      </div>
+    
+  
+</div>
+</div>
+        
+      
+      
+        
+          <div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div>
+        
+      
+    </div>
+  </div>
+  
+  <div class="sidebar-widget">
+  
+  </div>
+  
+  </div>
+  
+    <script src="/js/site-stats.js"></script>
+<div class="widget site-stats-widget">
+  <h3 class="widget-title">網站統計</h3>
+  <div class="site-stats-content">
+    <div class="stat-item">
+      <span class="stat-label">文章數目 :</span>
+      <span class="stat-value" id="stat-posts">-</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">已執行時間 :</span>
+      <span class="stat-value" id="stat-runtime">-</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">本站總字數 :</span>
+      <span class="stat-value" id="stat-words">-</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">本站訪客數 :</span>
+      <span class="stat-value"><span id="busuanzi_value_site_uv">-</span></span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">本站總訪問量 :</span>
+      <span class="stat-value"><span id="busuanzi_value_site_pv">-</span></span>
+    </div>
+  </div>
+</div>
+<style>
+  /* 隱藏 footer 中的不蒜子統計 */
+  #footer-info > div:has([id^="busuanzi_container"]) {
+    display: none !important;
+  }
+
+  .site-stats-widget {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--red-5-5);
+    border-radius: 8px;
+    box-shadow: var(--shadow-meta);
+    transition: 0.3s;
+  }
+  .site-stats-widget:hover {
+    box-shadow: var(--shadow-meta-hover);
+  }
+  .site-stats-widget .widget-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: var(--red-1);
+  }
+  .site-stats-content .stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--red-5);
+  }
+  .site-stats-content .stat-item:last-child {
+    border-bottom: none;
+  }
+  .stat-label {
+    font-weight: normal;
+    color: inherit;
+  }
+  .stat-value {
+    font-weight: bold;
+    color: var(--red-1);
+  }
+</style>
+<script>
+  (function() {
+    function updateStats() {
+      if (window.siteStats) {
+        // 更新文章數目
+        document.getElementById('stat-posts').textContent = window.siteStats.postCount;
+
+        // 更新總字數
+        document.getElementById('stat-words').textContent = window.siteStats.totalWords;
+      }
+    }
+
+    function updateRuntime() {
+      if (window.siteStats) {
+        var startDate = new Date(window.siteStats.siteStartDate);
+        var now = new Date();
+        var diff = now - startDate;
+
+        // 計算天、小時、分鐘、秒
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        // 格式化顯示
+        var runtimeText = days + ' 天 ' + hours + ' 小時 ' + minutes + ' 分 ' + seconds + ' 秒';
+        document.getElementById('stat-runtime').textContent = runtimeText;
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        updateStats();
+        updateRuntime();
+        // 每秒更新一次運行時間
+        setInterval(updateRuntime, 1000);
+      });
+    } else {
+      updateStats();
+      updateRuntime();
+      // 每秒更新一次運行時間
+      setInterval(updateRuntime, 1000);
+    }
+  })();
+</script>
+
+  
+</aside>
+
+          <section id="main"><article id="post-apcs-2025-10" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner" data-aos="fade-up">
+    <div class="article-meta">
+      <div class="article-date">
+  <span class="article-date-link icon-calendar" data-aos="zoom-in">
+    <time datetime="2025-10-18T16:00:00.000Z" itemprop="datePublished">2025 年 10 月 19 日</time>
+    <time style="display: none;" id="post-update-time">2025 年 10 月 19 日</time>
+  </span>
+  
+</div>
+
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/APCS/" data-aos="zoom-in">APCS</a>
+  </div>
+
+
+    </div>
+    
+    <div class="hr-line"></div>
+    
+
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+      
+        <h2 id="中級"><a class="markdownIt-Anchor" href="#中級"></a> 中級</h2>
+<h3 id="彗星撞擊"><a class="markdownIt-Anchor" href="#彗星撞擊"></a> 彗星撞擊</h3>
+<p><a target="_blank" rel="noopener" href="https://zerojudge.tw/ShowProblem?problemid=r488">題目連結</a></p>
+<h4 id="思路"><a class="markdownIt-Anchor" href="#思路"></a> 思路</h4>
+<p>模擬並逐格更新。初始化 <code>v</code> 為大小 <code>n×m</code>、每格值為 <code>x</code>，並用 <code>have</code> 標記先給定的目標格。對每一個操作（程式中第二個 <code>k</code> 讀入的那批查詢，參數為 <code>a,b,s,d</code>），計算正方形區域</p>
+<p>$$i\in\left[a-\frac{s-1}{2},a+\frac{s-1}{2}\right],\qquad
+j\in\left[b-\frac{s-1}{2},b+\frac{s-1}{2}\right],
+$$</p><p>（程式以 <strong>0-based</strong> 索引，遇到超出邊界的 $(i,j)$ 則跳過）。對這個區域做一次掃描：若存在任一格 <code>have[i][j] == 1</code>，則將該區域內所有 <code>have[i][j]</code> 設為 <code>0</code>（表示被移除）；否則對區域內每格執行 <code>v[i][j] -= d</code>（扣除耐久）。此策略嚴格按照題意的「若區域內有目標則移除，否則造成傷害」執行，故最後統計最大值 <code>mx = max(v[i][j])</code>、最小值 <code>mn = min(v[i][j])</code> 與剩餘目標數 <code>cnt = sum(have[i][j])</code> 能正確反映最終狀態。</p>
+<p>時間/空間複雜度（令第二個輸入的查詢數為 $Q$，單次查詢最大正方形邊長為 $s_{\max}$：</p>
+<p>$$\text{初始化與最後統計} &#x3D; O(n\cdot m),\qquad
+\text{每次查詢掃描} &#x3D; O(\min(s_{\max}^2,n\cdot m)),
+$$</p><p>因此總時間複雜度為</p>
+<p>$$O\big(nm + Q\cdot s_{\max}^2\big).
+$$</p><p>空間複雜度為</p>
+<p>$$O(n\cdot m)
+$$</p><hr />
+<h4 id="程式碼"><a class="markdownIt-Anchor" href="#程式碼"></a> 程式碼</h4>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IO ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);</span></span><br><span class="line"><span class="type">const</span> <span class="type">long</span> <span class="type">long</span> INF = numeric_limits&lt;<span class="type">int</span>&gt;::<span class="built_in">max</span>();</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="type">int</span> n, m, x;</span><br><span class="line">	cin &gt;&gt; n &gt;&gt; m &gt;&gt; x;</span><br><span class="line">	vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">v</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m, x));</span><br><span class="line">	vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">have</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m));</span><br><span class="line">	<span class="type">int</span> k;</span><br><span class="line">	cin &gt;&gt; k;</span><br><span class="line">	<span class="keyword">while</span> (k--) &#123;</span><br><span class="line">		<span class="type">int</span> a, b;</span><br><span class="line">		cin &gt;&gt; a &gt;&gt; b;</span><br><span class="line">		have[a][b]++;</span><br><span class="line">	&#125;</span><br><span class="line">	cin &gt;&gt; k;</span><br><span class="line">	<span class="keyword">while</span> (k--) &#123;</span><br><span class="line">		<span class="type">int</span> a, b, s, d;</span><br><span class="line">		cin &gt;&gt; a &gt;&gt; b &gt;&gt; s &gt;&gt; d;</span><br><span class="line">		<span class="type">bool</span> flag = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = a - (s - <span class="number">1</span>) / <span class="number">2</span>;i &lt;= a + (s - <span class="number">1</span>) / <span class="number">2</span>;i++) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> j = b - (s - <span class="number">1</span>) / <span class="number">2</span>;j &lt;= b + (s - <span class="number">1</span>) / <span class="number">2</span>;j++) &#123;</span><br><span class="line">				<span class="keyword">if</span> (i &lt; <span class="number">0</span> <span class="keyword">or</span> i &gt;= n <span class="keyword">or</span> j &lt; <span class="number">0</span> <span class="keyword">or</span> j &gt;= m) <span class="keyword">continue</span>;</span><br><span class="line">				<span class="keyword">if</span> (have[i][j]) &#123;</span><br><span class="line">					have[i][j] = <span class="number">0</span>;</span><br><span class="line">					flag = <span class="number">1</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> i = a - (s - <span class="number">1</span>) / <span class="number">2</span>;i &lt;= a + (s - <span class="number">1</span>) / <span class="number">2</span>;i++) &#123;</span><br><span class="line">				<span class="keyword">for</span> (<span class="type">int</span> j = b - (s - <span class="number">1</span>) / <span class="number">2</span>;j &lt;= b + (s - <span class="number">1</span>) / <span class="number">2</span>;j++) &#123;</span><br><span class="line">					<span class="keyword">if</span> (i &lt; <span class="number">0</span> <span class="keyword">or</span> i &gt;= n <span class="keyword">or</span> j &lt; <span class="number">0</span> <span class="keyword">or</span> j &gt;= m) <span class="keyword">continue</span>;</span><br><span class="line">					v[i][j] -= d;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">int</span> mx = <span class="number">0</span>, mn = INF, cnt = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; n;i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>;j &lt; m;j++) &#123;</span><br><span class="line">			cnt += have[i][j];</span><br><span class="line">			mx = <span class="built_in">max</span>(mx, v[i][j]);</span><br><span class="line">			mn = <span class="built_in">min</span>(mn, v[i][j]);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; mx &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; mn &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; cnt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr />
+<h3 id="航空拍照圖"><a class="markdownIt-Anchor" href="#航空拍照圖"></a> 航空拍照圖</h3>
+<p><a target="_blank" rel="noopener" href="https://zerojudge.tw/ShowProblem?problemid=r489">題目連結</a></p>
+<h4 id="思路-2"><a class="markdownIt-Anchor" href="#思路-2"></a> 思路</h4>
+<p>以「對矩陣 (a) 做 90° 旋轉並比對」的思路。定義旋轉函數 (f)（將 (a) 順時針旋轉 90°）：</p>
+<p>$$f(a)_{i,j} &#x3D; a_{n-1-j,i},
+$$</p><p>其中原矩陣 (a) 的大小為 $(n\times m)$，則 (f(a)) 的大小為 $(m\times n)$。演算法依序對 (k=0,1,2,3) 做 90° 旋轉（即反覆套用 (f)）；對於每個旋轉後的矩陣 (a’)，若其大小與目標矩陣 (b) 相同，則計算重合且值相等的格子數：</p>
+<p>$$\text{now} &#x3D; \sum_{i&#x3D;0}^{n-1}\sum_{j&#x3D;0}^{m-1} \mathbf{1}\big(a&#39;_{i,j}&#x3D;b_{i,j}\big),
+$$</p><p>維護最大重合數 $s&#x3D;\max(s,\text{now})$。最終輸出百分比為整數（向下取整）：</p>
+<p>$$\text{ans} &#x3D; \left\lfloor\frac{100\cdot s}{n\cdot m}\right\rfloor%\ .
+$$</p><p>時間 / 空間複雜度（以原始 $n\times m$ 為基準）：</p>
+<ul>
+<li>每次旋轉 (f) 建構新矩陣需 $O(nm)$，每次相等性檢查需 $O(nm)$。總共最多做 4 次，故時間複雜度為</li>
+</ul>
+<p>$$O(4\cdot n\cdot m)&#x3D;O(nm).
+$$</p><ul>
+<li>額外空間用於儲存旋轉後的矩陣與原矩陣，空間複雜度為</li>
+</ul>
+<p>$$O(nm).
+$$</p><hr />
+<h4 id="程式碼-2"><a class="markdownIt-Anchor" href="#程式碼-2"></a> 程式碼</h4>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IO ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);</span></span><br><span class="line"><span class="type">const</span> <span class="type">long</span> <span class="type">long</span> INF = numeric_limits&lt;<span class="type">int</span>&gt;::<span class="built_in">max</span>();</span><br><span class="line">vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">f</span>(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; a) &#123;</span><br><span class="line">	<span class="type">int</span> n = a.<span class="built_in">size</span>(), m = a[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">	vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">t</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; m;i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>;j &lt; n;j++) &#123;</span><br><span class="line">			t[i][j] = a[n - <span class="number">1</span> - j][i];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="type">int</span> n, m;</span><br><span class="line">	cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">	vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">a</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m)), <span class="built_in">b</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m));</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; n;i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>;j &lt; m;j++) &#123;</span><br><span class="line">			cin &gt;&gt; a[i][j];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; n;i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>;j &lt; m;j++) &#123;</span><br><span class="line">			cin &gt;&gt; b[i][j];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">int</span> s = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">0</span>;k &lt; <span class="number">4</span>;k++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (a.<span class="built_in">size</span>() == b.<span class="built_in">size</span>() <span class="keyword">and</span> a[<span class="number">0</span>].<span class="built_in">size</span>() == b[<span class="number">0</span>].<span class="built_in">size</span>()) &#123;</span><br><span class="line">			<span class="type">int</span> now = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; n;i++) &#123;</span><br><span class="line">				<span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>;j &lt; m;j++) &#123;</span><br><span class="line">					<span class="keyword">if</span> (a[i][j] == b[i][j]) now++;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			s = <span class="built_in">max</span>(s, now);</span><br><span class="line">		&#125;</span><br><span class="line">		a = <span class="built_in">f</span>(a);</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; (<span class="number">100</span> * s) / (n * m) &lt;&lt; <span class="string">&#x27;%&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr />
+<h3 id="商品包裝地"><a class="markdownIt-Anchor" href="#商品包裝地"></a> 商品包裝地</h3>
+<p><a target="_blank" rel="noopener" href="https://zerojudge.tw/ShowProblem?problemid=r490">題目連結</a></p>
+<h4 id="思路-3"><a class="markdownIt-Anchor" href="#思路-3"></a> 思路</h4>
+<p>逐筆讀入長度為 13 的字串 <code>x</code>，將前 12 位分成「奇數位」與「偶數位」兩組（程式以 0-based 索引，條件為 <code>(i+1)%2</code> 判斷奇偶），計算</p>
+<p>$$s_1&#x3D;\sum_{\substack{0\le i\le 11\ i\equiv 0\pmod{2}}}\big(x[i]-&#39;0&#39;\big),\qquad
+s_2&#x3D;\sum_{\substack{0\le i\le 11\ i\equiv 1\pmod{2}}}\big(x[i]-&#39;0&#39;\big).
+$$</p><p>將第 13 位記作 $d_{13}&#x3D;x[12]-&#39;0&#39;$。題目程式中以</p>
+<p>$$k&#x3D;(s_1+3s_2)\bmod 10 + d_{13}
+$$</p><p>判定合法條件 <code>if (k == 0 or k == 10)</code>，其數學意義等價於</p>
+<p>$$(s_1+3s_2+d_{13})\equiv 0\pmod{10},
+$$</p><p>也就是「前 12 位按奇偶位加權求和，再加上第 13 位，模 10 等於 0」時視為一筆合法資料（符合 ISBN／檢查碼類似的檢核邏輯）。當該筆合法時，把該字串的前三個字元 <code>x.substr(0,3)</code> 當作 key 在 <code>map&lt;string,int&gt; cnt</code> 中計數，並更新 <code>ans = max(ans, cnt[prefix])</code> 作為目前觀察到的最大頻次。讀完所有輸入後，按 <code>map</code> 的鍵序（由小到大）掃描，遇到 <code>y == ans</code> 即輸出該 <code>prefix</code> 與 <code>ans</code>（程式以第一個符合者輸出，對應於字典序最小的前綴）。</p>
+<p>時間 / 空間複雜度：</p>
+<ul>
+<li>每筆字串固定做 (12) 次位元相加與常數次數的字串切片／ <code>map</code> 操作：單筆時間為 $O(\log M)$（<code>M</code> 為目前不同前綴數，因 <code>map</code> 為平衡樹），整體時間為</li>
+</ul>
+<p>$$O\big(n\log M\big)\subseteq O(n\log n).
+$$</p><ul>
+<li>空間用於 <code>map</code> 儲存至多 $(M\le n)$ 個不同前綴，為 $O(M)$。</li>
+</ul>
+<hr />
+<h4 id="程式碼-3"><a class="markdownIt-Anchor" href="#程式碼-3"></a> 程式碼</h4>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IO ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);</span></span><br><span class="line"><span class="type">const</span> <span class="type">long</span> <span class="type">long</span> INF = numeric_limits&lt;<span class="type">int</span>&gt;::<span class="built_in">max</span>();</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="type">int</span> n;</span><br><span class="line">	cin &gt;&gt; n;</span><br><span class="line">	map&lt;string, <span class="type">int</span>&gt; cnt;</span><br><span class="line">	<span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span> (n--) &#123;</span><br><span class="line">		string x;</span><br><span class="line">		cin &gt;&gt; x;</span><br><span class="line">		<span class="type">int</span> s1 = <span class="number">0</span>, s2 = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; <span class="number">12</span>;i++) &#123;</span><br><span class="line">			<span class="keyword">if</span> ((i + <span class="number">1</span>) % <span class="number">2</span>) s1 += x[i] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">			<span class="keyword">else</span> s2 += x[i] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="type">int</span> k = (s1 + <span class="number">3</span> * s2) % <span class="number">10</span> + (x[<span class="number">12</span>] - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">		<span class="keyword">if</span> (k == <span class="number">0</span> <span class="keyword">or</span> k == <span class="number">10</span>) &#123;</span><br><span class="line">			cnt[x.<span class="built_in">substr</span>(<span class="number">0</span>, <span class="number">3</span>)]++;</span><br><span class="line">			ans = <span class="built_in">max</span>(ans, cnt[x.<span class="built_in">substr</span>(<span class="number">0</span>, <span class="number">3</span>)]);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">auto</span> [x, y] : cnt) &#123;</span><br><span class="line">		<span class="keyword">if</span> (y == ans) &#123;</span><br><span class="line">			cout &lt;&lt; x &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; ans;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+      
+      
+        <a data-aos="zoom-in" href="/2025/10/19/apcs-2025-10/#comments" class="article-comment-link">
+          <span class="post-comments-count waline-comment-count" data-path="/2025/10/19/apcs-2025-10/" itemprop="commentCount"></span>
+          留言
+        </a>
+      
+      
+      
+      
+        <span data-aos="zoom-in" class="article-visitor-link">
+          <span class="waline-pageview-count" data-path="/2025/10/19/apcs-2025-10/">0</span>
+          <em class="post-meta-item-text">閲讀量</em>
+        </span>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/APCS/" rel="tag">APCS</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/%E8%A7%A3%E9%A1%8C/" rel="tag">解題</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+  <nav id="article-nav" data-aos="fade-up">
+    
+      
+      <div class="article-nav-link-wrap left">
+        
+          <img data-src="https://apcs.csie.ntnu.edu.tw/wp-content/themes/APCS-201908/img/APCS.png" data-sizes="auto" alt="APCS 2025/11 解題紀錄（C++）" class="lazyload">
+        
+        <a href="/2025/11/16/apcs-2025-11/"></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">
+          
+            APCS 2025/11 解題紀錄（C++）
+          
+        </h3>
+      </div>
+    
+    
+    
+    <div class="article-nav-link-wrap right">
+      
+        <img data-src="https://media.discordapp.net/attachments/1334819564986302475/1422154459957559427/IMG_0686.jpg?ex=68dba40d&is=68da528d&hm=8fd982ee29782680eae38410457d45c2fb63337b22f12690b1bccc0a95a55c69&=&format=webp&width=1588&height=2118" data-sizes="auto" alt="APCS 2025/06 解題紀錄（C++）" class="lazyload">
+      
+      <a href="/2025/09/08/apcs-2025-06/"></a>
+      <div class="article-nav-caption">後一篇</div>
+      <h3 class="article-nav-title">
+        
+          APCS 2025/06 解題紀錄（C++）
+        
+      </h3>
+    </div>
+    
+  </nav>
+
+
+</article>
+
+
+
+
+
+
+
+
+
+  <section id="comments" data-aos="fade-up">
+    <div class="comment-header">
+      
+      
+        
+      
+      <h2 class="comment-title">說些什麼吧！</h2>
+      <div class="comment-selector">
+        <div class="comment-selector-wrap">
+            
+            <div class="selector-item" data-selector="waline">
+              <span>waline</span>
+            </div>
+            
+        </div>
+      </div>
+    </div>
+    <div class="comment-content">
+      
+        <div class="comment waline-comment" data-aos="fade-up"
+          id="waline-comment">
+        </div>
+      
+    </div>
+  </section>
+
+
+</section>
+        </div>
+        <footer id="footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info">
+    
+    <div>
+      <span class="icon-copyright"></span>
+      
+      
+      
+        2025
+      
+      <span class="footer-info-sep rotate"></span>
+      郭10
+    </div>
+    
+      <div>
+        基於&nbsp;<a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a>&nbsp;
+        Theme.<a href="https://github.com/D-Sketon/hexo-theme-reimu" rel="noopener external nofollow noreferrer" target="_blank">Reimu</a>
+      </div>
+    
+    
+    
+    
+    
+    
+      <div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv">總訪問量&nbsp;<span id="busuanzi_value_site_pv"></span></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv">總訪客量&nbsp;<span id="busuanzi_value_site_uv"></span></span>
+      </div>
+    
+  </div>
+</footer>
+
+        
+          <div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div>
+        
+        <div id="mask" class="hide"></div>
+      </div>
+      <nav id="mobile-nav">
+  <div class="sidebar-wrap">
+    
+      
+        <div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目錄</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+  
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E7%B4%9A"><span class="toc-number">1.</span> <span class="toc-text"> 中級</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%97%E6%98%9F%E6%92%9E%E6%93%8A"><span class="toc-number">1.1.</span> <span class="toc-text"> 彗星撞擊</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 程式碼</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%88%AA%E7%A9%BA%E6%8B%8D%E7%85%A7%E5%9C%96"><span class="toc-number">1.2.</span> <span class="toc-text"> 航空拍照圖</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-2"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC-2"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 程式碼</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%95%86%E5%93%81%E5%8C%85%E8%A3%9D%E5%9C%B0"><span class="toc-number">1.3.</span> <span class="toc-text"> 商品包裝地</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-3"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC-3"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 程式碼</span></a></li></ol></li></ol></li></ol>
+  
+</div>
+</div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img data-src="/avatar/avatar.webp" data-sizes="auto" alt="郭10" class="lazyload">
+  <div class="sidebar-author-name">郭10</div>
+  <div class="sidebar-description"></div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div>
+    <div class="sidebar-state-number">12</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>分類</div>
+    <div class="sidebar-state-number">2</div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>標籤</div>
+    <div class="sidebar-state-number">13</div>
+  </div>
+</div>
+<div class="sidebar-social">
+  
+</div>
+<div class="sidebar-menu">
+  
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/" aria-label="首頁"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/home.png'); -webkit-mask-image: url('/images/home.png');" aria-label="首頁 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">首頁</div>
+      </div>
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/%E9%97%9C%E6%96%BC%E6%88%91/" aria-label="關於我"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/person.png'); -webkit-mask-image: url('/images/person.png');" aria-label="關於我 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">關於我</div>
+      </div>
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/archives" aria-label="文章"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/floder.png'); -webkit-mask-image: url('/images/floder.png');" aria-label="文章 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">文章</div>
+      </div>
+    
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/friend" aria-label="友鏈"></a>
+        <div class="sidebar-menu-icon icon ">
+          
+            
+            
+              <span class="nav-icon-img" style="mask-image: url('/images/friend.png'); -webkit-mask-image: url('/images/friend.png');" aria-label="友鏈 icon"></span>
+            
+          
+        </div>
+        <div class="sidebar-menu-link">友鏈</div>
+      </div>
+    
+  
+</div>
+</div>
+      
+    
+  </div>
+  
+    
+      <div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div>
+    
+  
+</nav>
+
+    </div>
+    
+    
+    
+    
+<script src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js" integrity="sha384-3gT&#x2F;vsepWkfz&#x2F;ff7PpWNUeMzeWoH3cDhm&#x2F;A8jM7ouoAK0&#x2F;fP&#x2F;9bcHHR5kHq2nf+e" crossorigin="anonymous"></script>
+
+
+<script src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js" integrity="sha384-J08i8An&#x2F;QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  
+<script src="/js/aos.js"></script>
+
+  <script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', aosInit);
+    } else {
+      aosInit();
+    }
+  </script>
+
+
+
+<script src="/js/pjax_script.js" data-pjax></script>
+
+
+
+
+
+
+
+  
+<script src="https://npm.webcache.cn/mouse-firework@0.1.1/dist/index.umd.js" integrity="sha384-8LyaidD9GPxQQgLJO&#x2F;WRw&#x2F;O2h3BoNq&#x2F;ApI&#x2F;ecpvM6RsrCz2qP2ppBXUKihP4V&#x2F;2d" crossorigin="anonymous"></script>
+
+  <script>
+    window.firework && window.firework(JSON.parse('{"excludeElements":["a","button"],"particles":[{"shape":"circle","move":["emit"],"easing":"easeOutExpo","colors":["var(--red-1)","var(--red-2)","var(--red-3)","var(--red-4)"],"number":20,"duration":[1200,1800],"shapeOptions":{"radius":[16,32],"alpha":[0.3,0.5]}},{"shape":"circle","move":["diffuse"],"easing":"easeOutExpo","colors":["var(--red-0)"],"number":1,"duration":[1200,1800],"shapeOptions":{"radius":20,"alpha":[0.2,0.5],"lineWidth":6}}]}'))
+  </script>
+
+
+
+
+
+
+
+
+
+
+<div id="lazy-script">
+  <div>
+    
+      
+      
+      <script data-pjax>
+        window.REIMU_POST = {
+          author: "郭10",
+          title: "APCS 2025/10 解題紀錄（C++）",
+          url: "https://yilinguo121.github.io/2025/10/19/apcs-2025-10/",
+          excerpt: "",
+          description: "",
+          stripContent: " 中級  彗星撞擊 題目連結  思路 模擬並逐格更新。初始化 v 為大小 n×m、每格值為 x，並用 have 標記先給定的目標格。對每一個操作（程式中第二個 k 讀入的那批查詢，參數為 a,b,s,d），計算正方形區域 $$i\in\left[a-\frac{s-1}{2},a+\frac{s-1}{2}\right],\qquad j\in\left[b-\frac{s-1}{2},b+\frac{s-1}{2}\right], $$（程式以 0-based 索引，遇到超出邊界的 $(i,j",
+          date: "Sun Oct 19 2025 00:00:00 GMT+0800",
+          updated: "Sun Oct 19 2025 00:00:00 GMT+0800",
+          cover: "https://apcs.csie.ntnu.edu.tw/wp-content/themes/APCS-201908/img/APCS.png",
+        };
+      </script>
+       
+    
+    
+      
+        
+<script src="/js/insert_highlight.js" data-pjax></script>
+
+        
+      
+    
+    
+      <script type="module" data-pjax>
+        const PhotoSwipeLightbox = (await safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js", "sha384-DiL6M/gG+wmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF/N6lrZi/")).default;
+        
+        const pswp = () => {
+          if (_$$('.article-entry a.article-gallery-item').length > 0) {
+            new PhotoSwipeLightbox({
+              gallery: '.article-entry',
+              children: 'a.article-gallery-item',
+              pswpModule: () => safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8+oTJ7m3DfYEWX1fu1scuS4+s")
+            }).init();
+          }
+          if(_$$('.article-gallery a.article-gallery-item').length > 0) {
+            new PhotoSwipeLightbox({
+              gallery: '.article-gallery',
+              children: 'a.article-gallery-item',
+              pswpModule: () => safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8+oTJ7m3DfYEWX1fu1scuS4+s")
+            }).init();
+          }
+          window.lightboxStatus = 'done';
+          window.removeEventListener('lightbox:ready', pswp);
+        }
+        if(window.lightboxStatus === 'ready') {
+          pswp()
+        } else {
+          window.addEventListener('lightbox:ready', pswp);
+        }
+      </script>
+      
+        
+
+
+
+
+
+
+
+
+<script data-pjax>
+  var loadScript = (src, integrity) => {
+    const script = document.createElement('script');
+    script.src = src;
+    if (integrity) script.integrity = integrity;
+    script.crossOrigin = 'anonymous';
+    return script;
+  };
+
+  var commentConfigKeys = ['valine', 'waline', 'twikoo', 'gitalk', 'giscus'];
+  var commentConfig = {
+    valine: {
+      enable: false,
+      load: () => {
+        const container = document.querySelector('.valine-comment');
+        if (!container) return;
+        container.style.display = 'block';
+
+        const script = loadScript(
+          'https://npm.webcache.cn/valine@1.5.1/dist/Valine.min.js',
+          'sha384-3ma91AExDeMAZ1rjTjaP8V2A2obQE+s5ltKRwYlwdpArz9xVbp0tF3b0VV2ACNPn'
+        );
+        script.onload = () => {
+          var GUEST_INFO = ['nick', 'mail', 'link'];
+          var guest_info = 'nick,mail,link'.split(',').filter((item) => {
+            return GUEST_INFO.indexOf(item) > -1
+          });
+          var recordIP = JSON.parse('true');
+          var highlight = JSON.parse('true');
+          var visitor = JSON.parse('false');
+          var serverURLs = undefined;
+
+          if (window.Valine) {
+            new Valine({
+              el: '.valine-comment',
+              appId: "",
+              appKey: "",
+              placeholder: "Just go go",
+              pageSize: '10',
+              avatar: 'mp',
+              lang: document.documentElement.lang || 'en',
+              recordIP: recordIP,
+              highlight: highlight,
+              visitor: visitor,
+              requiredFields: guest_info,
+              path: window.location.pathname,
+              serverURLs
+            });
+          }
+        };
+        document.head.appendChild(script);
+      }
+    },
+    waline: {
+      enable: true,
+      load: async () => {
+        const container = document.querySelector('.waline-comment');
+        if (!container) return;
+        container.style.display = 'block';
+
+        let walineInit;
+        const walineCdn = 'https://npm.webcache.cn/@waline/client@2.15.8/dist/waline.mjs';
+        const walineIntegrity = 'sha384-9sbqJjrfGjbkI6/PI4nU/MvBfEmkkPC4YK9I4zBeMIf1CVCZdCMH/KinBEAZII/5';
+
+        const module = await safeImport(walineCdn, walineIntegrity);
+        walineInit = module.init;
+
+        window.walineInstance = walineInit({
+          el: '.waline-comment',
+          serverURL: 'https://waline-omega-neon.vercel.app/',
+          lang: document.documentElement.lang || 'en',
+          locale: {},
+          emoji: ["https://unpkg.com/@waline/emojis@1.2.0/weibo","https://unpkg.com/@waline/emojis@1.2.0/alus","https://unpkg.com/@waline/emojis@1.2.0/bilibili","https://unpkg.com/@waline/emojis@1.2.0/qq","https://unpkg.com/@waline/emojis@1.2.0/tieba","https://unpkg.com/@waline/emojis@1.2.0/tw-emoji"],
+          meta: ["nick","mail","link"],
+          requiredMeta: ["nick","mail"],
+          wordLimit: JSON.parse('0'),
+          comment: true,
+          pageSize: JSON.parse('10'),
+          dark: 'html[data-theme="dark"]',
+          pageview: JSON.parse('true'),
+        });
+      }
+    },
+    twikoo: {
+      enable: false,
+      load: () => {
+        const container = document.querySelector('.twikoo-comment');
+        if (!container) return;
+        container.style.display = 'block';
+
+        const script = loadScript(
+          'https://npm.webcache.cn/twikoo@1.6.44/dist/twikoo.all.min.js',
+          'sha384-kwWLC0HjeZZnVPqCJ1AncI8tsk+kQqF9TbAmCclcc9Z0hGkfgHRzeQZxmdmZhE0K'
+        );
+
+        script.onload = () => {
+          if (window.twikoo) {
+            twikoo.init({
+              envId: '',
+              el: '.twikoo-comment',
+              region: '',
+              lang: document.documentElement.lang || 'en',
+            });
+
+            twikoo.getCommentsCount({
+              envId: '',
+              region: '',
+              urls: [
+                '/friend/index.html'
+              ],
+              includeReply: false
+            }).then((res) => {
+              _$('.twikoo-comment-count').innerText = res[0].count;
+            }).catch((err) => {
+              console.error(err);
+            });
+          }
+        } 
+        document.head.appendChild(script);
+      }
+    },
+    gitalk: {
+      enable: false,
+      load: () => {
+        const container = document.querySelector('.gitalk-comment');
+        if (!container) return;
+        container.style.display = 'block';
+
+        const script = loadScript(
+          'https://npm.webcache.cn/gitalk@1.8.0/dist/gitalk.min.js',
+          'sha384-kspnZUWBoSWwoJHa0hBCXYbHGbhvU/lcEH5O8eVbSDhbPwsiVUTp/aGX/z/5EuMA'
+        );
+
+        script.onload = () => {
+          if (false) {
+            const md5Script = loadScript(
+              'https://npm.webcache.cn/blueimp-md5@2.19.0/js/md5.min.js',
+              'sha384-JmVtRz6RWiXnA14QbIOJzPuU3MidULOpBP66deeLLyyoF4Tr/gZlbkHkL6vTthxH'
+            );
+            md5Script.onload = initGitalk;
+            document.head.appendChild(md5Script);
+          } else {
+            initGitalk();
+          }
+        }
+        document.head.appendChild(script);
+
+        function initGitalk() {
+          var gitalkId = location.pathname;
+          var gitalk = new Gitalk({
+            clientID: '',
+            clientSecret: '',
+            repo: '',
+            owner: '',
+            admin: null,
+            id: gitalkId,
+            distractionFreeMode: false,
+            language: document.documentElement.lang || 'en',
+          })
+          gitalk.render('gitalk-comment');
+        }
+      }
+    },
+    giscus: {
+      enable: false,
+      load: () => {
+        const container = document.querySelector('.giscus-comment');
+        if (!container) return;
+        container.style.display = 'block';
+
+        // 删除可能已存在的 giscus 脚本和 iframe
+        const existingScript = container.querySelector('script[src*="giscus.app/client.js"]');
+        if (existingScript) existingScript.remove();
+        const existingFrame = document.querySelector('iframe.giscus-frame');
+        if (existingFrame) existingFrame.remove();
+
+        const giscusScript = document.createElement('script');
+        const domMode = document.documentElement.getAttribute("data-theme");
+
+        const docLang = document.documentElement.lang || 'en';
+        const langBase = docLang.split('-')[0];
+        const supportedLangs = ['ar', 'be', 'bg', 'ca', 'cs', 'da', 'de', 'en', 
+        'eo', 'es', 'eu', 'fa', 'fr', 'gr', 'hbs', 'he', 'hu', 'id', 'it', 'ja', 
+        'kh', 'ko', 'nl', 'pl', 'pt', 'ro', 'ru', 'th', 'tr', 'uk', 'uz', 'vi', 'zh-CN', 'zh-HK', 'zh-TW'];
+        const giscusLang = supportedLangs.includes(docLang) ? docLang : supportedLangs.includes(langBase) ? langBase : 'en';
+
+        giscusScript.src = 'https://giscus.app/client.js';
+        giscusScript.setAttribute('data-repo', '');
+        giscusScript.setAttribute('data-repo-id', '');
+        giscusScript.setAttribute('data-category', ''); 
+        giscusScript.setAttribute('data-category-id', '');
+        giscusScript.setAttribute('data-mapping', '0');
+        giscusScript.setAttribute('data-strict', '0');
+        giscusScript.setAttribute('data-reactions-enabled', '1');
+        giscusScript.setAttribute('data-emit-metadata', '0');
+        giscusScript.setAttribute('data-input-position', 'bottom');
+        giscusScript.setAttribute('data-theme', domMode === 'dark' ? 'dark' : 'light');
+        giscusScript.setAttribute('data-lang', giscusLang);
+        giscusScript.setAttribute('crossorigin', 'anonymous');
+        giscusScript.async = true;
+        container.appendChild(giscusScript);
+        document.body.addEventListener('light-theme-set', () => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: 'light' } } }, 'https://giscus.app');
+        });
+        document.body.addEventListener('dark-theme-set', () => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: 'dark' } } }, 'https://giscus.app');
+        });
+      }
+    }
+  }
+  commentConfig.enable = commentConfigKeys.some(key => commentConfig[key].enable);
+
+  var defaultComment = '';
+  if (commentConfig.enable) {
+    // 1. 首先检查localStorage中是否有保存的评论类型
+    var savedCommentType = localStorage.getItem('commentType');
+    
+    // 2. 如果localStorage中有值且对应的评论系统可用，就使用它
+    if (savedCommentType) {
+      if (commentConfig[savedCommentType]?.enable) {
+        defaultComment = savedCommentType;
+      }
+    }
+    
+    // 3. 如果localStorage无效，检查配置的默认评论系统
+    if (!defaultComment) {
+      var configDefault = 'waline';
+      if (commentConfig[configDefault]?.enable) {
+        defaultComment = configDefault;
+      }
+    }
+    
+    // 4. 如果前两项都无效，按指定顺序找到第一个可用的评论系统
+    if (!defaultComment) {
+      defaultComment = commentConfigKeys.find(sys => commentConfig[sys].enable) || '';
+    }
+  }
+  function loadComments() {
+    if (!commentConfig.enable) return;
+    // 评论组件加载状态跟踪
+    const loadedComments = {
+      valine: false,
+      waline: false,
+      twikoo: false,
+      gitalk: false,
+      giscus: false
+    };
+
+    // 隐藏所有评论容器
+    const hideAllComments = () => {
+      const commentContainers = document.querySelectorAll('.comment');
+      commentContainers.forEach(container => {
+        container.style.display = 'none';
+      });
+    };
+
+    // 按需加载评论系统
+    const loadCommentSystem = (type) => {
+      if (loadedComments[type]) {
+        // 如果已加载，只需显示对应容器
+        document.querySelector(`.${type}-comment`).style.display = 'block';
+        return;
+      }
+
+      // 根据类型加载对应的脚本
+      commentConfig[type]?.load();
+      loadedComments[type] = true;
+    };
+
+    // 评论组件选择器
+    const changeActiveCommentItems = (item) => {
+      const commentItems = document.querySelectorAll('.selector-item');
+      for (let i = 0; i < commentItems.length; i++) {
+        commentItems[i].classList.remove('active');
+      }
+      item.classList.add('active');
+
+      // 获取要加载的评论系统类型
+      const commentType = item.getAttribute('data-selector');
+
+      // 隐藏所有评论系统
+      hideAllComments();
+
+      // 加载选中的评论系统
+      loadCommentSystem(commentType);
+    };
+
+    const commentInit = () => {
+      // 评论组件选择器点击事件
+      const commentItems = document.querySelectorAll('.selector-item');
+      for (let item of commentItems) {
+        item.addEventListener('click', () => {
+          // 保存选择器状态
+          const commentType = item.getAttribute('data-selector');
+          window.localStorage.setItem('commentType', commentType);
+          // 切换选中状态
+          changeActiveCommentItems(item);
+        });
+      }
+
+      // 检查是否需要加载默认评论系统
+      if (defaultComment) {
+        const defaultSelectorItem = document.querySelector(`[data-selector="${defaultComment}"]`);
+        if (!defaultSelectorItem) return;
+        defaultSelectorItem.style.display = 'block';
+        defaultSelectorItem.classList.add('active');
+        loadCommentSystem(defaultComment);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', commentInit);
+    } else {
+      commentInit();
+    }
+  };
+  loadComments();
+</script>
+
+      
+    
+  </div>
+</div>
+
+
+  <script>
+    console.log(String.raw`%c 
+ ______     ______     __     __    __     __  __    
+/\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+\ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+ \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+  \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                  
+`,'color: #ff5252;')
+    console.log('%c Theme.Reimu v' + '1.9.2' + ' %c https://github.com/D-Sketon/hexo-theme-reimu ', 'color: white; background: #ff5252; padding:5px 0;', 'padding:4px;border:1px solid #ff5252;')
+  </script>
+  
+
+
+
+  
+<script src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js" integrity="sha384-0M75wtSkhjIInv4coYlaJU83+OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id+S" crossorigin="anonymous" async></script>
+
+
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+</script>
+
+
+
+  
+    
+<script src="https://npm.webcache.cn/katex@0.16.22/dist/katex.min.js" integrity="sha384-cMkvdD8LoxVzGF&#x2F;RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh&#x2F;OJfpU0jr6" crossorigin="anonymous" defer data-pjax></script>
+
+    
+<script src="https://npm.webcache.cn/katex@0.16.22/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous" defer onload="renderMathInElement(_$(&#39;article&#39;), {delimiters: [{left: &#39;$$&#39;, right: &#39;$$&#39;, display: true},{left: &#39;$&#39;, right: &#39;$&#39;, display: false}]});" data-pjax></script>
+
+  
+
+
+
+
+
+
+
+  
+<script src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js" integrity="sha384-HeUHqi0nVsPUm&#x2F;E0ss7OfnIV&#x2F;yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous" defer></script>
+
+  <script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script>
+
+    
+      <link rel="stylesheet" href="/css/custom-search.css">
+<script src="/js/custom-search.js"></script>
+<link rel="stylesheet" href="/css/friend-marquee.css">
+<script src="/js/friend-marquee.js"></script>
+<style>
+  #nav-random-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+  }
+  #nav-random-btn::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask: url('/images/1194690-200.png') no-repeat center / contain;
+    mask: url('/images/1194690-200.png') no-repeat center / contain;
+  }
+</style>
+<script src="/js/random-posts.js"></script>
+<script>
+  (function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      var subNav = document.getElementById('sub-nav');
+      if (subNav) {
+        var randomBtn = document.createElement('a');
+        randomBtn.id = 'nav-random-btn';
+        randomBtn.className = 'nav-icon';
+        randomBtn.title = '隨機文章';
+        randomBtn.href = 'javascript:void(0);';
+        randomBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (window.randomPostsPaths && window.randomPostsPaths.length > 0) {
+            // 获取当前页面路径
+            var currentPath = window.location.pathname;
+            // 过滤掉当前文章
+            var availablePosts = window.randomPostsPaths.filter(function(path) {
+              return path !== currentPath;
+            });
+
+            // 如果有可用的文章，随机跳转
+            if (availablePosts.length > 0) {
+              var randomIndex = Math.floor(Math.random() * availablePosts.length);
+              window.location.href = availablePosts[randomIndex];
+            } else {
+              // 如果没有其他文章，可以选择不跳转或跳转到首页
+              console.log('没有其他文章可以跳转');
+            }
+          }
+        });
+        subNav.appendChild(randomBtn);
+      }
+    });
+  })();
+</script>
+
+    
+  </body>
+  </html>
+

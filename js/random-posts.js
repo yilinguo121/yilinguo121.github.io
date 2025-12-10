@@ -1,0 +1,1 @@
+window.randomPostsPaths = ["/2025/12/10/115-special-selection/","/2025/09/08/apcs-2025-06/","/2025/10/19/apcs-2025-10/","/2025/11/16/apcs-2025-11/","/2025/12/10/fcu-csie/","/2025/12/10/nchu-csie/","/2025/12/10/ncnu-csie/","/2025/12/10/nsysu-csie/","/2025/12/10/nthu-csie/","/2025/12/10/nuk-csie/","/2025/12/10/nutn-csie/","/2025/12/10/tku-csie/"];
