@@ -176,14 +176,24 @@
   }
 
   /* —— 導航菜單圖片圖標樣式（使用mask讓圖標採用文字顏色） —— */
-  #header-nav #main-nav .main-nav-link-wrap,
-  #header-nav .main-nav-link-wrap {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 0.5em !important;
-    height: 50px !important;
-    line-height: 50px !important;
+  /* 手機版：隱藏選單項目 */
+  @media screen and (max-width: 767px) {
+    #header-nav #main-nav .main-nav-link-wrap,
+    #header-nav .main-nav-link-wrap {
+      display: none !important;
+    }
+  }
+  /* 桌面版：正常顯示 */
+  @media screen and (min-width: 768px) {
+    #header-nav #main-nav .main-nav-link-wrap,
+    #header-nav .main-nav-link-wrap {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 0.5em !important;
+      height: 50px !important;
+      line-height: 50px !important;
+    }
   }
   #header-nav #main-nav .main-nav-icon,
   .sidebar-menu .sidebar-menu-icon,
