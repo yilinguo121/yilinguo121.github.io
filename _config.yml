@@ -99,11 +99,7 @@ ignore:
 theme: reimu
 
 # Deployment
-## Docs: https://hexo.io/docs/one-command-deployment
-deploy:
-  type: git
-  repo: git@github.com:yilinguo121/yilinguo121.github.io.git
-  branch: gh-pages
+# 使用 GitHub Actions 部署，不需要 hexo deploy 設定
 
 feed:
   enable: false
