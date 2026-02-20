@@ -5,6 +5,7 @@ updated: 2025-12-15
 cover: /images/政治大學.JPG
 categories: [特殊選才]
 tags: [特殊選才, 政治大學, 資科]
+description: 政治大學資科特選面試流程與問答紀錄，結果：正取 1。
 toc: true
 comments: true
 ---

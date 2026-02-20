@@ -1,6 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 
+// Patch post.ejs to use description front-matter as excerpt
+const postFile = path.join(__dirname, '../node_modules/hexo-theme-reimu/layout/_partial/post.ejs');
+
+if (fs.existsSync(postFile)) {
+  let content = fs.readFileSync(postFile, 'utf8');
+  // Replace excerpt logic to prefer description field
+  content = content.replace(
+    '<% if (post.excerpt) { %>\n          <%= stripHtml(post.excerpt) %>\n        <% } else { %>\n          <%= stripHtml(post.content).slice(0, 300) %>\n        <% } %>',
+    '<% if (post.description) { %>\n          <%= post.description %>\n        <% } else if (post.excerpt) { %>\n          <%= stripHtml(post.excerpt) %>\n        <% } else { %>\n          <%= stripHtml(post.content).slice(0, 300) %>\n        <% } %>'
+  );
+  fs.writeFileSync(postFile, content, 'utf8');
+  console.log('✓ Theme post.ejs patched successfully');
+}
+
 // Patch language file
 const langFile = path.join(__dirname, '../node_modules/hexo-theme-reimu/languages/zh-TW.yml');
 

@@ -5,6 +5,7 @@ updated: 2025-12-10
 cover: /images/清華大學.JPG
 categories: [特殊選才]
 tags: [特殊選才, 清華大學, 資工]
+description: 清華大學資工特選面試流程與問答紀錄，結果：備取 16。
 toc: true
 comments: true
 ---

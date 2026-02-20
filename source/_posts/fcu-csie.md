@@ -5,6 +5,7 @@ updated: 2025-12-10
 cover: /images/逢甲大學.jpg
 categories: [特殊選才]
 tags: [特殊選才, 逢甲大學, 資工]
+description: 逢甲大學資工特選面試流程與問答紀錄，結果：正取 1。
 toc: true
 comments: true
 ---

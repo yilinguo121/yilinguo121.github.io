@@ -5,6 +5,7 @@ updated: 2025-12-16
 cover: /images/特選—封面.JPG
 categories: [特殊選才]
 tags: [特殊選才]
+description: 115 特殊選才心得與結果彙整。
 toc: true
 comments: true
 sticky: 100
