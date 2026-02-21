@@ -121,7 +121,7 @@ markdown_it_plus:
   breaks: true
   langPrefix:
   linkify: true
-  typographer:
+  typographer: false
   quotes: '""'''
   rawLaTeX: true # newly added
 
