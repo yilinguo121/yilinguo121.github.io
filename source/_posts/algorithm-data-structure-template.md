@@ -5,6 +5,7 @@ updated: 2026-02-21
 categories: [競程]
 tags: [演算法, 資料結構, C++, 模板]
 description: 競程常用演算法與資料結構的 C++ 模板整理，涵蓋 BIT、線段樹、DSU、Dijkstra、DP、貪心、二分搜等。
+cover: /images/code-cover.jpg
 toc: true
 comments: true
 ---
