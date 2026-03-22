@@ -9,9 +9,9 @@ comments: true
 ## 本站信息
 ```yml
 - name: 郭10
-  url: https://yilinguo121.github.io/
+  url: https://www.yilin0121.com/
   desc: 觀念考不到5級的115特選生
-  image: https://yilinguo121.github.io/avatar/avatar.webp
+  image: https://www.yilin0121.com/avatar/avatar.webp
 ```
 
 ## 申請方式
