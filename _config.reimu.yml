@@ -356,7 +356,10 @@ injector:
     </script>
     <style>
       /* 隱藏 footer 中的不蒜子統計 */
-      #footer-info > div:has([id^="busuanzi_container"]) {
+      #footer-info #busuanzi_container_site_pv,
+      #footer-info #busuanzi_container_site_uv,
+      #footer-info .icon-eye,
+      #footer-info .icon-user {
         display: none !important;
       }
 
@@ -475,7 +478,7 @@ footer:
   since: 2025 # 2020-current year
   powered: true
   count: false # show word count and reading time
-  busuanzi: false
+  busuanzi: true
   icon:
     url: "../images/taichi.png" # this path is relative to the css/style.css, so it needs to go up one level to reach the images folder
     rotate: true
