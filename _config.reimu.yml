@@ -325,11 +325,11 @@ injector:
         </div>
         <div class="stat-item">
           <span class="stat-label">本站訪客數 :</span>
-          <span class="stat-value"><span id="busuanzi_value_site_uv">-</span></span>
+          <span class="stat-value"><span id="sidebar_busuanzi_uv">-</span></span>
         </div>
         <div class="stat-item">
           <span class="stat-label">本站總訪問量 :</span>
-          <span class="stat-value"><span id="busuanzi_value_site_pv">-</span></span>
+          <span class="stat-value"><span id="sidebar_busuanzi_pv">-</span></span>
         </div>
       </div>
     </div>
@@ -337,22 +337,19 @@ injector:
       // 舊網域 yilinguo121.github.io 累積的統計偏移量
       const UV_OFFSET = 4000;
       const PV_OFFSET = 8000;
-      const widget = document.querySelector('.site-stats-widget');
-      if (widget) {
-        const observer = new MutationObserver(() => {
-          const uvEl = widget.querySelector('#busuanzi_value_site_uv');
-          const pvEl = widget.querySelector('#busuanzi_value_site_pv');
-          if (uvEl && uvEl.textContent && uvEl.textContent !== '-' && !uvEl.dataset.offset) {
-            uvEl.dataset.offset = '1';
-            uvEl.textContent = parseInt(uvEl.textContent) + UV_OFFSET;
-          }
-          if (pvEl && pvEl.textContent && pvEl.textContent !== '-' && !pvEl.dataset.offset) {
-            pvEl.dataset.offset = '1';
-            pvEl.textContent = parseInt(pvEl.textContent) + PV_OFFSET;
-          }
-        });
-        observer.observe(widget, { childList: true, subtree: true, characterData: true });
-      }
+      const sidebarUv = document.getElementById('sidebar_busuanzi_uv');
+      const sidebarPv = document.getElementById('sidebar_busuanzi_pv');
+      const observer = new MutationObserver(() => {
+        const uvSrc = document.getElementById('busuanzi_value_site_uv');
+        const pvSrc = document.getElementById('busuanzi_value_site_pv');
+        if (uvSrc && uvSrc.textContent && /^\d+$/.test(uvSrc.textContent.trim())) {
+          sidebarUv.textContent = parseInt(uvSrc.textContent) + UV_OFFSET;
+        }
+        if (pvSrc && pvSrc.textContent && /^\d+$/.test(pvSrc.textContent.trim())) {
+          sidebarPv.textContent = parseInt(pvSrc.textContent) + PV_OFFSET;
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     </script>
     <style>
       /* 隱藏 footer 中的不蒜子統計 */
