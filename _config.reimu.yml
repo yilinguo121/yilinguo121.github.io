@@ -78,6 +78,7 @@ rss: ""
 injector:
   head_begin: # Inject code snippet right after <head>
   head_end: |
+    <script data-goatcounter="https://yilin0121.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <style>
       /* —— 藍色層級（深→淺）對應主題的 --red-* —— */
       :root{
