@@ -339,17 +339,18 @@ injector:
       const PV_OFFSET = 8000;
       const sidebarUv = document.getElementById('sidebar_busuanzi_uv');
       const sidebarPv = document.getElementById('sidebar_busuanzi_pv');
-      const observer = new MutationObserver(() => {
+      const checkBusuanzi = setInterval(() => {
         const uvSrc = document.getElementById('busuanzi_value_site_uv');
         const pvSrc = document.getElementById('busuanzi_value_site_pv');
-        if (uvSrc && uvSrc.textContent && /^\d+$/.test(uvSrc.textContent.trim())) {
+        let done = true;
+        if (uvSrc && /^\d+$/.test(uvSrc.textContent.trim())) {
           sidebarUv.textContent = parseInt(uvSrc.textContent) + UV_OFFSET;
-        }
-        if (pvSrc && pvSrc.textContent && /^\d+$/.test(pvSrc.textContent.trim())) {
+        } else { done = false; }
+        if (pvSrc && /^\d+$/.test(pvSrc.textContent.trim())) {
           sidebarPv.textContent = parseInt(pvSrc.textContent) + PV_OFFSET;
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+        } else { done = false; }
+        if (done) clearInterval(checkBusuanzi);
+      }, 1000);
     </script>
     <style>
       /* 隱藏 footer 中的不蒜子統計 */
