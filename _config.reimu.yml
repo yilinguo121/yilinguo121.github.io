@@ -332,6 +332,26 @@ injector:
           <span class="stat-value"><span id="busuanzi_value_site_pv">-</span></span>
         </div>
       </div>
+      <script>
+        // 舊網域 yilinguo121.github.io 累積的統計偏移量
+        const UV_OFFSET = 4000;
+        const PV_OFFSET = 8000;
+        const observer = new MutationObserver(() => {
+          const uvEl = document.getElementById('busuanzi_value_site_uv');
+          const pvEl = document.getElementById('busuanzi_value_site_pv');
+          if (uvEl && uvEl.textContent && uvEl.textContent !== '-' && !uvEl.dataset.offset) {
+            uvEl.dataset.offset = '1';
+            uvEl.textContent = parseInt(uvEl.textContent) + UV_OFFSET;
+          }
+          if (pvEl && pvEl.textContent && pvEl.textContent !== '-' && !pvEl.dataset.offset) {
+            pvEl.dataset.offset = '1';
+            pvEl.textContent = parseInt(pvEl.textContent) + PV_OFFSET;
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+      </script>
+        </div>
+      </div>
     </div>
     <style>
       /* 隱藏 footer 中的不蒜子統計 */
