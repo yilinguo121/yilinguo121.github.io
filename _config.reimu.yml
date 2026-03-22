@@ -648,12 +648,7 @@ clarity: false
 # -> valine -> waline -> twikoo -> gitalk -> giscus
 comment:
   # comment system title
-  title:
-    en: Leave a comment
-    zh-CN: 说些什么吧！
-    zh-TW: 說些什麼吧！
-    ja: コメントを残す
-    pt-BR: Deixe um comentário
+  title: 說些什麼吧！
   default: waline # default comment system, when you enable multiple comment systems
 
 # valine comment system. https://valine.js.org
