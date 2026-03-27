@@ -10,6 +10,8 @@ toc: true
 comments: true
 ---
 
+> **補題連結（由 AA 競程製作）：**[Codeforces Contest](https://codeforces.com/contestInvitation/c92dae442d3d704a38eb0a1bcd9c1aea5e435658)
+
 **先講結果：223 / 500 分，rk.48**
 ![2026 TOI 初選計分板](/images/2026TOI初選計分板.png)
 ## 1. 快樂數
