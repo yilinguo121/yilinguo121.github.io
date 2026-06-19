@@ -18,9 +18,6 @@ menu:
   - name: 友鏈
     url: /friend
     icon: /images/friend.png
-  - name: 地圖
-    url: /sitemap/
-    icon: /images/floder.png
 
 banner: "/images/banner-bridge.webp" # which means themes/reimu/source/images/banner.webp
 # You can also write it in the form of the following url
