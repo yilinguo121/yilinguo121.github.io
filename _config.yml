@@ -132,3 +132,10 @@ symbols_count_time:
   total_symbols: true
   total_time: true
   exclude_codeblock: false
+
+sitemap:
+  path:
+    - sitemap.xml
+  rel: false
+  tags: true
+  categories: true
