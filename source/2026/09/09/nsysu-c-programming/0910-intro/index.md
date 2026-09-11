@@ -2,7 +2,8 @@
 title: 09/10｜課程介紹與環境暖身
 date: 2026-09-10
 cover: /images/code-cover.jpg
-toc: true
+toc: false
+__post: true
 comments: true
 ---
 

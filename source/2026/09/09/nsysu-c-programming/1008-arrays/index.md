@@ -3,6 +3,7 @@ title: 10/08｜陣列（Ch 5）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 10/01｜參數傳遞與函式重載（Ch 4）](/2026/09/09/nsysu-c-programming/1001-parameters/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/15｜結構與類別（Ch 5–6） →](/2026/09/09/nsysu-c-programming/1015-struct-class/)
 
 > 對應課本習題：Ch5: 4, 8, 10, 14, 17
-
-**本頁目錄**：[陣列是什麼](#陣列是什麼) ｜ [用迴圈掃陣列](#用迴圈掃陣列) ｜ [陣列傳進函式](#陣列傳進函式) ｜ [部分填滿的陣列](#部分填滿的陣列) ｜ [線性搜尋](#線性搜尋) ｜ [排序](#排序) ｜ [二維陣列](#二維陣列) ｜ [本週練習題](#本週練習題)
 
 **這週要會什麼**
 

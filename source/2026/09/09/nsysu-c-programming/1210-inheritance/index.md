@@ -3,6 +3,7 @@ title: 12/10｜繼承（Ch 14）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 12/03｜檔案輸入輸出（Ch 12）](/2026/09/09/nsysu-c-programming/1203-file-io/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/17｜期末筆試（範圍 Ch 1–12、Ch 14） →](/2026/09/09/nsysu-c-programming/1217-final-written/)
 
 > 對應課本習題：Ch14: 4, 6, 8
-
-**本頁目錄**：[繼承在做什麼](#繼承在做什麼) ｜ [建構子怎麼串](#建構子怎麼串) ｜ [`protected` 是什麼](#protected-是什麼) ｜ [三種繼承方式](#三種繼承方式) ｜ [覆寫（redefinition）父類別的函式](#覆寫redefinition父類別的函式) ｜ [建構與解構的順序](#建構與解構的順序) ｜ [哪些東西不會被繼承](#哪些東西不會被繼承) ｜ [is-a 還是 has-a？](#is-a-還是-has-a) ｜ [補充：為什麼還有 `virtual`](#補充為什麼還有-virtual) ｜ [本次練習題](#本次練習題)
 
 **這次要會什麼**
 

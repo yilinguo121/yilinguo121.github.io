@@ -3,14 +3,13 @@ title: 10/22｜類別與建構子（Ch 6–7）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
 > 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
 >
 > [← 10/15｜結構與類別（Ch 5–6）](/2026/09/09/nsysu-c-programming/1015-struct-class/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/29｜vector 與運算子重載入門（Ch 7） →](/2026/09/09/nsysu-c-programming/1029-vector-operator/)
-
-**本頁目錄**：[建構子在解決什麼問題](#建構子在解決什麼問題) ｜ [初始化列表（member initializer list）](#初始化列表member-initializer-list) ｜ [預設建構子非常重要](#預設建構子非常重要) ｜ [C++11：建構子委派](#c11建構子委派) ｜ [一個完整的例子：BankAccount](#一個完整的例子bankaccount) ｜ [`static` 成員：屬於「類別」而不是「物件」](#static-成員屬於類別而不是物件) ｜ [本週練習題](#本週練習題)
 
 **這週要會什麼**
 

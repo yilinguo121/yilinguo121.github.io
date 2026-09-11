@@ -3,6 +3,7 @@ title: 10/01｜參數傳遞與函式重載（Ch 4）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/08｜陣列（Ch 5） →](/2026/09/09/nsysu-c-programming/1008-arrays/)
 
 > 對應課本習題：Ch4: 3, 7, 8, 9, 14, 17
-
-**本頁目錄**：[傳值（call-by-value）：函式改不到外面](#傳值call-by-value函式改不到外面) ｜ [傳參考（call-by-reference）：函式可以改到外面](#傳參考call-by-reference函式可以改到外面) ｜ [`const` 參考：又快又安全](#const-參考又快又安全) ｜ [混合參數列表](#混合參數列表) ｜ [函式重載（overloading）](#函式重載overloading) ｜ [預設引數（default arguments）](#預設引數default-arguments) ｜ [用 `assert` 檢查前置條件](#用-assert-檢查前置條件) ｜ [測試技巧：stub 與 driver](#測試技巧stub-與-driver) ｜ [本週練習題](#本週練習題)
 
 **這週要會什麼**
 

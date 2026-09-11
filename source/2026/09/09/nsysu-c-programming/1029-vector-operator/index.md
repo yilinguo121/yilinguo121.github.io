@@ -3,14 +3,13 @@ title: 10/29｜vector 與運算子重載入門（Ch 7）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
 > 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
 >
 > [← 10/22｜類別與建構子（Ch 6–7）](/2026/09/09/nsysu-c-programming/1022-constructors/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/05｜期中上機考（範圍 Ch 1–6） →](/2026/09/09/nsysu-c-programming/1105-midterm/)
-
-**本頁目錄**：[`vector`：會自己長大的陣列](#vector會自己長大的陣列) ｜ [`vector` 傳進函式](#vector-傳進函式) ｜ [`vector` 裝物件](#vector-裝物件) ｜ [運算子重載：讓自訂型別也能用 `+`](#運算子重載讓自訂型別也能用) ｜ [本次練習題](#本次練習題)
 
 **這次要會什麼**
 

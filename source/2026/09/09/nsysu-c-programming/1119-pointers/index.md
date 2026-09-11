@@ -3,6 +3,7 @@ title: 11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 11/12｜運算子重載、friend 與 string（Ch 8、Ch 9）](/2026/09/09/nsysu-c-programming/1112-operator-string/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/26｜分離編譯與命名空間（Ch 11） →](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)
 
 > 對應課本習題：Ch9: 2, 4, 6, 10；Ch10: 1, 3, 4, 8
-
-**本頁目錄**：[記憶體、位址、指標](#記憶體-位址-指標) ｜ [空指標 `nullptr`](#空指標-nullptr) ｜ [動態記憶體：`new` 與 `delete`](#動態記憶體new-與-delete) ｜ [指標與陣列的關係](#指標與陣列的關係) ｜ [指標當參數](#指標當參數) ｜ [`->` 與 `this`](#-與-this) ｜ [淺拷貝與深拷貝（本節最重要的觀念）](#淺拷貝與深拷貝本節最重要的觀念) ｜ [C 風格字串（C-string）](#c-風格字串c-string) ｜ [本次練習題](#本次練習題)
 
 **這次要會什麼**
 

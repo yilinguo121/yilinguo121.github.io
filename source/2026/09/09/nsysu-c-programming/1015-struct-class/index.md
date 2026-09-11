@@ -3,6 +3,7 @@ title: 10/15｜結構與類別（Ch 5–6）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 10/08｜陣列（Ch 5）](/2026/09/09/nsysu-c-programming/1008-arrays/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/22｜類別與建構子（Ch 6–7） →](/2026/09/09/nsysu-c-programming/1022-constructors/)
 
 > 對應課本習題：Ch6: 1, 7, 10, 12
-
-**本頁目錄**：[為什麼需要 `struct`](#為什麼需要-struct) ｜ [使用 `struct`](#使用-struct) ｜ [從 `struct` 到 `class`](#從-struct-到-class) ｜ [封裝（encapsulation）是什麼、為什麼](#封裝encapsulation是什麼-為什麼) ｜ [成員函式後面的 `const`](#成員函式後面的-const) ｜ [在類別外面定義成員函式](#在類別外面定義成員函式) ｜ [本週練習題](#本週練習題)
 
 **這週要會什麼**
 

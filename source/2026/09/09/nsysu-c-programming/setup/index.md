@@ -3,14 +3,13 @@ title: 環境設置：把工具鏈準備好
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
 > 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
 >
 > [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [09/10｜課程介紹與環境暖身 →](/2026/09/09/nsysu-c-programming/0910-intro/)
-
-**本頁目錄**：[給完全沒寫過程式的人：先建立三個概念](#給完全沒寫過程式的人先建立三個概念) ｜ [安裝 VirtualBox 與 Ubuntu 20.04](#安裝-virtualbox-與-ubuntu-2004) ｜ [安裝 g++ 與 make](#安裝-g-與-make) ｜ [第一支 Hello World](#第一支-hello-world) ｜ [編譯到底發生了什麼事](#編譯到底發生了什麼事) ｜ [你必須會的 Terminal 指令](#你必須會的-terminal-指令) ｜ [Makefile：從零到模組化](#makefile從零到模組化)
 
 實驗課與上機考都在**虛擬機的 Ubuntu 20.04 LTS** + **g++** + **Makefile** 環境完成。這一段請在第一次實驗課前先自己做一遍，課堂上就不會耗掉整個下午。
 

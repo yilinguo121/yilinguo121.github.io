@@ -3,6 +3,7 @@ title: 12/03｜檔案輸入輸出（Ch 12）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 11/26｜分離編譯與命名空間（Ch 11）](/2026/09/09/nsysu-c-programming/1126-separate-compilation/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/10｜繼承（Ch 14） →](/2026/09/09/nsysu-c-programming/1210-inheritance/)
 
 > 對應課本習題：Ch12: 2, 3, 5
-
-**本頁目錄**：[串流（stream）的概念](#串流stream的概念) ｜ [讀檔](#讀檔) ｜ [寫檔](#寫檔) ｜ [讀到檔尾的正確寫法](#讀到檔尾的正確寫法) ｜ [逐字元讀寫](#逐字元讀寫) ｜ [格式化輸出（`<iomanip>`）](#格式化輸出iomanip) ｜ [`stringstream`：把字串當串流用](#stringstream把字串當串流用) ｜ [本次練習題](#本次練習題)
 
 **這次要會什麼**
 

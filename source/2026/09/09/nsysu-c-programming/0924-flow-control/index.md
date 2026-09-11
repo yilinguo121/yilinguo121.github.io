@@ -3,6 +3,7 @@ title: 09/24｜流程控制與函式基礎（Ch 2、Ch 3）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 09/17｜C++ 基礎（Ch 1）](/2026/09/09/nsysu-c-programming/0917-cpp-basics/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/01｜參數傳遞與函式重載（Ch 4） →](/2026/09/09/nsysu-c-programming/1001-parameters/)
 
 > 對應課本習題：Ch3: 1, 5, 10, 11, 13
-
-**本頁目錄**：[布林運算式](#布林運算式) ｜ [分支：`if` / `else if` / `else`](#分支if-else-if-else) ｜ [`switch`](#switch) ｜ [迴圈](#迴圈) ｜ [從檔案讀入（Ch2 尾）](#從檔案讀入ch2-尾) ｜ [預定義函式](#預定義函式) ｜ [自訂函式](#自訂函式) ｜ [遞迴](#遞迴) ｜ [作用域（scope）](#作用域scope) ｜ [本週練習題](#本週練習題)
 
 **這週要會什麼**
 

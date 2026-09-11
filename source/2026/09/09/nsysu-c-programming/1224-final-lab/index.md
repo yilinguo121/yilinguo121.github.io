@@ -3,6 +3,7 @@ title: 12/24｜期末上機考（範圍 Ch 1–12、Ch 14）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 

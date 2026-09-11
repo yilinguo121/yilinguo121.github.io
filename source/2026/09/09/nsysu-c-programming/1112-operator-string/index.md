@@ -3,6 +3,7 @@ title: 11/12｜運算子重載、friend 與 string（Ch 8、Ch 9）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 11/05｜期中上機考（範圍 Ch 1–6）](/2026/09/09/nsysu-c-programming/1105-midterm/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10） →](/2026/09/09/nsysu-c-programming/1119-pointers/)
 
 > 對應課本習題：Ch8: 1, 4, 5, 8, 9
-
-**本頁目錄**：[成員函式還是非成員函式？](#成員函式還是非成員函式) ｜ [`friend`：讓外面的函式能看見 private](#friend讓外面的函式能看見-private) ｜ [重載 `<<` 與 `>>`](#重載-與) ｜ [重載 `[]` 與 `++`](#重載-與-2) ｜ [`string` 類別](#string-類別) ｜ [本次練習題](#本次練習題)
 
 **這次要會什麼**
 

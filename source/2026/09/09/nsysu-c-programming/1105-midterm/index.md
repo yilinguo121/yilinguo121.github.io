@@ -3,6 +3,7 @@ title: 11/05｜期中上機考（範圍 Ch 1–6）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 

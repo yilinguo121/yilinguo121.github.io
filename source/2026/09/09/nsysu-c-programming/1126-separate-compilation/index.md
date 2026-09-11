@@ -3,6 +3,7 @@ title: 11/26｜分離編譯與命名空間（Ch 11）
 date: 2026-09-10
 cover: /images/code-cover.jpg
 toc: true
+__post: true
 comments: true
 ---
 
@@ -11,8 +12,6 @@ comments: true
 > [← 11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10）](/2026/09/09/nsysu-c-programming/1119-pointers/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/03｜檔案輸入輸出（Ch 12） →](/2026/09/09/nsysu-c-programming/1203-file-io/)
 
 > 對應課本習題：Ch11: 1, 3
-
-**本頁目錄**：[為什麼要拆檔](#為什麼要拆檔) ｜ [實際範例](#實際範例) ｜ [Include guard：`#ifndef` / `#define` / `#endif`](#include-guardifndef-define-endif) ｜ [多檔案怎麼編譯](#多檔案怎麼編譯) ｜ [多檔案的 Makefile](#多檔案的-makefile) ｜ [命名空間（namespace）](#命名空間namespace) ｜ [本次練習題](#本次練習題)
 
 **這次要會什麼**
 
