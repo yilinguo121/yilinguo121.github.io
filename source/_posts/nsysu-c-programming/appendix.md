@@ -13,56 +13,64 @@ hidden: true
 
 [← 12/24｜期末上機考（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1224-final-lab/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/)
 
+這一頁是**查的，不是讀的**：編譯或執行冒出看不懂的訊息 → 跳到〈常見錯誤訊息對照表〉；忘記某個語法長怎樣 → 〈語法速查〉；名詞對不上 → 最後的〈名詞速查表〉。
+
 ## 常用 g++ 編譯選項
 
 ```bash
 g++ -Wall -Wextra -std=c++17 -o app main.cpp   # 開全部警告 + 指定 C++17（平常就用這個）
-g++ -g -o app main.cpp                          # 加入除錯資訊（配合 gdb）
-g++ -O2 -o app main.cpp                         # 開最佳化（跑比較快）
 g++ -c foo.cpp                                  # 只編譯成 .o，不連結
 g++ -E foo.cpp -o foo.i                         # 只做前置處理（看 #include 展開的結果）
+g++ -g -o app main.cpp                          # 加入行號與變數名（錯誤報告才印得出「錯在第幾行」）
+g++ -O2 -o app main.cpp                         # 最佳化（本課用不到，除錯時不要開）
 g++ -fsanitize=address -g -o app main.cpp       # 執行時偵測陣列越界與記憶體錯誤
 ```
 
-最後一個 `-fsanitize=address` 特別推薦：程式跑起來會幫你抓出越界存取、記憶體洩漏、重複釋放，並且**直接告訴你錯在第幾行**。平常除錯用它，交作業前再拿掉。
+除錯就用最後這組 `-fsanitize=address -g`：越界、記憶體洩漏、重複 `delete` 會在執行當下直接印出錯在第幾行。交出去的 Makefile 不要留這個選項。
 
 ## 整學期通用的 Makefile
 
-放在每週的作業資料夾根目錄，`make` 一鍵編譯、`make clean` 一鍵清乾淨：
+放在每週的作業資料夾根目錄，`make` 一鍵編譯、`make clean` 一鍵清乾淨。每一行語法的意思見[〈環境設置〉](/2026/09/09/nsysu-c-programming/setup/)，這裡只放可以直接貼的成品：
 
 ```makefile
-CC       := g++
-CFLAGS   := -Wall -Wextra -std=c++17
+CXX      := g++
+CXXFLAGS := -Wall -Wextra -std=c++17
 SRCS     := $(wildcard Q*.cpp)
 TARGETS  := $(SRCS:.cpp=)
+# 需要多個檔案才編得出來的題目寫在這裡，例如 EXTRA := Q6
+EXTRA    :=
 
 .PHONY: all clean
 
-all: $(TARGETS)
+all: $(TARGETS) $(EXTRA)
 
 %: %.cpp
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) $(EXTRA) *.o
 ```
 
-如果當週某一題需要多個檔案（例如拆成 `.h` / `.cpp`），就在下面另外加一條專屬規則：
+兩個常做錯的細節：變數名照慣例用 `CXX`／`CXXFLAGS`（`CC`／`CFLAGS` 是 C 用的，取錯會跟 make 的內建規則打架）；`clean` 要連 `*.o` 一起刪，因為 zip 裡只能放 `.cpp` 和 Makefile。
+
+某一題要拆成多個檔案時（例如 `.h` / `.cpp`），`TARGETS` 只掃得到 `Q*.cpp`，不會掃到沒有 `Q6.cpp` 的 Q6：先把上面改成 `EXTRA := Q6`（不改的話只有手打 `make Q6` 編得出來，`make` 和 `make clean` 都會漏掉它），再到檔案最後補規則：
 
 ```makefile
 Q6: main.o Student.o
-	$(CC) -o $@ $^
+	$(CXX) -o $@ $^
 
 main.o: main.cpp Student.h
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c $<
 
 Student.o: Student.cpp Student.h
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c $<
 ```
 
-## 一頁語法速查（可以印出來帶去上課）
+## 語法速查（建議印出來）
 
-課堂與上機考都沒有網路，但可以帶紙本。這一節把整學期會用到的骨架濃縮成可以照抄的形式。
+上機考的機器不能上網查語法。**若該場考試允許攜帶紙本（開學第一堂先跟老師或助教確認）**，這一節可以印出來帶去。
+
+**讀法**：底下的 `型別`、`成員`、`回傳型別`、`名稱`、`Name` 這類中文代稱與 `...` 都是**佔位符**，要換成自己的內容，照打一定編譯失敗；其餘英文關鍵字與符號（`class`、`const`、`:`、`;`、`&`）要一字不差照打。
 
 ### 標頭檔：什麼時候要 include 什麼
 
@@ -72,10 +80,13 @@ Student.o: Student.cpp Student.h
 | `<iomanip>` | `setw`、`setprecision`、`fixed`、`left`、`setfill` |
 | `<string>` | `string` 類別、`getline`、`stoi`、`to_string` |
 | `<vector>` | `vector` |
-| `<cmath>` | `sqrt`、`pow`、`abs`、`ceil`、`floor`、`round` |
-| `<cstdlib>` | `rand`、`srand`、`exit` |
+| `<algorithm>` | `sort`、`max`、`min`、`swap` |
+| `<cmath>` | `sqrt`、`pow`、`fabs`（浮點絕對值）、`ceil`、`floor`、`round` |
+| `<cstdlib>` | `rand`、`srand`、`abs`（整數絕對值）、`exit(n)`（立刻結束程式，等同 `main` 裡的 `return n;`） |
 | `<ctime>` | `time`（配合 `srand`） |
 | `<cctype>` | `isalpha`、`isdigit`、`toupper`、`tolower` |
+| `<climits>` | `INT_MAX`、`INT_MIN` |
+| `<limits>` | `numeric_limits`（配合 `cin.ignore`） |
 | `<cstring>` | `strlen`、`strcpy`、`strcat`、`strcmp`（C 風格字串） |
 | `<fstream>` | `ifstream`、`ofstream` |
 | `<sstream>` | `istringstream`、`ostringstream` |
@@ -84,9 +95,11 @@ Student.o: Student.cpp Student.h
 ### 輸入輸出
 
 ```cpp
-cin >> a >> b;                       // 讀一個值（跳過空白）
-getline(cin, line);                  // 讀一整行（cin >> 之後要先 cin.ignore()）
+cin >> a >> b;                       // 依序讀兩個值，空白與換行都會自動跳過
 while (cin >> x) { }                 // 讀到沒東西為止
+
+cin.ignore(numeric_limits<streamsize>::max(), '\n');  // 需 <limits>；清掉前一個 cin >> 留下的換行
+getline(cin, line);                  // 再讀一整行
 
 cout << fixed << setprecision(2) << x;   // 小數點後兩位（會一直生效）
 cout << setw(8) << x;                    // 欄寬 8，只影響下一個輸出
@@ -127,7 +140,9 @@ for (int i = 0; i < n; i++) ...      // 索引 0 ~ n-1
 
 vector<int> v;                       // 動態陣列
 v.push_back(x); v.size(); v.empty(); v.clear();
-v[i];  v.at(i);  v.front();  v.back();
+v[i];                                // 不檢查範圍，越界是未定義行為
+v.at(i);                             // 會檢查，越界丟 out_of_range 例外
+v.front();  v.back();
 for (size_t i = 0; i < v.size(); i++) ...
 
 string s = "abc";
@@ -136,12 +151,16 @@ s += t;  s[0];  s == t;  s < t;
 stoi(s);  to_string(n);
 ```
 
-### 類別骨架
+### 類別骨架（含分離編譯）
 
 ```cpp
+// ── Name.h：只放宣告，不寫 using namespace std ──
+#ifndef NAME_H
+#define NAME_H
 class Name {
 private:
     型別 成員;
+    static 型別 計數;                // static 宣告：全類別共用一份
 public:
     Name();                          // 預設建構子
     Name(型別 x);                    // 帶參數建構子
@@ -152,21 +171,27 @@ public:
     型別 getX() const;               // 唯讀函式一律加 const
     void setX(型別 x);
 };
+#endif
 
+// ── Name.cpp：開頭 #include "Name.h"，再寫定義 ──
 Name::Name() : 成員(初值) { }        // 類別外定義要寫 Name::
+型別 Name::計數 = 初值;              // static 成員的定義，整個程式只寫一次
 ```
 
 ### 運算子重載
 
 ```cpp
-// 成員函式：左邊一定是自己
-Vec2 operator+(const Vec2& o) const;
-// 非成員：左邊可能是內建型別，或是 cout
-friend ostream& operator<<(ostream& os, const Vec2& v);
-ostream& operator<<(ostream& os, const Vec2& v) { os << ...; return os; }
-// 前置 / 後置
-Vec2& operator++();        // ++v
-Vec2  operator++(int);     // v++
+// ── 寫在 class 裡 ──
+Vec2 operator+(const Vec2& o) const;   // 成員函式：左邊一定是自己
+Vec2& operator++();                    // 前置 ++v
+Vec2  operator++(int);                 // 後置 v++，那個 int 只是用來區分
+friend ostream& operator<<(ostream& os, const Vec2& v);   // 非成員：左邊是 cout，要 friend 才看得到 private
+
+// ── 寫在 class 外 ──
+ostream& operator<<(ostream& os, const Vec2& v) {
+    os << '(' << v.x << ',' << v.y << ')';
+    return os;                         // 回傳 os 才能一直 << 接下去
+}
 ```
 
 ### 指標與動態記憶體
@@ -179,10 +204,10 @@ int* p = &a;        // 取位址
 int* arr = new int[n];
 delete[] arr;  arr = nullptr;
 
-int** g = new int*[n];                       // 動態二維
-for (int i = 0; i < n; i++) g[i] = new int[m];
-for (int i = 0; i < n; i++) delete[] g[i];
-delete[] g;
+int** g = new int*[n];                          // int** 是「指向 int* 的指標」：先配 n 個指標當列首
+for (int i = 0; i < n; i++) g[i] = new int[m];  // 每一列再各配 m 個 int
+for (int i = 0; i < n; i++) delete[] g[i];      // 釋放順序與配置相反：先內層
+delete[] g;                                     // 再外層
 ```
 
 ### 檔案 I/O
@@ -192,26 +217,13 @@ ifstream fin("input.txt");
 if (!fin) { cerr << "open failed\n"; return 1; }
 while (fin >> x) { }                  // 或 while (getline(fin, line))
 
-ofstream fout("output.txt");          // 加 ios::app 變成附加
+ofstream fout("out.txt", ios::app);   // 第二引數省略＝整個蓋掉重寫，寫 ios::app＝接在檔尾
+if (!fout) { cerr << "open failed\n"; return 1; }   // 寫檔一樣要檢查
 fout << x << '\n';
 
 istringstream iss(line);              // 拆一行的欄位
 while (iss >> token) { }
 getline(iss, field, ',');             // 用逗號分隔（CSV）
-```
-
-### 分離編譯
-
-```cpp
-// Name.h
-#ifndef NAME_H
-#define NAME_H
-class Name { ... };                   // 只放宣告，不寫 using namespace std
-#endif
-
-// Name.cpp
-#include "Name.h"
-回傳型別 Name::函式(...) { ... }
 ```
 
 ### 繼承
@@ -225,6 +237,8 @@ public:
 };
 
 class Derived : public Base {
+private:
+    型別 自己的成員;
 public:
     Derived(型別 x, 型別 y) : Base(x), 自己的成員(y) { }   // 先呼叫父類別建構子
 };
@@ -235,68 +249,62 @@ public:
 
 **編譯錯誤（compile error）**
 
-| 訊息 | 意思 | 常見原因 |
-| --- | --- | --- |
-| `expected ';' before ...` | 少了分號 | `struct`/`class` 結尾漏分號、上一行忘了分號 |
-| `'xxx' was not declared in this scope` | 用了不存在的名字 | 變數沒宣告、拼錯字、忘了 `#include`、超出作用域 |
-| `expected initializer before '...'` | 語法在更前面就斷了 | **往上一行找**，通常是漏分號或括號沒配對 |
-| `no matching function for call to ...` | 找不到符合的函式版本 | 參數型別或個數不對、缺預設建構子 |
-| `call of overloaded ... is ambiguous` | 有兩個一樣好的候選 | 重載版本的參數型別太相近 |
-| `passing 'const X' as 'this' argument discards qualifiers` | 對 const 物件呼叫了非 const 函式 | 唯讀成員函式忘了加 `const` |
-| `invalid conversion from 'int' to 'int*'` | 型別不合 | 忘了 `&` 或多寫了 `*` |
-| `redefinition of 'class X'` | 同一個東西定義兩次 | header 忘了 include guard |
-| `fatal error: xxx.h: No such file or directory` | 找不到檔案 | 檔名拼錯、`<>` 與 `""` 用錯 |
+| 訊息 | 怎麼修 |
+| --- | --- |
+| `expected ';' after class definition` | `class` / `struct` 的右大括號後面漏了分號，補成 `};` |
+| `expected ';' before 'X'` 或 `expected ',' or ';' before 'X'` | 上一行敘述結尾漏了分號，`X` 就是下一行的第一個字 |
+| `expected initializer before '...'` | 語法在更前面就斷了：**往上一行找**漏掉的分號或沒配對的括號 |
+| `'xxx' was not declared in this scope` | 檢查：變數沒宣告、拼錯字、忘了 `#include`、超出作用域 |
+| `no matching function for call to ...` | 參數型別或個數跟宣告對不上；建立物件時出現多半是少了預設建構子 |
+| `call of overloaded ... is ambiguous` | 兩個重載版本一樣符合，把參數型別改明確（或加 cast） |
+| `passing 'const X' as 'this' argument discards qualifiers` | 對 const 物件呼叫了非 const 函式：那個唯讀成員函式後面補 `const` |
+| `invalid conversion from 'int' to 'int*'` | 型別不合，多半是漏了 `&` 或多寫了 `*` |
+| `redefinition of 'class X'` | header 忘了 include guard，補 `#ifndef` / `#define` / `#endif` |
+| `fatal error: xxx.h: No such file or directory` | 檔名拼錯，或自己寫的 header 用了 `<>`（應該用 `""`） |
 
 **連結錯誤（link error）**
 
-| 訊息 | 意思 | 常見原因 |
-| --- | --- | --- |
-| `undefined reference to 'foo()'` | 有宣告但找不到實作 | 少編譯某個 `.cpp`、定義時忘了寫 `類別名::`、簽名不一致 |
-| `undefined reference to 'main'` | 找不到主程式 | 拼成 `Main`、或整個專案沒有 `main` |
-| `multiple definition of 'x'` | 同一個東西定義多次 | 把變數或函式的**定義**寫在 header 裡 |
+| 訊息 | 怎麼修 |
+| --- | --- |
+| `undefined reference to 'foo()'` | 檢查三件事：(1) 那個 `.cpp` 有沒有一起編 (2) 定義時漏寫 `類別名::` (3) 宣告與定義的簽名不一致 |
+| `undefined reference to 'Widget::count'` | `static` 成員忘了在類別外定義，補上 `int Widget::count = 0;` |
+| `undefined reference to 'main'` | 拼成 `Main`，或整個專案根本沒有 `main` |
+| `multiple definition of 'x'` | 變數或函式的**定義**被寫進 header 了：只留宣告，定義搬到 `.cpp` |
 
 **執行時期錯誤（runtime error）**
 
-| 現象 | 意思 | 常見原因 |
-| --- | --- | --- |
-| `Segmentation fault (core dumped)` | 存取了不該碰的記憶體 | 陣列越界、對 `nullptr` 解參考、無窮遞迴 |
-| `free(): double free detected` / `double free or corruption` | 同一塊記憶體被釋放兩次 | 淺拷貝沒補三法則、`delete` 寫兩次 |
-| `std::bad_alloc` | 記憶體配置失敗 | `new` 要的量太大（常見於變數沒初始化） |
-| 程式卡住不動 | 無窮迴圈 | 迴圈變數沒更新、條件用 `!=` 剛好跳過 |
-| 輸出多一筆或少一筆 | 讀檔邏輯錯 | 用 `while (!fin.eof())` 當條件 |
+| 現象 | 怎麼修 |
+| --- | --- |
+| `Segmentation fault (core dumped)` | 陣列越界、對 `nullptr` 解參考、無窮遞迴；用 `-fsanitize=address -g` 重編會直接指出第幾行 |
+| `free(): double free detected` / `double free or corruption` | 同一塊記憶體被釋放兩次：淺拷貝沒補三法則，或 `delete` 寫了兩次 |
+| `std::bad_alloc` | `new` 要的量太大，例如 `int n;` 忘了 `cin >> n` 就 `new int[n]`，`n` 是垃圾值（可能幾十億） |
+| 程式卡住不動 | 無窮迴圈：迴圈變數沒更新，或條件用 `!=` 剛好跳過 |
+| 輸出多一筆或少一筆 | 讀檔用了 `while (!fin.eof())`，改成 `while (fin >> x)` 或 `while (getline(fin, line))` |
 
 **Makefile 錯誤**
 
-| 訊息 | 意思 |
+| 訊息 | 怎麼修 |
 | --- | --- |
-| `missing separator` | recipe 前面用了空格，必須是 **Tab** |
+| `missing separator` | recipe 開頭必須是 **Tab** 不能是空格；用 `cat -A Makefile` 確認行首是 `^I` |
 | `No rule to make target 'Q3.cpp'` | 檔名打錯，或檔案不在這個目錄 |
-| `make: 'app' is up to date.` | 相依關係沒寫對，make 以為不用重編（改 header 時最常見） |
+| `make: 'app' is up to date.` | 沒改過檔案時這是正常的；**剛改過檔案卻還看到它**，才是相依關係漏寫（最常見：改了 `.h`，但規則沒把 `.h` 列為相依） |
 
 ## 名詞速查表
 
 | 名詞 | 白話解釋 |
 | --- | --- |
-| **編譯（compile）** | 把 `.cpp` 翻譯成電腦看得懂的機器碼 |
 | **連結（link）** | 把多個 `.o` 與函式庫接成一個執行檔 |
-| **執行檔** | 編譯連結完成、可以直接跑的檔案，Linux 用 `./檔名` 執行 |
-| **標準輸入 / 輸出** | 程式預設的輸入來源（鍵盤）與輸出去處（螢幕） |
-| **變數** | 有名字的儲存格，可以放一個值 |
-| **型別** | 這個格子裝什麼種類的資料（整數、小數、字元……） |
-| **函式（function）** | 一段有名字、可以重複呼叫的程式 |
 | **參數 / 引數** | 參數是函式定義裡的變數名；引數是呼叫時實際傳進去的值 |
 | **傳值 / 傳參考** | 傳複製品（改不到外面）／傳本人的別名（改得到外面） |
 | **重載（overload）** | 同名函式、不同參數列表並存 |
-| **陣列** | 一排編號的同型別格子，編號從 0 開始 |
 | **越界（out of range）** | 存取了陣列合法範圍以外的格子，C++ 不會幫你擋 |
 | **結構（struct）** | 把幾個相關欄位綁成一包的自訂型別 |
 | **類別（class）** | 資料 + 操作資料的函式綁在一起；預設成員是 private |
-| **物件（object）** | 由類別產生出來的實體變數 |
 | **封裝（encapsulation）** | 資料設成 private，只開放少數 public 函式操作 |
 | **建構子（constructor）** | 與類別同名、沒有回傳型別，物件誕生時自動執行 |
 | **解構子（destructor）** | `~類別名`，物件消失時自動執行，用來還資源 |
 | **初始化列表** | 建構子參數列後面用 `: 成員(值)` 直接初始化成員 |
-| **`static` 成員** | 屬於整個類別、所有物件共用的一份 |
+| **`static` 成員** | 屬於整個類別、所有物件共用的一份；宣告寫在類別裡，定義要寫在類別外 |
 | **運算子重載** | 定義 `+`、`<<` 等符號對自訂型別的意義 |
 | **`friend`** | 破例允許某個外部函式存取 private 成員 |
 | **指標（pointer）** | 存放「記憶體位址」的變數 |

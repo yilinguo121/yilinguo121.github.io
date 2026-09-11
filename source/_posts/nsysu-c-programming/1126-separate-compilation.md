@@ -31,14 +31,12 @@ header 檔與實作檔 → include guard → 多檔案編譯與連結 → Makefi
 
 解法是把每個類別拆成兩個檔案：
 
-| 檔案 | 放什麼 | 類比 |
-| --- | --- | --- |
-| `Circle.h`（header，標頭檔） | **宣告**：類別有哪些成員、函式長什麼樣 | 產品說明書 |
-| `Circle.cpp`（implementation，實作檔） | **定義**：函式實際怎麼做 | 工廠內部作業 |
+- `Circle.h`（header，標頭檔）放**宣告**：類別有哪些成員、每個函式長什麼樣，等於這個類別的說明書。
+- `Circle.cpp`（實作檔）放**定義**：每個函式實際怎麼做。
 
-使用者只要 `#include "Circle.h"` 就知道怎麼用，完全不必看實作。
+講白一點：header 放的就是 09/24 學過的**函式原型**（只有簽名、結尾分號），只是現在連類別一起放進去；`.cpp` 放帶大括號的本體。別人（或未來的你）只要 `#include "Circle.h"`，看宣告就知道有哪些函式能呼叫，不必翻 `Circle.cpp`。
 
-## 實際範例
+## 把 Circle 拆成三個檔案
 
 **`Circle.h`**
 
@@ -52,7 +50,7 @@ private:
 
 public:
     Circle();
-    Circle(double x);
+    explicit Circle(double x);
     double area() const;
     double perimeter() const;
     void   setRadius(double x);
@@ -61,6 +59,8 @@ public:
 
 #endif
 ```
+
+最外面的 `#ifndef` / `#define` / `#endif` 三行叫 **include guard**，每個 header 都要寫，下一節解釋它在擋什麼——先照抄。單參數建構子加 `explicit` 是 11/12 講過的習慣，只寫在 header 這一邊。
 
 **`Circle.cpp`**
 
@@ -78,6 +78,8 @@ void   Circle::setRadius(double x) { r = (x >= 0) ? x : 0; }
 double Circle::getRadius() const   { return r; }
 ```
 
+**建構子寫在類別外面長這樣**：建構子的名字就是類別名，所以會寫成 `Circle::Circle()`——看起來像重複兩次，其實左邊 `Circle::` 是「屬於哪個類別」、右邊才是函式名。建構子沒有回傳型別，所以 `Circle::` 前面什麼都不寫，跟 `double Circle::area()` 前面要寫 `double` 不一樣。另外**初始化列表只能寫在定義這一邊**，header 裡的 `Circle();` 後面不可以掛 `: r(1.0)`。
+
 **`main.cpp`**
 
 ```cpp
@@ -94,14 +96,16 @@ int main() {
 }
 ```
 
-**注意 `#include` 的兩種括號**：
+### 角括號 vs 雙引號，以及 `#include` 放哪個檔
 
 - `#include <iostream>`：**角括號**用於系統／標準函式庫。
 - `#include "Circle.h"`：**雙引號**用於你自己寫的檔案（先找目前目錄）。
 
+還有一條擺放規則：header 只 include **宣告本身用得到的**——資料成員型別是 `std::string`，`.h` 就非 `#include <string>` 不可；只有實作才用到的 `<iostream>`、`<iomanip>` 放 `.cpp` 就好，否則每個引入它的檔案都被迫一起吃進去。
+
 ## Include guard：`#ifndef` / `#define` / `#endif`
 
-如果同一個 header 被引入兩次（例如 `main.cpp` 引了 `A.h` 和 `B.h`，而兩者都引了 `Circle.h`），類別就會被定義兩次 → `error: redefinition of 'class Circle'`。
+`#include` 做的事就是把檔案內容**原地貼上**。如果同一個 header 被貼進來兩次（例如你後來又寫了 `Canvas.h` 和 `Report.h`，兩個都 `#include "Circle.h"`，而 `main.cpp` 把兩個都引進來），類別就會被定義兩次 → `error: redefinition of 'class Circle'`。
 
 ```cpp
 #ifndef CIRCLE_H     // 如果還沒定義過 CIRCLE_H 這個名字
@@ -112,15 +116,9 @@ int main() {
 #endif               // 結束
 ```
 
-第二次引入時 `CIRCLE_H` 已經存在，整段就被跳過。**每個 header 都要寫**，巨集名稱通常用檔名大寫加底線。
+第二次引入時 `CIRCLE_H` 已經存在，整段就被跳過。**每個 header 都要寫**，巨集名稱通常用檔名大寫加底線。（另外有個一行版的 `#pragma once`，效果一樣，但課本與考試請寫 `#ifndef` 三行式。）
 
-現代寫法只要一行：
-
-```cpp
-#pragma once
-```
-
-兩者效果相同。課本與課程習慣用 `#ifndef` 三行式，**考試建議寫這個版本**。
+**guard 擋得住什麼、擋不住什麼**：它只保證同一個 `.cpp` 裡展開一次，擋不住「兩個 `.cpp` 各含一次」。所以 **header 裡只能放宣告**——類別定義、函式原型、`const` 常數可以；把函式實作（`int twice(int x) { return x * 2; }`）寫進 header，兩個 `.cpp` 各引入一次再一起連結，就會爆 `multiple definition of 'twice(int)'`，而且 include guard 救不了，因為那是**連結**階段的錯，不是前置處理階段。（範例把 `const double PI` 放在 `Circle.cpp` 而不是 `Circle.h`，就是因為只有實作用得到。）
 
 ## 多檔案怎麼編譯
 
@@ -139,48 +137,44 @@ g++ -o app main.o Circle.o    # 連結成執行檔
 78.5398 31.4159
 ```
 
-`-c` 的意思是「只編譯，不連結」。每個 `.cpp` 各自變成一個 `.o`，最後一次連結起來。
+`-c` 的意思是「只編譯，不連結」。每個 `.cpp` 各自變成一個 `.o`，最後一次連結起來。趕時間時也可以 `g++ -o app main.cpp Circle.cpp` 一行搞定，但那是**整份重編**；拆成 `.o` 的意義是「只有改過的 `.cpp` 需要重編」——幫你判斷哪些要重編的，就是下一節的 `make`。
 
 > **雷區：`undefined reference to 'Circle::area()'`**
 > 這是**連結階段**的錯誤，代表「有宣告但找不到實作」。最常見原因：
 > 1. 忘了把 `Circle.cpp` 一起編譯（只 `g++ -o app main.cpp`）。
 > 2. 定義時忘了寫 `Circle::`，變成定義了一個全域函式。
-> 3. 函式簽名不一致（header 寫 `const`，cpp 忘了寫）。
+> 3. **非成員**函式的簽名跟 header 不一致（header 宣告 `int twice(int);`，cpp 卻定義成 `double twice(double)`）——連結器照著 header 的簽名去找，找不到。（成員函式漏寫 `const` 則是編譯 `.cpp` 時就報 `no declaration matches`，不會拖到連結。）
+>
+> 另外：**永遠不要 `#include "Circle.cpp"`**。`#include` 只拿 `.h`；把 `.cpp` 貼進來再跟它自己一起連結，會得到一整串 `multiple definition of 'Circle::Circle()'`。
 
 ## 多檔案的 Makefile
 
 ```makefile
-CC     := g++
-CFLAGS := -Wall -Wextra -std=c++17
+CXX      := g++
+CXXFLAGS := -Wall -Wextra -std=c++17
 
 .PHONY: all clean
 
 all: app
 
 app: main.o Circle.o
-	$(CC) -o app main.o Circle.o
+	$(CXX) -o app main.o Circle.o
 
 main.o: main.cpp Circle.h
-	$(CC) $(CFLAGS) -c main.cpp
+	$(CXX) $(CXXFLAGS) -c main.cpp
 
 Circle.o: Circle.cpp Circle.h
-	$(CC) $(CFLAGS) -c Circle.cpp
+	$(CXX) $(CXXFLAGS) -c Circle.cpp
 
 clean:
 	rm -f *.o app
 ```
 
+變數名照〈環境設置〉那篇的慣例，C++ 專案用 `CXX`／`CXXFLAGS`。`rm -f *.o app` 的 `*` 是 shell 的**萬用字元**（「目前目錄下所有 `.o` 結尾的檔案」），`-f` 是「檔案不存在也別報錯」；`rm` 配 `*` 威力很大，下指令前先 `pwd` 確認站對資料夾。
+
 **為什麼 `main.o` 要把 `Circle.h` 列為相依？** 因為 `main.cpp` 引入了它——改了 `Circle.h` 卻沒重編 `main.o`，就會編出前後不一致的程式。把 header 列進相依清單，`make` 才知道要重編。
 
-用自動變數可以寫得更短：
-
-```makefile
-app: main.o Circle.o
-	$(CC) -o $@ $^        # $@ = app，$^ = main.o Circle.o
-
-%.o: %.cpp
-	$(CC) $(CFLAGS) -c $<
-```
+`$@`、`$^`、`$<` 在〈環境設置〉講過，Q1 解答會直接用。但**別只寫 `%.o: %.cpp`**：那樣 header 就不在相依清單裡了，改完 `Circle.h` 再 `make` 只會回 `make: Nothing to be done for 'all'.`；真要用 pattern rule，得另外補一行 `main.o Circle.o: Circle.h`。
 
 ## 命名空間（namespace）
 
@@ -190,17 +184,17 @@ app: main.o Circle.o
 #include <iostream>
 using namespace std;
 
-namespace mathUtil {
-    double square(double x) { return x * x; }
+namespace square {
+    double area(double a) { return a * a; }
 }
 
-namespace physicsUtil {
-    double square(double x) { return x * x * 9.8; }
+namespace circle {
+    double area(double r) { return 3.14159 * r * r; }
 }
 
 int main() {
-    cout << mathUtil::square(3) << '\n';      // 9
-    cout << physicsUtil::square(3) << '\n';   // 88.2
+    cout << square::area(3) << '\n';   // 正方形邊長 3
+    cout << circle::area(3) << '\n';   // 圓形半徑 3
     return 0;
 }
 ```
@@ -209,21 +203,47 @@ int main() {
 
 ```text
 9
-88.2
+28.2743
 ```
+
+兩邊都合理地把函式取名叫 `area`，有「姓氏」就不會打架。注意 `namespace` 的結尾大括號**不加分號**（跟 `class`／`struct`／`enum` 相反）——它是區塊不是型別定義，`if`、`for`、函式的大括號也一樣不加。
 
 **三種使用方式**：
 
-```cpp
-std::cout << "A";              // ① 每次都寫全名（最明確）
-using std::cout;               // ② using 宣告：只把 cout 拉進來
-using namespace std;           // ③ using 指令：把整個 std 拉進來（最方便，也最髒）
-```
+| 寫法 | 意思 | 建議用在哪 |
+| --- | --- | --- |
+| `std::cout << "A";` | 每次寫全名，最明確 | header 檔一律用這個 |
+| `using std::cout;` | using **宣告**：只把 `cout` 一個名字拉進來 | 想少打字又想控制範圍時 |
+| `using namespace std;` | using **指令**：把整個 `std` 拉進來，最方便也最髒 | 只寫在 `.cpp` 最上面或函式內 |
+
+兩種 `using` 都遵守作用域：寫在函式裡就只有那個函式受影響，寫在檔案最上面則是整個檔案。
 
 > **重要規則：`using namespace std;` 絕對不要寫在 header 檔裡。**
 > 因為所有引入這個 header 的檔案都會被影響，等於強迫別人接受你的選擇，名稱衝突的風險會傳染出去。**header 裡請乖乖寫 `std::string`**。
 
-**未命名的命名空間**：只在這個檔案內可見，用來隱藏內部工具函式：
+### namespace 跨檔案怎麼寫
+
+宣告與定義分家之後，**兩邊都要說清楚自己屬於哪個 namespace**：
+
+```cpp
+// mathUtil.h —— 宣告包在 namespace 裡
+namespace mathUtil { double square(double x); }
+
+// mathUtil.cpp —— 定義也要包在同名 namespace 裡
+#include "mathUtil.h"
+namespace mathUtil {
+    double square(double x) { return x * x; }
+}
+// 或不開區塊，直接寫 double mathUtil::square(double x) { return x * x; }
+```
+
+兩種寫法效果一樣，後者就像類別的 `Circle::area`。順便記一條：**`namespace` 跟 `class` 不同，可以重複打開**——`.h` 開一次放宣告、`.cpp` 再開一次放定義，編譯器會把同名的合併，不算重複定義。
+
+忘了包（也沒寫 `mathUtil::`）就會定義出一個全域 `square`，`mathUtil::square` 只有宣告沒有實作，連結時報 `undefined reference to 'mathUtil::square(double)'`——正好是上一節的雷區。
+
+### 未命名的命名空間
+
+預設情況下，`.cpp` 裡的全域函式是**跨檔可見**的——別的 `.cpp` 寫個宣告就叫得到，也代表兩個 `.cpp` 各寫一個 `helper` 會在連結時撞成 `multiple definition`。包進未命名的命名空間，它就只剩本檔案看得到：
 
 ```cpp
 // Circle.cpp
@@ -234,7 +254,7 @@ namespace {
 
 ### 巢狀命名空間
 
-命名空間可以包命名空間，用來做更細的分類：
+命名空間可以包命名空間，做更細的分類：
 
 ```cpp
 #include <iostream>
@@ -245,9 +265,7 @@ namespace school {
         double square(double x) { return x * x; }
     }
 }
-
-// C++17 之後可以直接寫成一行：
-// namespace school::math { double square(double x) { return x * x; } }
+// C++17 之後可以直接寫成 namespace school::math { ... }
 
 int main() {
     cout << school::math::square(3) << '\n';
@@ -265,12 +283,10 @@ int main() {
 
 ## 本節重點回顧
 
-- `.h` 放**宣告**（別人要知道的），`.cpp` 放**定義**（怎麼做到的）。
-- 每個 header 都要加 **include guard**（`#ifndef` / `#define` / `#endif`），否則被引入兩次就會重複定義。
-- `#include <...>` 找系統函式庫，`#include "..."` 找自己的檔案。
-- **`undefined reference` 是連結階段的錯誤**，意思是「有宣告但找不到實作」——通常是少編譯某個 `.cpp`，或定義時忘了寫 `類別名::`。
-- Makefile 要把 header 列進相依清單，否則改了 header 不會重編，編出前後不一致的程式。
-- **header 裡絕對不要寫 `using namespace std;`**，會污染所有引入它的檔案。
+- `.h` 放**宣告**、`.cpp` 放**定義**；**函式實作不要放進 header**，兩個 `.cpp` 一起連結會 `multiple definition`，include guard 救不了。
+- 每個 header 都要加 **include guard**（`#ifndef` / `#define` / `#endif`）；`#include <...>` 找系統函式庫，`#include "..."` 找自己的檔案。
+- **`undefined reference` 是連結階段的錯誤**，意思是「有宣告但找不到實作」——通常是少編譯某個 `.cpp`，或定義時忘了寫 `類別名::`／`namespace 名::`。
+- **header 裡絕對不要寫 `using namespace std;`**；Makefile 的相依清單一定要含 header，否則改了 header 不會重編。
 
 ## 本次練習題
 
@@ -339,6 +355,8 @@ void BankAccount::print() const {
 }
 ```
 
+header 寫 `std::string`、`.cpp` 因為有 `using namespace std;` 而寫 `string`，兩者是同一個型別，簽名算一致——編譯器比對的是**型別**，不是字面上的文字。header 不能靠 `using` 省略（會污染引入它的人），所以要寫全名。
+
 **main.cpp**
 
 ```cpp
@@ -358,21 +376,21 @@ int main() {
 **Makefile**
 
 ```makefile
-CC     := g++
-CFLAGS := -Wall -Wextra -std=c++17
+CXX      := g++
+CXXFLAGS := -Wall -Wextra -std=c++17
 
 .PHONY: all clean
 
 all: app
 
 app: main.o BankAccount.o
-	$(CC) -o $@ $^
+	$(CXX) -o $@ $^
 
 main.o: main.cpp BankAccount.h
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c $<
 
 BankAccount.o: BankAccount.cpp BankAccount.h
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c $<
 
 clean:
 	rm -f *.o app

@@ -18,21 +18,28 @@ hidden: true
 **這週要會什麼**
 
 ```text
-布林運算式 → if / switch → while / do-while / for → break / continue
-            → 預定義函式 → 自訂函式 → 遞迴 → 作用域
+布林運算式 → if / switch（含 enum、三元運算子）
+           → while / do-while / for → break / continue → 從檔案讀入
+── 以上 Ch2 ────────────────────────────
+預定義函式 → 自訂函式 → 作用域 → 遞迴
 ```
 
-這是整學期**份量最重的一次進度**，兩章塞在一起。如果只能挑一週認真做練習，就是這週。
+這是整學期**份量最重的一次進度**，兩章塞在一起。讀不完很正常，可以在 Ch2 結束的地方停一次，分兩天讀。
 
-## 布林運算式
+（下面的程式碼裡如果出現 `{ ... }` 或 `/* ... */`，那是「這裡省略了與重點無關的程式碼」的意思，不是要你真的打三個點；其餘沒標註的程式碼都可以整段貼進檔案編譯。）
+
+## Ch2：流程控制
+
+### 布林運算式
 
 比較運算子：`==`、`!=`、`<`、`<=`、`>`、`>=`
 邏輯運算子：`&&`（且）、`||`（或）、`!`（非）
 
 ```cpp
-bool inRange = (0 <= x && x <= 100);
-bool isWeekend = (day == 6 || day == 7);
-bool notEmpty = !s.empty();
+int x = 50, day = 6;                      // 一行宣告兩個 int，等同 int x = 50; int day = 6;
+bool inRange    = (0 <= x && x <= 100);   // 兩個條件都成立才是 true
+bool isWeekend  = (day == 6 || day == 7); // 任一個成立就是 true
+bool notInRange = !inRange;               // ! 把 true / false 反過來
 ```
 
 **優先順序**（由高到低）：`!` > 算術運算子 > 比較運算子 > `&&` > `||` > `=`
@@ -50,38 +57,34 @@ bool notEmpty = !s.empty();
 > ```
 > `-Wall` 會提示 `warning: suggest parentheses around assignment used as truth value`。看到這個警告 99% 是打錯字。
 
-> **雷區 ③：整數可以當布林用**
-> ```cpp
-> int n = 0;
-> if (n) cout << "yes";    // 不會印，因為 0 == false
-> if (-3) cout << "yes";   // 會印，非 0 皆為 true
-> ```
-> 這在讀別人程式碼時常見（`while (n)` 等同 `while (n != 0)`），自己寫則建議寫清楚。
+Ch1 提過「非 0 即 true」，所以讀別人的程式時 `while (n)` 就等於 `while (n != 0)`；自己寫建議寫完整。
 
-**短路求值（short-circuit evaluation）**：
+**短路求值（short-circuit evaluation）**：`&&` 左邊為 `false` 就不算右邊；`||` 左邊為 `true` 就不算右邊。
 
 ```cpp
-if (a != 0 && b / a > 3)  { ... }   // a == 0 時右邊「不會被執行」，避免除以 0
-if (i < n && arr[i] > 0)  { ... }   // 先確認索引合法，再存取陣列
+int a = 0, b = 10;
+if (a != 0 && b / a > 3) { ... }   // a == 0 時右邊「不會被執行」，避免除以 0
 ```
 
-`&&` 左邊為 `false` 就不算右邊；`||` 左邊為 `true` 就不算右邊。**順序寫反就會當掉**，這是很實用的防呆技巧。
+所以**保護條件一定要寫在左邊**：寫成 `if (b / a > 3 && a != 0)` 就沒救了，`a` 是 0 時 `b / a` 先被算，**整數除以 0** 會讓程式當場 `Floating point exception (core dumped)` 掛掉，右邊的保護來不及生效。
 
-## 分支：`if` / `else if` / `else`
+### 分支：`if` / `else if` / `else`
+
+最小形式是 `if (條件) 敘述A else 敘述B`——括號裡的條件（一個布林運算式）算出來是 `true` 就執行敘述A，是 `false` 就執行敘述B，`else` 那半可以整個省略。結果不只兩種時，把下一個 `if` 接在 `else` 後面寫成 `else if`，就變成一串由上往下的檢查：
 
 ```cpp
 int score;
 cin >> score;
-if (score >= 90)      cout << 'A';
-else if (score >= 80) cout << 'B';
-else if (score >= 70) cout << 'C';
-else if (score >= 60) cout << 'D';
-else                  cout << 'F';
+if (score >= 90)      { cout << 'A'; }
+else if (score >= 80) { cout << 'B'; }
+else if (score >= 70) { cout << 'C'; }
+else if (score >= 60) { cout << 'D'; }
+else                  { cout << 'F'; }
 ```
 
 多路 `if-else` 是**由上而下**逐一檢查，第一個成立就結束，所以條件要**由嚴格排到寬鬆**。如果把 `score >= 60` 寫在第一個，95 分也會拿 D。
 
-**複合敘述（compound statement）**：只有一行時可以不加大括號，但**建議一律加**：
+用 `{}` 包起來的一串敘述叫**複合敘述（compound statement）**，語法上算「一個」敘述——`if` 後面永遠只管一個敘述。只有一行時大括號可以不加，但**建議一律加**（上面的範例就是照這個規矩寫的）：
 
 ```cpp
 if (x > 0)
@@ -89,7 +92,18 @@ if (x > 0)
     cout << "!!!";        // 陷阱：這行「不在」if 裡面，永遠會執行
 ```
 
-## `switch`
+### 條件運算子（三元運算子）
+
+寫法是 `條件 ? 值A : 值B`——條件成立時整串的值是 `值A`，不成立時是 `值B`。它是**運算式**（算得出一個值），所以可以直接放在 `=` 右邊或 `cout <<` 後面，算是 `if`／`else` 的運算式版本。
+
+```cpp
+int maxVal = (a > b) ? a : b;          // 等同 if (a > b) maxVal = a; else maxVal = b;
+cout << (n % 2 == 0 ? "even" : "odd");
+```
+
+放進 `cout <<` 時**外面那層括號不能省**：`<<` 的優先順序比 `?:` 高，少了括號會變成先算 `cout << n % 2`、再拿整個 `cout` 去跟 `0` 比，編譯器會吐出一長串 `no match for 'operator=='`。
+
+### `switch`
 
 ```cpp
 char op;
@@ -107,13 +121,22 @@ switch (op) {
 }
 ```
 
+```text
+輸入： 12 * 5
+輸出： 60
+```
+
+（`cin >> a >> op >> b` 會依序抓走三樣東西，中間的空白自動跳過。）
+
+先建立心智模型：`switch` **不是**「從幾個分支裡挑一個」，而是「拿括號裡的值跟每個 `case` 的常數比對，跳到相符的那一行，然後**一路往下執行**，直到遇見 `break` 或大括號結束」；都沒對上就跳到 `default:`（可省略，省略時什麼都不做）。`case 常數:`、`default:` 後面接的是冒號——它們是標記位置的**標籤**、不是敘述，所以不加分號。懂了這段，下面三條規則（尤其是為什麼要寫 `break`）就不用死背。
+
 規則：
 
 - `switch` 的條件必須是**整數型別或字元或列舉**，**不能是 `double` 或 `string`**。
 - `case` 後面必須是**常數**。
 - 沒寫 `break` 會**穿透**（fall-through）到下一個 `case`。
 
-> **雷區 ④：忘記 `break`**
+> **雷區 ③：忘記 `break`**
 > ```cpp
 > switch (n) {
 >     case 1: cout << "one";
@@ -123,43 +146,64 @@ switch (op) {
 > ```
 > 有時穿透是刻意的（多個 case 共用同一段程式），這時建議加註解 `// fall through`。
 
-**列舉型別（enum）**，適合搭配 `switch`：
+**列舉型別（enum）**：自己造一組有名字的整數常數，跟 `switch` 很搭：
 
 ```cpp
 enum Weekday { MON, TUE, WED, THU, FRI };   // MON=0, TUE=1, ...
-enum class Color { RED, GREEN, BLUE };      // C++11 強型別列舉
 
 Weekday d = WED;
-if (d == WED) cout << "Wednesday";
-Color c = Color::RED;                       // 強型別必須加 Color::
+switch (d) {
+    case MON: cout << "週一"; break;
+    case WED: cout << "週三"; break;
+    default:  cout << "其他天";
+}
 ```
 
-**條件運算子（三元運算子）**：
+輸出：
 
-```cpp
-int maxVal = (a > b) ? a : b;      // 等同 if-else 的簡寫
-cout << (n % 2 == 0 ? "even" : "odd");
+```text
+週三
 ```
 
-## 迴圈
+`enum` 是在**宣告一個型別**，大括號後面要加分號——之後的 `struct`、`class`（10/15、10/22）也是同一條規則，`if`／`for` 那種**敘述**才不用。C++11 另有 `enum class`（更嚴格、不會撞名），課堂上多半仍用一般的 `enum`。
+
+### 迴圈
+
+（下面會大量用到 `n /= 2`、`cnt++` 這些簡寫，[09/17 的〈複合指定運算子〉與〈`++` 與 `--`〉](/2026/09/09/nsysu-c-programming/0917-cpp-basics/)講過，忘了就回去翻一下。）
+
+**`while`：先判斷再執行**，條件一開始就不成立就一次都不跑。
 
 ```cpp
-// while：先判斷再執行，可能一次都不跑
 int n = 100, cnt = 0;
-while (n > 1) { n /= 2; cnt++; }
+while (n > 1) { n /= 2; cnt++; }   // 100→50→25→12→6→3→1
+cout << cnt;                       // 6：100 一直除以 2，除 6 次會變成 1
+```
 
-// do-while：先執行再判斷，至少跑一次（適合輸入驗證）
+**`do-while`：先執行再判斷**，至少跑一次，適合輸入驗證。
+
+```cpp
 int x;
 do {
     cout << "請輸入正整數：";
     cin >> x;
-} while (x <= 0);
-
-// for：初始化、條件、更新寫在一起
-for (int i = 1; i <= 10; i++) cout << i << ' ';
+} while (x <= 0);        // 結尾這個分號不能省，do-while 是唯一要用分號收尾的迴圈
 ```
 
-`for` 的三個部分都可以省略，`for (;;)` 就是無窮迴圈。
+實際跑起來：
+
+```text
+請輸入正整數：-3
+請輸入正整數：0
+請輸入正整數：7      ← 讀到正數才離開迴圈
+```
+
+**`for`：把初始化、條件、更新寫在一起**。
+
+```cpp
+for (int i = 1; i <= 10; i++) cout << i << ' ';   // 1 2 3 ... 10
+```
+
+`for` 的執行順序：① `int i = 1` 只做一次 → ② 檢查 `i <= 10`，不成立就結束 → ③ 執行迴圈主體 → ④ 做 `i++`，回到 ②。在 `for (...)` 裡宣告的 `i` **只活在這個迴圈內**。三個部分都可省略，`for (;;)` 就是無窮迴圈。浮點數則不要拿來當計數器：`for (double d = 0; d != 1.0; d += 0.1)` 因為精度誤差永遠不會停。
 
 **巢狀迴圈**（九九乘法表）：
 
@@ -171,17 +215,35 @@ for (int i = 1; i <= 9; i++) {
 }
 ```
 
-> **雷區 ⑤：`for` 後面多一個分號**
-> ```cpp
-> for (int i = 0; i < 10; i++);     // 注意這個分號
->     cout << i;                     // 這行只執行一次，而且 i 已超出作用域 → 編譯錯
-> ```
+輸出（只列前兩行）：
 
-> **雷區 ⑥：無窮迴圈**
+```text
+1*1=1	1*2=2	1*3=3	...	1*9=9
+2*1=2	2*2=4	2*3=6	...	2*9=18
+```
+
+`for` 的括號裡想塞兩件事時有兩種機制，長得像但不一樣：**初始化**部分寫 `int i = 0, j = 10` 是「一次宣告兩個同型別變數」（跟 `int a, b;` 同一回事，兩個都是 `int`）；**更新**部分寫 `i++, j--` 才是**逗號運算子**——由左到右依序做，整串的值取最右邊那一個。
+
+```cpp
+for (int i = 0, j = 10; i < j; i++, j--)
+    cout << i << ' ' << j << '\n';      // 0 10 / 1 9 / 2 8 / 3 7 / 4 6
+```
+
+`for` 以外的地方用逗號運算子只會讓程式更難讀，不建議。
+
+> **雷區 ④：`for` 後面多一個分號**
+> ```cpp
+> int i, sum = 0;
+> for (i = 1; i <= 10; i++);   // 注意這個分號：迴圈主體是「空的」
+>     sum += i;                // 這行不在迴圈裡，只跑一次 → sum = 11，不是 55
+> ```
+> 這種寫法編得過、跑得完、答案卻是錯的。`g++ -Wall` 會警告 `this 'for' clause does not guard... [-Wmisleading-indentation]`，看到就是中這招。
+
+> **雷區 ⑤：無窮迴圈**
 > ```cpp
 > for (int i = 0; i != 10; i += 3)  { ... }   // i = 0,3,6,9,12,... 永遠跳過 10
 > ```
-> 迴圈條件用 `<`、`<=` 比用 `!=` 安全。另外浮點數也不要拿來當迴圈計數器（`for (double d = 0; d != 1.0; d += 0.1)` 因為精度誤差不會停）。
+> 迴圈條件用 `<`、`<=` 比用 `!=` 安全。
 
 **`break` 與 `continue`**：
 
@@ -194,47 +256,23 @@ for (int i = 1; i <= 100; i++) {
 // 印出 3 6 9 12 15 18 21 24 27 30
 ```
 
-`break` 只跳出**最內層**的迴圈。想跳出雙層迴圈，用旗標變數或把它包成函式直接 `return`。
+`break` 只跳出**最內層**的迴圈。想一次跳出雙層有兩招：(1) 宣告一個 `bool found = false;`，內層 `break` 之前先把它設成 `true`，外層條件改寫成 `while (i < n && !found)`；(2) 更乾淨的做法是把雙層迴圈包成一個函式，找到就直接 `return`，一次跳出兩層。
 
-### 逗號運算子
+> **先認個長相：從檔案讀**
+> 課本在 Ch2 最後就介紹了 `ifstream`，[後面〈檔案輸入輸出〉那一節](/2026/09/09/nsysu-c-programming/1203-file-io/)會完整講：
+> ```cpp
+> #include <fstream>
+> ifstream fin("input.txt");      // 括號裡放要開啟的檔名
+> int x;
+> while (fin >> x) { /* ... */ }  // 意思是「成功讀到一個數就繼續，讀到檔尾就停」
+> ```
+> 括號放初值、串流能當條件，原理分別在 10/22 與 12/03，現在認得長相就好。
 
-`,` 也可以當成運算子：**由左到右依序計算，整串運算式的值是最右邊那一個**。最常見的用途是在 `for` 的初始化與更新部分塞進多個動作：
+## Ch3：把程式切成函式
 
-```cpp
-#include <iostream>
-using namespace std;
+### 預定義函式
 
-int main() {
-    for (int i = 0, j = 10; i < j; i++, j--)   // 兩個地方都用了逗號運算子
-        cout << i << ' ' << j << '\n';
-    return 0;
-}
-```
-
-輸出：
-
-```text
-0 10
-1 9
-2 8
-3 7
-4 6
-```
-
-除了 `for` 之外，其他地方用逗號運算子只會讓程式更難讀，不建議。
-
-## 從檔案讀入（Ch2 尾）
-
-課本在 Ch2 最後就介紹了 `ifstream`，[後面〈檔案輸入輸出〉那一節](/2026/09/09/nsysu-c-programming/1203-file-io/)會完整講，這裡先知道長相：
-
-```cpp
-#include <fstream>
-ifstream fin("input.txt");
-int x;
-while (fin >> x) { /* ... */ }
-```
-
-## 預定義函式
+呼叫函式的寫法是「函式名(要給它的值)」，像 `sqrt(16.0)`；不用給值時括號留空，像 `rand()`。
 
 ```cpp
 #include <cmath>     // 數學函式
@@ -242,14 +280,16 @@ while (fin >> x) { /* ... */ }
 #include <ctime>     // time
 ```
 
-| 函式 | 功能 | 範例 |
-| --- | --- | --- |
-| `sqrt(x)` | 平方根 | `sqrt(16.0)` → `4.0` |
-| `pow(x, y)` | $x^y$ | `pow(2, 10)` → `1024` |
-| `abs(n)` / `fabs(x)` | 整數 / 浮點絕對值 | `abs(-3)` → `3` |
-| `ceil(x)` / `floor(x)` | 無條件進位 / 捨去 | `ceil(3.2)` → `4.0` |
-| `round(x)` | 四捨五入 | `round(3.5)` → `4.0` |
-| `max(a, b)` / `min(a, b)` | 較大 / 較小值（`<algorithm>`） | `max(3, 7)` → `7` |
+| 函式 | 例子（回傳值） |
+| --- | --- |
+| `sqrt(x)` 平方根 | `sqrt(16.0)` → 4 |
+| `pow(x, y)` $x^y$ | `pow(2, 10)` → 1024 |
+| `abs(n)` / `fabs(x)` 絕對值（整數 / 浮點） | `abs(-3)` → 3、`fabs(-2.5)` → 2.5 |
+| `ceil(x)` / `floor(x)` 無條件進位 / 捨去 | `ceil(3.2)` → 4、`floor(3.2)` → 3 |
+| `round(x)` 四捨五入 | `round(3.5)` → 4 |
+| `max(a, b)` / `min(a, b)` 較大 / 較小值（需 `<algorithm>`） | `max(3, 7)` → 7 |
+
+右欄是**回傳值**（函式算完交回給你的那個結果）：`sqrt`、`ceil`、`round` 回傳的型別都是 `double`，但 `cout` 預設不印多餘的小數，所以 `cout << sqrt(16.0)` 螢幕上是 `4` 不是 `4.0`；要看到小數點得用 Ch1 教過的 `fixed << setprecision(1)`。
 
 **亂數**：
 
@@ -271,22 +311,28 @@ int main() {
 某一次的執行結果（每次都不一樣）：
 
 ```text
-3 11
+6 49
 ```
+
+`rand()` 每次呼叫回傳一個 0 到 `RAND_MAX`（至少 32767）之間的非負整數，`% 6` 壓成 0~5，再 `+1` 就是 1~6；要 a~b 的亂數就寫 `rand() % (b - a + 1) + a`。`time(nullptr)` 的 `nullptr` 是「空指標」，11/19 才會講，這裡照抄就好（寫 `time(0)` 也行）。
 
 `srand` 整支程式**只呼叫一次**（放在 `main` 開頭）。放在迴圈裡每次都重設種子，反而會一直拿到同一個數。
 
-## 自訂函式
+### 自訂函式
 
 函式的三要素：**回傳型別**、**函式名**、**參數列表**。
 
+先講 `return 運算式;`，它做兩件事：① 把運算式的值當成這個函式的**結果交回呼叫它的地方**——`cout << gcd(24, 36);` 印出來的就是 `gcd` 裡 `return` 的那個值，也可以寫成 `int g = gcd(24, 36);` 存起來；② **立刻結束這個函式**，後面的程式碼一行都不會跑。下面 `isPrime` 的 `return false;` 就是在用第二點：一找到因數就不必再檢查下去。`main` 也是函式，所以在 `main` 中間寫 `return 0;` 就是提前結束整支程式（Q4 解答用到）。
+
 ```cpp
 #include <iostream>
+#include <string>
 using namespace std;
 
 // 函式「定義」：有 body
-int gcd(int a, int b) {
-    return (b == 0) ? a : gcd(b, a % b);     // 遞迴
+int gcd(int a, int b) {                      // 輾轉相除法：一直取餘數，直到餘數是 0
+    while (b != 0) { int r = a % b; a = b; b = r; }
+    return a;
 }
 
 bool isPrime(int n) {
@@ -296,7 +342,7 @@ bool isPrime(int n) {
     return true;
 }
 
-void greet(string name) {                    // void：不回傳值
+void greet(string name) {                    // void：不回傳值（參數寫法 10/01 會再改良）
     cout << "Hello, " << name << "!\n";
 }
 
@@ -322,52 +368,78 @@ Hello, NSYSU!
 #include <iostream>
 using namespace std;
 
-int gcd(int a, int b);       // 宣告（prototype），注意結尾有分號
+int cube(int x);             // 宣告（prototype），注意結尾有分號
 
 int main() {
-    cout << gcd(24, 36);
+    cout << cube(3) << '\n';
     return 0;
 }
 
-int gcd(int a, int b) {      // 定義寫在後面
-    return (b == 0) ? a : gcd(b, a % b);
+int cube(int x) {            // 定義寫在後面，這裡沒有分號，改成大括號
+    return x * x * x;
 }
 ```
 
 輸出：
 
 ```text
-12
+27
 ```
 
-宣告時參數名可以省略：`int gcd(int, int);` 也合法。
-
-（`greet` 的參數之後可以再改良成 `const string&`，效率比較好，但那要等到[下一節講參數傳遞](/2026/09/09/nsysu-c-programming/1001-parameters/)才會解釋 `&` 是什麼，這裡先用最單純的寫法。）
+宣告時參數名可以省略：`int cube(int);` 也合法。
 
 **要點：**
 
 - 回傳型別不是 `void` 時，**每一條執行路徑都要 `return`**。漏掉的話 `-Wall` 會警告 `control reaches end of non-void function`，執行結果是垃圾值。
-- `void` 函式可以用 `return;`（沒有值）提早結束。
+- `void` 函式不回傳值，可以用 `return;`（後面不接運算式）提早結束。
 - **參數（parameter）** 是函式定義裡的變數名，**引數（argument）** 是呼叫時實際傳進去的值。筆試喜歡考這組名詞。
+- **傳進函式的是值的複本**：呼叫 `reverseNumber(n)` 時，函式裡的 `n` 是另一個變數，裡面只是複製過來的值，函式內怎麼改它都不會動到 `main` 的 `n`（Q3 解答就靠這點，呼叫完還能拿原本的 `n` 來比對）。想讓函式改到呼叫端的變數，要用[下一節](/2026/09/09/nsysu-c-programming/1001-parameters/)的傳參考。
+- **程序抽象（procedural abstraction）**：用函式的人只要知道「它做什麼」，不必知道「它怎麼做」——所以寫程式時先想「我需要哪幾個小工具」，再一個一個實作，大問題就拆小了。
+- **前置條件／後置條件（precondition / postcondition）**：課本強調的註解習慣，筆試可能考名詞——在函式上方寫 `// Precondition: n >= 0`（呼叫前必須成立的假設）與 `// Postcondition: 回傳 n!`（函式保證交出的結果）。
 
-**函式可以呼叫函式**：上面的 `main` 呼叫了 `gcd`、`isPrime`、`greet`，而 `gcd` 裡面又呼叫了自己。函式互相呼叫是把大問題拆小的基礎——寫程式時先想「我需要哪幾個小工具」，再一個一個把它們實作出來。
-
-> **雷區 ⑦：引數順序寫反**
+> **雷區 ⑥：引數順序寫反**
 > ```cpp
-> double areaOfRect(double width, double height);
-> areaOfRect(3.0, 5.0);    // 編譯器不會幫你檢查你到底哪個是寬哪個是高
+> double percent(double part, double whole) { return part / whole * 100; }
+>
+> cout << percent(50.0, 200.0) << '\n';   // 25：50 佔 200 的 25%
+> cout << percent(200.0, 50.0) << '\n';   // 400：順序寫反，答案錯得離譜，編譯器一聲不吭
 > ```
 > 型別相同時**編譯器完全幫不上忙**，只能靠命名與註解。
 
-**前置條件與後置條件（precondition / postcondition）**：課本強調的文件習慣，筆試可能考名詞：
+### 作用域（scope）
 
 ```cpp
-// Precondition:  n >= 0
-// Postcondition: 回傳 n!
-int factorial(int n);
+#include <iostream>
+using namespace std;
+
+int globalCount = 100;              // 全域變數（盡量少用，名字也要取得看得懂）
+
+int main() {
+    cout << globalCount << '\n';    // 100：全域變數在任何函式裡都看得到
+    int x = 10;                     // 區域變數，只在 main 內有效
+    {
+        int x = 5;                  // 內層區塊的新變數，遮蔽外層的 x
+        cout << x << '\n';          // 5
+    }
+    cout << x << '\n';              // 10
+    for (int i = 0; i < 3; i++) { /* i 只在這個 for 內有效 */ }
+    // cout << i;                   // 編譯錯誤：'i' was not declared in this scope
+    return 0;
+}
 ```
 
-## 遞迴
+輸出：
+
+```text
+100
+5
+10
+```
+
+- **區域變數**在函式（或區塊）結束時消失，不同函式裡的同名變數互不相干；同一個函式被呼叫兩次，兩次各有自己的一份。
+- **全域常數**（`const double PI = 3.14159;`）可以接受；**全域變數**則會讓程式難以追蹤，課本與業界都建議避免。
+
+### 遞迴
 
 遞迴函式必須有兩個部分：
 
@@ -390,60 +462,47 @@ factorial(4) = 4 * factorial(3)
              = 4 * (3 * (2 * 1)) = 24
 ```
 
-> **雷區 ⑧：無窮遞迴**
-> 忘記 base case 或問題沒變小，會一直往下呼叫直到**堆疊溢位（stack overflow）**，執行時出現 `Segmentation fault`。
+每一層 `factorial` 都有**自己的一份 `n`**（上一節的區域變數規則），裡層把 `n` 算成什麼都不會影響外層——這是遞迴能成立的關鍵。
 
-## 作用域（scope）
+前面那個迴圈版的 `gcd` 也可以改寫成遞迴——同一個函式、兩種寫法：
 
 ```cpp
-#include <iostream>
-using namespace std;
-
-int g = 100;              // 全域變數（盡量少用）
-
-int main() {
-    int x = 10;           // 區域變數，只在 main 內有效
-    {
-        int x = 5;        // 內層區塊的新變數，遮蔽外層的 x
-        cout << x << '\n';        // 5
-    }
-    cout << x << '\n';            // 10
-    for (int i = 0; i < 3; i++) { /* i 只在這個 for 內有效 */ }
-    // cout << i;         // 編譯錯誤：'i' was not declared in this scope
-    return 0;
+int gcd(int a, int b) {
+    if (b == 0) return a;          // base case
+    return gcd(b, a % b);          // recursive step：問題規模變小
 }
 ```
 
-輸出：
+（也常見壓成一行的寫法 `return (b == 0) ? a : gcd(b, a % b);`，意思完全一樣。）
 
-```text
-5
-10
-```
-
-- **區域變數**在函式（或區塊）結束時消失，不同函式裡的同名變數互不相干。
-- **全域常數**（`const double PI = 3.14159;`）可以接受；**全域變數**則會讓程式難以追蹤，課本與業界都建議避免。
-- **程序抽象（procedural abstraction）**：使用函式的人只需要知道「它做什麼」，不需要知道「它怎麼做」——這就是把程式拆成函式的目的。
+> **雷區 ⑦：無窮遞迴**
+> 忘記 base case 或問題沒變小，會一直往下呼叫直到**堆疊溢位（stack overflow）**，執行時出現 `Segmentation fault`。
 
 ## 本節重點回顧
 
-- `0 < x < 10` **永遠為真**，要寫成 `0 < x && x < 10`。
-- `=` 是指派、`==` 才是比較。`if (x = 5)` 會編譯過但永遠成立。
-- `switch` 的 `case` 忘記 `break` 會**穿透**到下一個 case。
-- `while` 先判斷、`do-while` **至少執行一次**（適合輸入驗證）；迴圈條件用 `<`、`<=` 比 `!=` 安全。
-- `break` 跳出整個迴圈（且只跳一層），`continue` 只跳過本輪剩下的部分。
-- 非 `void` 的函式，**每一條路徑都要 `return`**。
-- 遞迴一定要有**終止條件**，而且每次呼叫問題規模要變小。
-- 內層區塊宣告的同名變數會**遮蔽**外層的，離開區塊後外層完全不受影響。
+看到症狀先查這張表：
+
+| 你看到的症狀 | 先去檢查 |
+| --- | --- |
+| 條件永遠成立 | 寫成 `0 < x < 10`？還是 `if (x = 5)`？ |
+| 輸出多印了東西 | `switch` 的 `case` 忘記 `break` |
+| 迴圈停不下來 | 條件用了 `!=`，或計數器根本沒變 |
+| 迴圈主體好像沒跑 | `for (...)` 後面多一個分號 |
+| `Segmentation fault` | 遞迴沒有終止條件 |
+| `control reaches end of non-void function` | 有某條路徑沒寫 `return` |
+
+還有一件不會報錯、最容易忘的事：`do-while` **至少會執行一次**，而且結尾要加分號——這是唯一連編譯器都不會提醒你的一條。
 
 ## 本週練習題
 
-**Q1. 質數列印**
-讀入正整數 `n`，輸出 2 到 `n` 之間（含）所有質數，以空白分隔，最後換行。
+**Q1. 質數統計**
+讀入正整數 `n`，沿用前面寫好的 `isPrime`，輸出 2 到 `n` 之間（含）質數的**個數**與**總和**。
 
 ```text
 輸入： 20
-輸出： 2 3 5 7 11 13 17 19
+輸出：
+count: 8
+sum: 77
 ```
 
 <details>
@@ -453,9 +512,9 @@ int main() {
 #include <iostream>
 using namespace std;
 
-bool isPrime(int n) {
+bool isPrime(int n) {         // 課文那份判斷質數的函式
     if (n < 2) return false;
-    for (int i = 2; i * i <= n; i++)      // 只需檢查到 sqrt(n)
+    for (int i = 2; i * i <= n; i++)
         if (n % i == 0) return false;
     return true;
 }
@@ -463,30 +522,28 @@ bool isPrime(int n) {
 int main() {
     int n;
     cin >> n;
-    bool first = true;
+    int count = 0, sum = 0;
     for (int i = 2; i <= n; i++) {
         if (!isPrime(i)) continue;
-        if (!first) cout << ' ';
-        cout << i;
-        first = false;
+        count++;
+        sum += i;
     }
-    cout << '\n';
+    cout << "count: " << count << '\n';
+    cout << "sum: " << sum << '\n';
     return 0;
 }
 ```
 
-`i * i <= n` 比 `i <= sqrt(n)` 好：不用引入浮點運算，也沒有精度問題。
+`isPrime` 裡的 `i * i <= n` 比 `i <= sqrt(n)` 好：不用引入浮點運算，也沒有精度問題。這題也順便示範了函式原型的用處。
 
 </details>
 
-**Q2. 階乘（兩種寫法）**
-寫出 `int factIter(int n)`（迴圈版）與 `int factRec(int n)`（遞迴版），讀入 `n`（0 ≤ n ≤ 12）後兩種都印一次，確認結果相同。
+**Q2. 階乘（迴圈版）**
+課文寫過遞迴版的 `factorial`，這題請自己寫出迴圈版 `int factIter(int n)`：讀入 `n`（0 ≤ n ≤ 12）後印出 `n!`，並回答為什麼要限制 n ≤ 12。
 
 ```text
 輸入： 5
-輸出：
-iterative: 120
-recursive: 120
+輸出： 120
 ```
 
 <details>
@@ -502,16 +559,10 @@ int factIter(int n) {
     return result;
 }
 
-int factRec(int n) {
-    if (n <= 1) return 1;
-    return n * factRec(n - 1);
-}
-
 int main() {
     int n;
     cin >> n;
-    cout << "iterative: " << factIter(n) << '\n';
-    cout << "recursive: " << factRec(n) << '\n';
+    cout << factIter(n) << '\n';
     return 0;
 }
 ```
@@ -556,6 +607,8 @@ int main() {
 }
 ```
 
+函式裡的 `n` 被除到 0，但那是複本；`main` 的 `n` 完全沒變，所以最後一行還能拿它來比對。
+
 </details>
 
 **Q4. 成績等第（`switch` 版）**
@@ -578,7 +631,7 @@ int main() {
     cin >> score;
     if (score < 0 || score > 100) {
         cout << "invalid\n";
-        return 0;
+        return 0;                  // 在 main 中間 return：直接結束整支程式
     }
     switch (score / 10) {          // 關鍵：把 0~100 壓成 0~10
         case 10:
@@ -600,7 +653,7 @@ int main() {
 程式用 `rand()` 產生 1–100 的秘密數字，重複讀入玩家的猜測，提示 `too high` / `too low`，猜中則印出 `correct in k guesses` 並結束。
 
 ```text
-（互動範例）
+（互動範例；`→` 左邊是你打進去的，右邊是程式印的。程式本身不會印 `→`，也不會提示你輸入）
 50  → too high
 25  → too low
 37  → correct in 3 guesses

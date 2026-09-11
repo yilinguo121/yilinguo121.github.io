@@ -18,7 +18,7 @@ hidden: true
 **這次要會什麼**
 
 ```text
-ifstream / ofstream → 檢查開檔成功 → 讀到檔尾 → 追加模式 → 逐字元讀寫 → 格式化 → stringstream
+ifstream / ofstream → 檢查開檔 → 讀到檔尾 → 追加模式 → get / put 逐字元 → 對齊輸出 → getline + stringstream 拆欄位
 ```
 
 ## 串流（stream）的概念
@@ -29,9 +29,10 @@ ifstream / ofstream → 檢查開檔成功 → 讀到檔尾 → 追加模式 →
 | --- | --- | --- |
 | `ifstream` | 從檔案**讀**（input file stream） | 像 `cin` |
 | `ofstream` | 往檔案**寫**（output file stream） | 像 `cout` |
-| `fstream` | 可讀可寫 | 兩者皆可 |
 
-都要 `#include <fstream>`。
+都要 `#include <fstream>`。（還有可讀可寫的 `fstream`，這學期用不到。）
+
+「語法完全一樣」不是比喻：`ofstream` 就是**一種** `ostream`，所以你在 11/12 自己重載的 `operator<<(ostream& os, const Vec2& v)`，拿去寫檔案 `fout << v;` 完全不用改（`ifstream` 與 `istream` 同理）。「是一種」的意思 12/10 講繼承時會說清楚。
 
 ## 讀檔
 
@@ -56,13 +57,23 @@ int main() {
 }
 ```
 
-假設 `input.txt` 內容是 `3 7 11` 與 `20`，輸出：
+`input.txt` 內容與輸出：
 
 ```text
+input.txt:
+3 7 11
+20
+
+輸出：
 sum = 41
 ```
 
-`if (!fin)` 檢查開檔是否成功。**沒檢查就直接讀**的話，檔案不存在時程式會安靜地什麼都不做，你會找 bug 找很久。
+- `cerr` 就是 0917 提過的**標準錯誤輸出**：一樣印到螢幕，但不緩衝、專門用來印錯誤訊息。
+- `if (!fin)` 檢查開檔是否成功。**沒檢查就直接讀**的話，檔案不存在時程式會安靜地什麼都不做。開不起來最常見的原因不是程式寫錯，是**檔案不在你執行 `./a.out` 的那個資料夾**——程式裡的 `"input.txt"` 找的是「目前工作目錄」底下的檔案；先 `ls` 確認兩個在一起再重跑。
+
+> **為什麼串流可以當條件？**
+> 兩件事。(1) `fin >> x` 的**回傳值是 `fin` 自己**，所以 `>>` 才能一路串下去寫成 `fin >> a >> b`——這就是 11/12 你親手寫過的「`operator>>` 要回傳 `istream&`」。(2) 串流身上記著一個**狀態**（上一次讀寫成功了沒），被放進 `if` / `while` 的括號裡時會自動變成 `true`（狀態正常）或 `false`（讀失敗、到檔尾、格式不合）。
+> 所以 `while (fin >> x)` 讀作「這次真的讀到一個 int 就繼續」，`!fin` 讀作「串流狀態不正常」。這就是 09/24 說「串流能當條件，原理 12/03 再講」的那件事。
 
 另一種寫法是先宣告再開檔：
 
@@ -71,6 +82,8 @@ ifstream fin;
 fin.open("input.txt");
 if (fin.fail()) { /* 錯誤處理 */ }
 ```
+
+`fin.fail()` 問的是「上一個動作失敗了嗎」，在開檔檢查上跟 `!fin` 同一件事，挑一種寫就好（課本兩種都有）。分開寫是為了檔名要等程式跑起來才決定，或同一個串流要換檔案重開（先 `close()` 再 `open()`）。
 
 ## 寫檔
 
@@ -97,58 +110,70 @@ Hello, file!
 42 3.14
 ```
 
-- `ofstream fout("out.txt");` 預設會**清空**原本的檔案。
+- `ofstream fout("output.txt");` 預設會**清空**原本的檔案（本來的內容就沒了）。
+- `fout.close();`：寫完要**在同一支程式裡再讀回來**時一定要先 `close()`，否則資料可能還卡在緩衝區裡、讀到的是空檔；單純寫完就結束程式可以不寫。
 - 想**接在後面**寫，用追加模式：
 
 ```cpp
 ofstream fout("log.txt", ios::app);     // append
 ```
 
-常見開檔模式：`ios::in`（讀）、`ios::out`（寫）、`ios::app`（追加）、`ios::binary`（二進位）。多個模式用 `|` 串起來：`ios::in | ios::out`。
+`ios` 是所有串流共同的祖先類別，`::` 就是 10/15 的「屬於」，所以 `ios::app` ＝「`ios` 裡那個叫 `app`（append）的旗標」。常用的只有三個：`ios::in`（讀）、`ios::out`（寫，預設清空）、`ios::app`（接在後面寫）；`ios::binary` 是給圖片影音用的，這學期用不到。要一次要好幾種模式就用 `|` 串起來：`ios::in | ios::out` ＝「**又要能讀、又要能寫**」。這個 `|` 是位元 OR，跟 09/24 的邏輯 `||`（兩根）不是同一個東西，這學期不必深究。
 
 ## 讀到檔尾的正確寫法
 
 ```cpp
-// ✅ 正確：把讀取動作本身當條件
-while (fin >> x) { /* 處理 x */ }
-
-// ✅ 正確：讀整行
+// ✅ 正確：把讀取動作本身當條件（前面求和那支用的 while (fin >> x) 就是這招）
 string line;
 while (getline(fin, line)) { /* 處理 line */ }
 
 // ❌ 常見錯誤：用 eof() 當條件
 while (!fin.eof()) {
-    fin >> x;          // 讀到檔尾時這次讀取失敗，x 保持舊值
-    cout << x;         // 最後一筆會被印兩次！
+    fin >> x;              // 讀到檔尾時這次讀取失敗，x 保持舊值
+    cout << x << ' ';
 }
 ```
 
-原因：`eof()` 是「**已經讀失敗之後**」才會變成 true，所以用它當條件一定會多跑一圈。**請一律用 `while (fin >> x)` 或 `while (getline(fin, line))`。**
+❌ 那段拿上面的 `input.txt` 去跑，實際印出：
+
+```text
+3 7 11 20 20
+```
+
+原因：文字檔最後幾乎一定有一個換行。讀完 `20` 之後 `eof()` 還是 false，於是迴圈又跑一圈——這次 `fin >> x` 只吃到換行就碰到檔尾、讀取失敗，`x` 沒被改到，最後一筆就被印了兩次。**請一律用 `while (fin >> x)` 或 `while (getline(fin, line))`。**
+
+> **混用 `>>` 和 `getline` 一樣會中招**：`fin >> id;` 之後直接 `getline(fin, line)` 會讀到空字串，因為 `>>` 把數字後面的換行留在管子裡。解法跟 11/12 的 `cin` 版一模一樣——中間插一行 `fin.ignore();`。
 
 ## 逐字元讀寫
+
+下面這段把 `input.txt` 一個字元不漏地抄進 `output.txt`，順便把小寫轉大寫（`fin`、`fout` 就是前面開好的那兩個，`toupper` 要 `#include <cctype>`）：
 
 ```cpp
 char c;
 while (fin.get(c)) {          // get 連空白與換行都會讀進來
-    if (c >= 'a' && c <= 'z') c = c - 'a' + 'A';
+    c = static_cast<char>(toupper(static_cast<unsigned char>(c)));   // 11/12 教過的寫法
     fout.put(c);
 }
 ```
 
+`input.txt` 是 `Hello, World!` 時，`output.txt` 就是 `HELLO, WORLD!`。
+
 - `fin >> c` 會**跳過空白**；`fin.get(c)` **不會**。要原封不動處理檔案內容就用 `get` / `put`。
-- `fin.peek()`：偷看下一個字元但不取走。
-- `fin.ignore(n, ch)`：略過 n 個字元或直到遇到 `ch`。
+- `fin.ignore(n, ch)`：丟掉 n 個字元或丟到遇見 `ch` 為止——就是 11/12 的 `cin.ignore()`，前面說的換行殘留就靠它清掉。
+- `fin.peek()`：偷看下一個字元但不取走（這學期用不到，知道有就好）。
 
 ## 格式化輸出（`<iomanip>`）
 
-| 操作子 | 作用 | 持續性 |
-| --- | --- | --- |
-| `setw(n)` | 設定欄寬 | **只影響下一個輸出** |
-| `setfill(c)` | 補位字元 | 持續 |
-| `setprecision(n)` | 精度 | 持續 |
-| `fixed` | 固定小數點表示法 | 持續 |
-| `left` / `right` | 靠左 / 靠右對齊 | 持續 |
-| `showpoint` | 強制顯示小數點 | 持續 |
+**只有 `setw(n)` 只影響下一個輸出，其他都會一直生效到你改掉為止。**
+
+| 操作子 | 作用 |
+| --- | --- |
+| `setw(n)` | 設定欄寬 |
+| `setfill(c)` | 補位字元 |
+| `setprecision(n)` | 精度 |
+| `fixed` | 固定小數點表示法 |
+| `left` / `right` | 靠左 / 靠右對齊 |
+| `showpoint` | 強制顯示小數點 |
 
 ```cpp
 cout << left << setw(10) << "Name" << right << setw(8) << "Score" << '\n';
@@ -180,7 +205,7 @@ int main() {
     cout << "要讀哪個檔案？";
     cin >> filename;
 
-    ifstream fin(filename);          // C++11 起可以直接吃 string
+    ifstream fin(filename);
     if (!fin) {
         cerr << "開不起來：" << filename << '\n';
         return 1;
@@ -192,60 +217,68 @@ int main() {
 }
 ```
 
-> **舊編譯器要注意**：C++11 以前的 `ifstream` 只吃 C 風格字串，得寫成 `fin.open(filename.c_str());`。課本用的是這個舊寫法，Ubuntu 20.04 的 g++ 兩種都吃得下。
+> 課本寫的是舊寫法 `fin.open(filename.c_str());`（C++11 以前的 `ifstream` 只吃 C 風格字串），兩種在 Ubuntu 的 g++ 都能編。
 
 ## 隨機存取：`seekg` / `tellg`
 
-前面都是「從頭讀到尾」。串流其實有一個**讀取位置指標**，可以自己搬動：
-
-| 函式 | 作用 |
-| --- | --- |
-| `fin.tellg()` | 目前讀取位置（第幾個 byte） |
-| `fin.seekg(n)` | 跳到第 n 個 byte |
-| `fin.seekg(n, ios::beg)` | 從檔頭往後 n |
-| `fin.seekg(n, ios::end)` | 從檔尾往前（n 用負數） |
-| `fout.tellp()` / `fout.seekp(...)` | 寫入位置的對應版本（p = put） |
-
-最常見的用途是**先量出檔案大小**：
+串流內部有一個「讀到第幾個 byte」的位置指標。`fin.tellg()` 問現在在哪；`fin.seekg(n)`（等同 `fin.seekg(n, ios::beg)`）跳到檔頭往後第 n 個 byte，`fin.seekg(n, ios::end)` 則從檔尾往前算（n 用負數）；寫入端是 `fout.tellp()` / `fout.seekp(...)`（p = put）。最常見的用途是量檔案大小：
 
 ```cpp
-ifstream fin("input.txt");
 fin.seekg(0, ios::end);          // 跳到檔尾
 long long size = fin.tellg();    // 此時位置＝檔案長度
 fin.seekg(0, ios::beg);          // 記得跳回檔頭再開始讀
-cout << "檔案大小 " << size << " bytes\n";
 ```
 
-這學期只要知道有這件事、看得懂就好，實驗課題目幾乎都是順序讀寫。
+這學期看得懂就好，實驗課題目幾乎都是順序讀寫。
 
 ## `stringstream`：把字串當串流用
 
-需要 `#include <sstream>`。最常用在「解析一行資料」：
+需要 `#include <sstream>`。命名規則跟檔案串流一模一樣：`istringstream`（從字串**讀**，像 `ifstream`）、`ostringstream`（往字串**寫**，像 `ofstream`）、`stringstream`（可讀可寫）。
+
+什麼時候需要它？檔案每一列的欄位數如果不固定（有人考三科、有人考五科），`fin >> a >> b >> c` 沒辦法知道哪裡換行。做法是：**先用 `getline` 抓一整列，再把這個字串包成串流慢慢拆**。
 
 ```cpp
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 using namespace std;
 
 int main() {
-    string line = "Yilin 95 88 100";
-    istringstream iss(line);           // 把字串包成可以 >> 的串流
+    ifstream fin("grades.txt");
+    if (!fin) { cerr << "cannot open grades.txt\n"; return 1; }
 
-    string name;
-    int score, sum = 0;
-    iss >> name;
-    while (iss >> score) sum += score;
-
-    cout << name << " total = " << sum << '\n';   // Yilin total = 283
+    string line;
+    while (getline(fin, line)) {            // 先抓一整列
+        istringstream iss(line);            // 再把這一列包成可以 >> 的串流
+        string name;
+        int score, sum = 0;
+        iss >> name;
+        while (iss >> score) sum += score;  // 這一列有幾科就加幾科
+        cout << name << " total = " << sum << '\n';
+    }
     return 0;
 }
 ```
 
-輸出：
+`grades.txt` 內容與輸出：
 
 ```text
+grades.txt:
+Yilin 95 88 100
+Ann 70 80
+
+輸出：
 Yilin total = 283
+Ann total = 150
+```
+
+欄位改用逗號之類的符號隔開時，`getline` 的**第三個參數**可以自訂分隔字元（這就是解析 CSV 的標準做法）：
+
+```cpp
+istringstream iss("Ann,90,85");
+string field;
+while (getline(iss, field, ',')) cout << field << '\n';   // 印出 Ann / 90 / 85 三行
 ```
 
 反過來，`ostringstream` 可以把數字組成字串：
@@ -256,21 +289,16 @@ oss << "score_" << 95;
 string s = oss.str();        // "score_95"
 ```
 
-**組合技**：`getline` 讀一整行 + `istringstream` 拆欄位，是處理「每列欄位數不固定」的資料的標準做法。
-
 ## 本節重點回顧
 
-- 檔案串流的用法跟 `cin` / `cout` 幾乎一樣，只是把管子接到檔案上。
-- **開檔後一定要檢查** `if (!fin)`，否則檔案不存在時程式會安靜地什麼都不做。
-- 讀到檔尾的正確寫法是 `while (fin >> x)` 或 `while (getline(fin, line))`；**用 `while (!fin.eof())` 會多跑一圈**。
-- `fin >> c` 會跳過空白，`fin.get(c)` 不會——要原封不動處理檔案內容就用 `get` / `put`。
-- `ofstream` 預設會清空檔案，要接在後面寫得用 `ios::app`。
-- `setw` 只影響下一個輸出，`fixed`、`setprecision`、`left` / `right` 會一直生效。
-- 「`getline` 讀一整行 ＋ `istringstream` 拆欄位」是處理每列欄位數不固定的標準組合。
+- 開檔後一定要 `if (!fin)`；開不起來通常不是程式錯，是檔案沒跟 `a.out` 放在同一個資料夾。
+- 讀到檔尾用 `while (fin >> x)` 或 `while (getline(fin, line))`，**永遠不要用 `eof()`**；`>>` 之後要接 `getline` 記得先 `fin.ignore()`。
+- 要保留空白與換行就用 `get` / `put`，`>>` 會把空白吃掉。
+- 每列欄位數不固定 → `getline` 抓整列 ＋ `istringstream` 拆欄位；逗號分隔就用三參數 `getline`。
 
 ## 本次練習題
 
-> 以下題目請自己先用 `nano input.txt` 建一個測試檔。
+> 以下題目請先 `cd` 到你放程式的資料夾，再用 `nano input.txt` 建一個測試檔。
 
 **Q1. 檔案求和**
 讀取 `input.txt` 中任意數量的整數，把總和與平均寫進 `output.txt`。
@@ -353,6 +381,9 @@ sorted.txt:
 Bob 95
 Ann 88
 Cat 73
+
+螢幕：
+average = 85.33
 ```
 
 <details>
@@ -408,8 +439,8 @@ Ann,90,85,95
 Bob,70,80,75
 
 輸出：
-Ann        270   90.00
-Bob        225   75.00
+Ann         270   90.00
+Bob         225   75.00
 ```
 
 <details>
@@ -444,18 +475,29 @@ int main() {
         cout << left << setw(10) << name
              << right << setw(5) << sum
              << setw(8) << fixed << setprecision(2)
-             << (n ? static_cast<double>(sum) / n : 0.0) << '\n';
+             << (n > 0 ? static_cast<double>(sum) / n : 0.0) << '\n';
     }
     return 0;
 }
 ```
 
-`getline(iss, field, ',')` 的第三個參數是**自訂分隔字元**——這就是解析 CSV 的標準做法。
+拆欄位用的就是前面講的三參數 `getline`；`n > 0` 是在防「這一列一個分數都沒有」時除以 0。
 
 </details>
 
 **Q5. 詞頻統計**
-讀入 `text.txt`，統計每個單字出現次數（忽略大小寫與標點），輸出出現次數最多的前三名。
+讀入 `text.txt`，統計每個單字出現次數（忽略大小寫與標點），輸出出現次數最多的前三名。同票時輸出順序不拘；單字不足三個就有幾個印幾個。
+
+```text
+text.txt:
+The cat, the CAT and a dog. The dog!
+cat cat
+
+輸出：
+cat 4
+the 3
+dog 2
+```
 
 <details>
 <summary><b>參考解答</b></summary>

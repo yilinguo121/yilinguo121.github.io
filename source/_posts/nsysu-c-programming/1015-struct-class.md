@@ -33,7 +33,7 @@ int    id[50];
 double gpa[50];
 ```
 
-三個陣列必須「第 i 格代表同一個人」——**只要有一次排序忘了同步交換，資料就全錯了**。`struct` 的作用就是把這些欄位**綁成一包**：
+陣列的元素型別不限於數字，`string name[50];` 就是一排 50 個字串（`string` 不像 `int` 會留垃圾值，沒給初值的每一格都是空字串）。但三個陣列必須「第 i 格代表同一個人」——**只要有一次排序忘了同步交換，資料就全錯了**。`struct` 的作用就是把這些欄位**綁成一包**：
 
 ```cpp
 struct Student {
@@ -43,7 +43,7 @@ struct Student {
 };            // ← 這個分號絕對不能忘
 ```
 
-之後 `Student s[50];` 一個陣列就搞定，排序時整包一起搬，不可能錯開。
+之後 `Student s[50];` 一個陣列就搞定。
 
 ## 使用 `struct`
 
@@ -59,7 +59,7 @@ struct Student {
 };
 
 int main() {
-    Student s;                    // 宣告一個 Student 變數（叫做「物件」）
+    Student s;                    // 照著設計圖做出一個「物件」
     s.name = "Yilin";             // 用 . 存取成員
     s.id   = 113001;
     s.gpa  = 4.0;
@@ -78,18 +78,21 @@ Yilin 4
 Ann
 ```
 
-> **雷區 ①：`struct` 定義後面忘記分號**
-> ```cpp
-> struct Student {
->     string name;
-> }            // ← 少了分號
-> int main() { ... }
-> ```
-> 錯誤訊息會是莫名其妙的 `error: expected initializer before 'int'`，而且**指到下一行**。看到「錯誤指在一個看起來沒問題的地方」，第一件事就是往上檢查有沒有漏分號。
+**型別與物件**：`struct Student { ... };` 定義的是一個**新型別**，等於一張設計圖，本身不佔記憶體；`Student s;` 才照圖做出一個東西，這個東西就叫**物件（object）**。設計圖只有一張，物件可以有無限多個。
 
-**巢狀結構**（結構裡放結構）也很常見：
+**大括號初始化**：裡面的值**依成員宣告的順序**一一對應（`name`、`id`、`gpa`），不能跳過中間的欄位；少寫的欄位會變成 0 或空字串（`-Wextra` 會提醒你漏了）。順序寫錯時，如果型別不相容（例如把 3.8 放進 `int` 的 `id`），g++ 會直接擋下來報 `narrowing conversion`，算是好運；真正危險的是**兩個同型別的欄位對調**（例如兩個 `int`），編譯器一聲都不吭，資料就這樣錯到底。欄位一多時建議一行一行用 `.` 指定。
+
+放進陣列後，`s[3].gpa` 讀作「第 3 位學生的 gpa」——先用 `[]` 從陣列挑出一個 `Student`，再用 `.` 取它的欄位，由左往右讀就對了。
+
+### 巢狀結構
+
+結構裡面放結構也很常見：
 
 ```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
 struct Date { int year, month, day; };
 
 struct Employee {
@@ -97,11 +100,32 @@ struct Employee {
     Date   hireDate;      // 一個 Employee 裡面有一個 Date
 };
 
-Employee e;
-e.hireDate.year = 2026;   // 一層一層點下去
+int main() {
+    Employee e;
+    e.name = "Amy";
+    e.hireDate.year = 2026;      // 一層一層點下去
+    cout << e.name << ' ' << e.hireDate.year << '\n';
+    return 0;
+}
 ```
 
-**結構傳進函式**：預設是**傳值（整包複製）**，所以大結構要用 `const&`：
+輸出：
+
+```text
+Amy 2026
+```
+
+> **雷區 ①：`struct` 定義後面忘記分號**
+> ```cpp
+> struct Date { int year, month, day; }     // ← 少了分號
+>
+> Date d;
+> ```
+> g++ 通常會說 `error: expected ';' after struct definition` 並指在 `}` 那一行；但下一行剛好在宣告變數時（如上），訊息會變成 `expected initializer before 'd'` 並**指到下一行**。只要錯誤指在一個看起來完全沒問題的地方，第一件事就是往上檢查分號。
+
+## `struct` 傳進函式
+
+先跟上週的陣列分清楚。陣列：傳進函式只傳第一格位址、不複製，也不能當回傳值（上週講過）；還有一件上週沒特別提的——**兩個陣列不能用 `=` 互相指派**。**`struct` 三件事全部相反**：`b = a;` 會把每個欄位各複製一份、可以整包當參數傳、也可以整包當回傳值。正因為會複製一整包，大的結構才要用 `const&`：
 
 ```cpp
 void printStudent(const Student& s) {          // 不複製、不修改
@@ -113,31 +137,70 @@ void giveBonus(Student& s, double delta) {     // 要修改就不能加 const
 }
 ```
 
-## 從 `struct` 到 `class`
+另外兩件事實際跑一次：
 
-`struct` 有個問題：**任何人都能亂改裡面的值**。
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Student {
+    string name;
+    int    id;
+    double gpa;
+};
+
+Student makeStudent() {
+    Student s = {"Ann", 113002, 3.8};
+    return s;              // 可以：整包複製一份回去（區域陣列不行，區域 struct 可以）
+}
+
+int main() {
+    Student a = makeStudent();
+    Student b = a;         // 每個欄位各複製一份
+    b.gpa = 0;             // 改 b 完全不會動到 a
+    cout << a.gpa << ' ' << b.gpa << '\n';
+    return 0;
+}
+```
+
+輸出：
+
+```text
+3.8 0
+```
+
+順帶一提，`string` 雖然裝的是一串字元，但它是**類別**不是陣列，所以跟 `struct` 一樣可以 `a = b;` 整包指派、整包傳參、整包當回傳值——這也是課程一律用 `string` 而不用 `char` 陣列的原因之一。
+
+## `class`：把資料鎖起來
+
+`struct` 的欄位預設誰都能改：
 
 ```cpp
 Student s;
 s.gpa = -999;      // 沒有人擋得住
 ```
 
-`class` 解決的就是這件事。它跟 `struct` 幾乎一樣，差別只有**預設的存取權限**：
+`class` 和 `struct` 的大括號裡除了資料，還能直接放函式，這種函式叫**成員函式（member function）**。成員函式裡直接寫成員名字就能用那個物件的資料，不必當參數傳進去。
 
-| | 預設權限 |
-| --- | --- |
-| `struct` | `public`（誰都能存取） |
-| `class` | `private`（只有自己的成員函式能存取） |
-
-**存取權限三個關鍵字**：
+**存取權限**：
 
 - `private`：只有這個類別**自己的成員函式**能碰。
 - `public`：任何人都能碰。
-- `protected`：自己 + **繼承它的子類別**能碰（講到繼承時會用到）。
+
+（還有第三個 `protected`，講繼承時才會用到，這週先忽略。）
+
+寫法是 `public:`——關鍵字後面加一個冒號、自成一行。它是**標籤**不是敘述，所以不加分號；從它以下的每個成員都套用這個權限，**直到下一個標籤為止**。最常見的就是 `private:` 放資料、`public:` 放函式。
+
+所以擋住 `s.gpa = -999;` 的是 **`private` 這個關鍵字**，不是 `class`——`struct` 裡面一樣能寫 `private`，`class` 只是**預設**就是 private 而已（`struct` 預設是 `public`），除此之外兩者完全一樣。實務慣例很簡單：**只是把幾個欄位綁成一包、沒有檢查邏輯的用 `struct`；有 private 資料 ＋ 一組函式當對外介面的用 `class`。**
+
+## 第一個類別：`Circle`
 
 ```cpp
 #include <iostream>
 using namespace std;
+
+const double PI = 3.14159265358979;
 
 class Circle {
 private:
@@ -152,7 +215,7 @@ public:
         return r;
     }
     double area() const {
-        return 3.14159265358979 * r * r;
+        return PI * r * r;
     }
 };
 
@@ -160,7 +223,7 @@ int main() {
     Circle c;
     c.setRadius(3);
     // c.r = -5;                         // 編譯錯誤：r 是 private，改不到
-    cout << c.area() << '\n';            // 28.2743
+    cout << c.area() << '\n';
     return 0;
 }
 ```
@@ -171,22 +234,33 @@ int main() {
 28.2743
 ```
 
-## 封裝（encapsulation）是什麼、為什麼
+`c.setRadius(3)` 讀作「叫 `c` 去執行它的 `setRadius`，把 3 交給它」——`.` 也用來**呼叫成員函式**，`c.area()` 沒有引數但括號不能省。`area()` 裡的 `r` 既沒宣告也不是參數，它就是 `c` 自己的那一份；再宣告一個 `Circle d;`，`d.area()` 算的就是 `d` 的 `r`——同一段程式碼，每個物件各有一份資料。
+
+注意 `Circle c;` 之後 `r` 還是垃圾值（編譯器不一定抓得到——編譯器有時抓得到、有時抓不到，不能指望它，不能指望它），一定要先 `setRadius` 才能用。想讓物件「一出生就合法」，需要的是**建構子**——下週的主題。
+
+> **雷區 ②：`class` 忘了寫 `public:`**
+> ```cpp
+> class Circle {
+>     double r;
+>     void setRadius(double x);   // 忘了寫 public:，整個類別都是 private
+> };
+> ```
+> 呼叫時會出現 `error: 'void Circle::setRadius(double)' is private within this context`，下面還跟一行 `note: declared private here`。看到 `is private within this context`，九成是漏了 `public:`。
+
+## 封裝（encapsulation）
 
 **白話說**：把資料藏起來（`private`），只留幾個開關（`public` 函式）給外界用。
 
 三個實際好處：
 
-1. **可以檢查**：`setRadius` 能擋掉負數，資料永遠是合法的。
-2. **可以改實作**：哪天你想把半徑改成存直徑，只要 `getRadius()` 回傳 `d/2`，**所有用到這個類別的程式都不用改**。
-3. **好找 bug**：半徑變成奇怪的值時，只可能是那幾個 public 函式做的，不用翻遍整份程式。
-
-課本給的檢驗標準很實用：**如果把所有資料成員的名字全改掉，只需要改類別內部就能編譯過，那封裝就做對了。**
+1. **可以檢查**：`setRadius` 擋掉負數，資料永遠合法。
+2. **可以改實作**：只要 public 函式的行為不變，內部怎麼改（改存直徑、成員改名）都不影響外面。
+3. **好找 bug**：資料變成怪值，兇手只可能在那幾個 public 函式裡。
 
 ## 成員函式後面的 `const`
 
 ```cpp
-double area() const { return 3.14159 * r * r; }
+double area() const { return PI * r * r; }
 //              ^^^^^ 承諾：這個函式不會修改物件
 ```
 
@@ -198,11 +272,11 @@ void show(const Circle& c) {
 }
 ```
 
-如果 `area()` 沒寫 `const`，這裡就會編譯錯誤 `passing 'const Circle' as 'this' argument discards qualifiers`。**規則很簡單：所有「只讀不寫」的成員函式都加 `const`**，養成習慣就不會被這個錯誤訊息卡住。
+如果 `area()` 沒寫 `const`，這裡就會編譯錯誤 `passing 'const Circle' as 'this' argument discards qualifiers`（訊息裡的 `this` 就是「呼叫這個成員函式的那個物件」，11/19 講指標時才正式介紹；現在認得這串訊息＝「const 物件被交給了沒標 const 的成員函式」就夠了）。**規則很簡單：所有「只讀不寫」的成員函式都加 `const`**。
 
 ## 在類別外面定義成員函式
 
-類別裡面只留宣告、實作寫在外面，是比較正式的寫法（之後把程式拆成多個檔案時一定會用到）：
+類別裡面只留宣告、實作寫在外面。好處是類別本體變成一張目錄，一眼看得完有哪些成員，實作再長也撐不爆它（之後把程式拆成多個檔案時一定會這樣寫）：
 
 ```cpp
 class Circle {
@@ -217,21 +291,19 @@ void Circle::setRadius(double x) {      // Circle:: 表示「這是 Circle 的�
     r = (x >= 0) ? x : 0;
 }
 
-double Circle::area() const {           // 定義時 const 也要跟著寫
-    return 3.14159265358979 * r * r;
+double Circle::area() const {           // 宣告有 const，定義就一定要跟著寫
+    return PI * r * r;
 }
 ```
 
-`::` 叫做**範圍解析運算子（scope resolution operator）**，意思是「這個名字屬於哪裡」。
+`::` 叫做**範圍解析運算子（scope resolution operator）**，意思是「這個名字屬於哪裡」。**`const` 宣告與定義兩邊都要寫**：只寫一邊會被當成兩個不同的函式，g++ 給 `error: no declaration matches 'double Circle::area()'`。
 
 ## 本節重點回顧
 
-- `struct` / `class` 定義的**大括號後面要加分號**，忘了會出現指在下一行的怪錯誤。
-- 兩者唯一的預設差別：`struct` 預設 `public`，`class` 預設 `private`。
-- **封裝**＝資料設成 `private`，只留少數 `public` 函式當作對外介面。好處是可以在 setter 裡檢查、可以改內部實作而不影響使用者。
-- **所有只讀不寫的成員函式都加 `const`**。否則傳 `const 物件&` 進函式時會編譯錯誤。
-- 大的 struct / class 傳進函式要用 `const&`，預設的傳值會整包複製。
-- 類別外面定義成員函式要寫 `類別名::`，`::` 表示「這個名字屬於誰」。
+- `struct` / `class` 定義的**大括號後面要加分號**，忘了會出現指在別行的怪錯誤。
+- `struct` 預設 `public`、`class` 預設 `private`；把資料設 private、只留少數 public 函式當介面，就是**封裝**。
+- **所有只讀不寫的成員函式都加 `const`**，否則接不了 `const 物件&`。
+- struct / class 傳參是整包複製（跟陣列相反），大的要用 `const&`；類別外定義成員函式要寫 `類別名::`。
 
 ## 本週練習題
 
@@ -256,7 +328,7 @@ struct Point {
     double x, y;
 };
 
-double distance(const Point& a, const Point& b) {
+double dist(const Point& a, const Point& b) {   // 不叫 distance：標準函式庫已經有同名的
     double dx = a.x - b.x;
     double dy = a.y - b.y;
     return sqrt(dx * dx + dy * dy);
@@ -266,7 +338,7 @@ int main() {
     Point p, q;
     cin >> p.x >> p.y >> q.x >> q.y;
     cout << "distance = " << fixed << setprecision(3)
-         << distance(p, q) << '\n';
+         << dist(p, q) << '\n';
     return 0;
 }
 ```
@@ -274,11 +346,13 @@ int main() {
 </details>
 
 **Q2. 學生類別**
-寫一個 `class Student`，資料成員為姓名、學號、GPA（皆 private），提供各自的 setter / getter 以及 `print()`。GPA 只接受 0.0–4.3，超出範圍就設為 0。
+寫一個 `class Student`，資料成員為姓名、學號、GPA（皆 private），提供各自的 setter / getter 以及 `print()`。GPA 只接受 0.0–4.3，超出範圍就設為 0。印完資料後，若 GPA ≥ 3.5 再多印一行 `honor roll`。
 
 ```text
 輸入： Yilin 113001 4.0
-輸出： 113001 Yilin 4.00
+輸出：
+113001 Yilin 4.00
+honor roll
 ```
 
 <details>
@@ -320,14 +394,17 @@ int main() {
     s.setId(i);
     s.setGpa(g);
     s.print();
+    if (s.getGpa() >= 3.5) cout << "honor roll\n";
     return 0;
 }
 ```
 
+`print()` 在類別內部可以直接寫 `id`、`name`；`main` 想拿 GPA 出來判斷卻只能透過 `getGpa()`——這就是 getter 存在的理由。`setName` 裡的 `name = n;` 會把整個字串複製一份給資料成員。另外 `cin >> n`（`n` 是 `string`）只讀到**下一個空白為止**，所以這種題目的姓名不能含空白；要連空白一起讀整行得用 `getline`，11/12 會講。
+
 </details>
 
 **Q3. 依 GPA 排序**
-讀入 `n` 位學生（姓名、學號、GPA），依 GPA **由高到低**排序後輸出；GPA 相同時依學號由小到大。
+讀入 `n` 位學生（姓名、學號、GPA，n ≤ 100），依 GPA **由高到低**排序後輸出；GPA 相同時依學號由小到大。
 
 ```text
 輸入：
@@ -367,13 +444,17 @@ int main() {
     Student s[MAX];
     int n;
     cin >> n;
+    if (n > MAX) n = MAX;
     for (int i = 0; i < n; i++) cin >> s[i].name >> s[i].id >> s[i].gpa;
 
-    for (int i = 0; i < n - 1; i++)                 // 選擇排序
+    for (int i = 0; i < n - 1; i++) {                       // 選擇排序
+        int bestIdx = i;
         for (int j = i + 1; j < n; j++)
-            if (higher(s[j], s[i])) {
-                Student t = s[i]; s[i] = s[j]; s[j] = t;   // 整包交換
-            }
+            if (higher(s[j], s[bestIdx])) bestIdx = j;
+        if (bestIdx != i) {
+            Student t = s[i]; s[i] = s[bestIdx]; s[bestIdx] = t;   // 整包交換
+        }
+    }
 
     cout << fixed << setprecision(2);
     for (int i = 0; i < n; i++)
@@ -382,7 +463,7 @@ int main() {
 }
 ```
 
-**重點**：把比較規則抽成 `higher()` 函式，排序邏輯就不會被一長串條件式塞爆——而且交換時是 `Student t = s[i];` **整包一起搬**，不可能發生欄位錯開。
+**重點**：排序骨架和上週的選擇排序一模一樣，只換兩件事——比較規則換成 `higher()`（抽成函式，排序邏輯才不會被一長串條件式塞爆），交換對象從一個 `int` 換成一整包 `Student`。另外 `a.gpa != b.gpa` 比的是讀進來的原值、沒經過運算所以安全；一般**算出來**的浮點數不要這樣比相等。
 
 </details>
 
@@ -418,8 +499,9 @@ public:
     void set(int n, int d) {
         if (d == 0) d = 1;
         if (d < 0) { n = -n; d = -d; }      // 負號統一放在分子
-        int g = gcd(n, d);
-        if (g != 0) { n /= g; d /= g; }
+        int g = gcd(n, d);                  // d 已保證 >= 1，所以 g 一定 >= 1
+        n /= g;
+        d /= g;
         num = n;
         den = d;
     }
@@ -438,7 +520,7 @@ int main() {
 }
 ```
 
-這題把「約分」與「負號正規化」放在 `set()` 裡，外面不管傳什麼進來，物件內部永遠是最簡分數——**這就是封裝的價值**。
+`-n` 是**一元負號（只有一個運算元）**，意思是「n 的相反數」，跟 `7 - 2` 的減法不同用法。這題把「約分」與「負號正規化」放在 `set()` 裡，外面不管傳什麼進來，物件內部永遠是最簡分數——**這就是封裝的價值**。
 
 </details>
 

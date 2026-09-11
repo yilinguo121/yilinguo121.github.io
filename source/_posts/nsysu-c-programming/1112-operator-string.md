@@ -13,12 +13,12 @@ hidden: true
 
 [← 11/05｜期中上機考（範圍 Ch 1–6）](/2026/09/09/nsysu-c-programming/1105-midterm/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10） →](/2026/09/09/nsysu-c-programming/1119-pointers/)
 
-> 對應課本習題：Ch8: 1, 4, 5, 8, 9
+> 對應課本習題：Ch8: 1, 4, 5, 8, 9（Ch9 的 string 部分以本篇練習題為主）
 
 **這次要會什麼**
 
 ```text
-成員 vs 非成員運算子 → friend → 重載 << 與 >> → 重載 [] 與 ++ → string 類別
+成員 vs 非成員 → friend → << >> → [] 與 ++ → 一元與 () → 不能重載的運算子 → explicit → string
 ```
 
 ## 成員函式還是非成員函式？
@@ -42,8 +42,10 @@ Money operator+(const Money& lhs, const Money& rhs);
 | --- | --- |
 | 左邊一定是自己的類別（`m + m`） | 兩種都可以 |
 | 左邊可能是內建型別（`2.0 * v`） | **只能非成員**（你沒辦法在 `double` 裡面加函式） |
-| `<<`、`>>`（左邊是 `cout` / `cin`） | **只能非成員** |
+| `<<`、`>>`（左邊是 `cout` / `cin`） | **只能非成員**（左邊是 `cout`，你也沒辦法去改標準函式庫） |
 | `=`、`[]`、`()`、`->` | C++ 規定**只能成員** |
+
+（`->` 是「用指標取成員」的符號，它和 `=` 的重載都跟指標、深拷貝綁在一起，11/19 才會講；這裡只要記得「它們只能是成員」。）
 
 ```cpp
 #include <iostream>
@@ -73,11 +75,13 @@ int main() {
 2 4
 ```
 
+上一篇說「同一個運算子只能選一種寫法」，指的是**左右運算元型別相同**的那一組（`v + v` 同時有成員與非成員版才會 ambiguous）。這裡兩個版本左邊的型別不一樣（一個是 `Vec2`、一個是 `double`），編譯器分得出來，所以可以並存——這正是讓 `2 * v` 也能用的標準做法。
+
 ## `friend`：讓外面的函式能看見 private
 
 非成員函式碰不到 `private` 資料。兩個解法：
 
-1. 提供 public 的 getter（比較乾淨，優先考慮）。
+1. 提供 public 的 getter。
 2. 把該函式宣告為 **`friend`（夥伴）**，破例讓它存取 private。
 
 ```cpp
@@ -96,11 +100,14 @@ Vec2 operator+(const Vec2& a, const Vec2& b) {
 
 `friend` 寫在類別裡面（放 public 或 private 區都可以，效果相同），但它**不是成員函式**——定義時不寫 `Vec2::`，也不能加 `const` 後綴。
 
-> **注意**：`friend` 是把封裝**開一個洞**。課本的建議是「能用 getter 就用 getter」，`friend` 留給 `<<`、`>>` 這類無法用成員函式表達的場合。
+順帶一提：課本會把 `operator+` 的回傳型別寫成 `const Vec2`（`const Vec2 operator+(const Vec2& a, const Vec2& b);`），理由是可以擋掉 `(a + b) = c;` 這種合法但毫無意義的寫法。現代 C++ 因為妨礙最佳化已不建議，但**課本與考試是這個寫法**，知道理由即可。
 
 **`friend` 也可以整個類別一起給**：
 
 ```cpp
+#include <iostream>
+using namespace std;
+
 class Engine {
 private:
     int horsepower;
@@ -108,13 +115,36 @@ public:
     Engine(int hp) : horsepower(hp) { }
     friend class Car;            // Car 的所有成員函式都能看見 Engine 的 private
 };
+
+class Car {                      // Car 裡面有 Engine 物件，所以 Engine 要先定義完
+private:
+    Engine engine;
+public:
+    Car(int hp) : engine(hp) { }
+    void show() const { cout << engine.horsepower << '\n'; }   // 直接碰 Engine 的 private
+};
+
+int main() {
+    Car c(150);
+    c.show();
+    return 0;
+}
 ```
 
-`friend class Car;` 表示「Car 是我的夥伴」，Car 裡面可以直接寫 `engine.horsepower`。這個權限是**單向**的：Engine 看不到 Car 的 private。
+輸出：
+
+```text
+150
+```
+
+這個權限是**單向**的：Engine 看不到 Car 的 private。（這個例子只是示範**語法**——真實情況給 `Engine` 一個 `hp()` getter 更好。`friend class` 真正用得上的場合，是兩個類別本來就是同一個設計的兩半，例如容器和它的迭代器。）
 
 ## 重載 `<<` 與 `>>`
 
-這是最實用的一組，讓你的類別可以直接 `cout << obj`：
+這是最實用的一組，讓你的類別可以直接 `cout << obj`。動手之前先補兩個新東西：
+
+- `cout` 其實是一個**物件**，它的型別叫 `ostream`（輸出串流），`cin` 的型別叫 `istream`，兩個名字都住在 `<iostream>` 裡。`cout << v` 會被翻譯成 `operator<<(cout, v)`，所以參數 `ostream& os` 接到的就是 `cout` 本人，函式裡對 `os` 做的事就等於對 `cout` 做。
+- **回傳型別也可以寫成參考**：`Vec2 f()` 回傳的是一份複製品，`Vec2& f()` 回傳的是**本人的別名（就是 10/01 的參考，只是從參數換到回傳值）**，所以它能放在等號左邊，也能被下一個 `<<` 繼續使用——`return os;` 交回去的就是 `cout` 本人。唯一的規定：被回傳的東西必須比函式活得久，**不能回傳區域變數的參考**。
 
 ```cpp
 #include <iostream>
@@ -147,22 +177,24 @@ int main() {
 }
 ```
 
-輸入 `3 4` 後：
-
 ```text
-3 4
+輸入：3 4
+輸出：
 (3, 4) and (3, 4)
 ```
 
 三個一定要記住的細節：
 
-1. 回傳型別是 **`ostream&`**（參考），不是 `void`——這樣才能串接 `<<`。
+1. 回傳型別是 **`ostream&`** 不是 `void`，結尾 `return os;`。
 2. 第一個參數是 **`ostream& os`**，不能加 `const`（輸出會改變串流狀態）。
 3. `operator>>` 的第二個參數**不能加 `const`**（要把讀到的值寫進去）。
 
 ## 重載 `[]` 與 `++`
 
 ```cpp
+#include <iostream>
+using namespace std;
+
 class IntArray {
 private:
     int data[100];
@@ -174,14 +206,28 @@ public:
     int  operator[](int i) const { return data[i]; }        // const 物件用的版本
 };
 
-IntArray a;
-a[3] = 7;                 // 因為回傳 int&，所以可以放在等號左邊
-cout << a[3];             // 7
+int main() {
+    IntArray a;
+    a[3] = 7;                 // 因為回傳 int&，所以可以放在等號左邊
+    cout << a[3] << '\n';
+    return 0;
+}
 ```
 
-前置與後置 `++` 的區分方式有點詭異，但考試會考：
+輸出：
+
+```text
+7
+```
+
+這兩個 `operator[]` 參數一模一樣、只差尾巴的 `const`，但這是**合法的重載**——成員函式後面的 `const` 也算簽章的一部分：一般物件呼叫上面那個（可以改），`const` 物件呼叫下面那個（只能讀）。
+
+前置與後置 `++` 的區分方式有點詭異，但考試會考。先講一個新東西：在成員函式裡，`*this` 就是「這個物件自己」，所以 `return *this;` 是「把改完的自己交回去」，`Counter old = *this;` 是「照著自己複製一份存成 `old`」。（`this` 本身是一個指標，11/19 會正式講，這裡先把 `*this` 當成「自己」這個代名詞記起來就好。）
 
 ```cpp
+#include <iostream>
+using namespace std;
+
 class Counter {
 private:
     int v;
@@ -192,13 +238,26 @@ public:
     Counter  operator++(int)   { Counter old = *this; ++v; return old; }  // 後置 c++
     int get() const { return v; }
 };
+
+int main() {
+    Counter c(5), d(5);
+    cout << (++c).get() << ' ' << c.get() << '\n';   // 前置：回傳改完的
+    cout << (d++).get() << ' ' << d.get() << '\n';   // 後置：回傳改之前的
+    return 0;
+}
 ```
 
-- **前置**：沒有參數，回傳**參考**（改完的自己）。
-- **後置**：多一個沒有名字的 `int` 參數（純粹用來區分，不會真的傳值），回傳**改之前的複製品**。
-- `*this` 代表「物件自己」，`this` 是指向自己的指標（下一節講指標時會再遇到）。
+輸出：
 
-## 一元運算子、`()`，以及不能碰的運算子
+```text
+6 6
+5 6
+```
+
+- **前置**：沒有參數，回傳**參考**（改完的自己），所以兩個數字都是 6。
+- **後置**：多一個沒有名字的 `int` 參數，純粹用來跟前置版本區分（編譯器會傳 `0` 進去，但沒人會去用它，所以連名字都不取），回傳**改之前的複製品**，所以印出 5 和 6。
+
+## 一元運算子與 functor
 
 **一元運算子**（只有一個運算元，例如負號）寫成成員函式時**不需要參數**，因為運算元就是物件自己：
 
@@ -257,27 +316,20 @@ int main() {
 15
 ```
 
-**回傳 `const` 值**：課本建議把 `operator+` 的回傳型別寫成 `const Vec2` 而不是 `Vec2`：
-
-```cpp
-const Vec2 operator+(const Vec2& a, const Vec2& b);
-```
-
-理由是這樣可以擋掉 `(a + b) = c;` 這種合法但毫無意義的寫法。（現代 C++ 因為會妨礙效能最佳化，其實不建議這樣做；不過**課本與考試是這個寫法**，知道理由即可。）
-
-**有些運算子不能重載，有些是「能但別做」：**
+## 哪些運算子不能重載
 
 | 運算子 | 情況 |
 | --- | --- |
 | `.`、`::`、`?:`、`sizeof` | **完全不能重載** |
 | `&&`、`\|\|`、`,` | 語法上可以重載，但**千萬不要** |
-| `=`、`[]`、`()`、`->` | 只能寫成**成員函式** |
 
-為什麼 `&&`、`||` 不能碰？因為內建版本有**短路特性**（左邊決定結果就不算右邊），而重載之後會變成一般的函式呼叫，**兩邊一定都會被求值**——原本靠短路做的防呆（`if (p != nullptr && p->x > 0)`）就全部失效了。
+為什麼 `&&`、`||` 不能碰？因為內建版本有**短路特性（左邊決定結果就不算右邊）**，而重載之後會變成一般的函式呼叫，**兩邊一定都會被求值**——原本靠短路做的防呆（`if (i < v.size() && v[i] > 0)`，左邊不成立時右邊根本不會去碰 `v[i]`）就全部失效了。（`=`、`[]`、`()`、`->` 只能是成員函式，見本篇開頭那張表。）
 
 ## 建構子也會被拿來做「自動型別轉換」
 
-只有**一個參數**的建構子，編譯器會自動拿它做隱式轉換：
+這件事跟運算子重載直接相關：如果 `Money` 重載了 `+`，隱式轉換會讓 `m + 100` 也通過編譯——因為 `100` 會先被轉成 `Money(100)`。
+
+只要**呼叫時可以只給一個引數**的建構子（單參數，或第二個之後的參數都有預設值），編譯器就會自動拿它做隱式轉換：
 
 ```cpp
 #include <iostream>
@@ -328,13 +380,13 @@ int main() {
     cout << s << '\n';            // Hello, NSYSU!
     cout << s.length() << '\n';   // 13（size() 也一樣）
     cout << s[0] << '\n';         // H
-    cout << s.substr(7, 5) << '\n';   // NSYSU（從第 7 個字開始取 5 個）
+    cout << s.substr(7, 5) << '\n';   // NSYSU（從索引 7、也就是第 8 個字元 N 開始取 5 個）
 
     if (s.find("NSYSU") != string::npos)      // 找不到會回傳 string::npos
         cout << "found at " << s.find("NSYSU") << '\n';
 
     string a = "apple", b = "banana";
-    if (a < b) cout << a << " comes first\n";   // 字典序比較，可以直接用 < >
+    if (a < b) cout << a << " comes first\n";   // 字典序比較，==、!=、<、> 都能直接用
     return 0;
 }
 ```
@@ -350,16 +402,15 @@ found at 7
 apple comes first
 ```
 
+`substr(pos, len)` 的 `len` 省略就是取到結尾。上面沒示範到、但一樣常用的：
+
 | 用法 | 作用 |
 | --- | --- |
-| `s.length()` / `s.size()` | 字元數 |
 | `s.empty()` | 是否為空字串 |
-| `s[i]` / `s.at(i)` | 第 i 個字元 |
-| `s.substr(pos, len)` | 取子字串（`len` 省略則取到結尾） |
-| `s.find(t)` | 找子字串，回傳位置或 `string::npos` |
+| `s[i]` / `s.at(i)` | 第 i 個字元；`s[i]` **不檢查範圍（同 `vector`）**，`s.at(i)` **會檢查**，越界丟例外 |
+| `s + t`、`s += t`、`s += c` | 串接；`+=` 右邊可以是字串、字面值或**單一字元**，都是接在尾端 |
+| `s.clear()` | 清空字串 |
 | `s.insert(pos, t)` / `s.erase(pos, len)` | 插入 / 刪除 |
-| `s + t`、`s += t` | 串接 |
-| `==`、`!=`、`<`、`>` | 比較（字典序） |
 | `stoi(s)` / `to_string(n)` | 字串與數字互轉（C++11） |
 
 **輸入字串的兩種方式**：
@@ -381,7 +432,7 @@ getline(cin, line);      // 讀「一整行」，含空白，讀到換行為止
 > ```cpp
 > cin.ignore(numeric_limits<streamsize>::max(), '\n');   // 需要 #include <limits>
 > ```
-> 這個坑幾乎每個人都踩過一次，筆試也常考。
+> `cin.ignore(n, ch)` 是「最多丟掉 n 個字元，一遇到 ch 就停」；`numeric_limits<streamsize>::max()` 只是「這種計數能表示的最大數字」的官方寫法，整句等於「丟到換行為止、不設上限」。名字很長，照抄即可。這個坑幾乎每個人都踩過一次，筆試也常考。
 
 **逐字元處理**（需要 `#include <cctype>`）：
 
@@ -393,6 +444,8 @@ getline(cin, line);      // 讀「一整行」，含空白，讀到換行為止
 | `isupper(c)` / `islower(c)` | 是否為大 / 小寫 |
 | `toupper(c)` / `tolower(c)` | 轉大 / 小寫 |
 
+這些函式規定只吃 0–255 的值，而 `char` 在多數系統上**可以是負數**（遇到中文或特殊符號就會），傳負數是未定義行為。所以標準做法是先轉成 `unsigned char`（「不會是負數的 `char`」）再傳：`isalpha(static_cast<unsigned char>(c))`——後面的練習題會一直這樣寫。
+
 > **雷區**：`toupper` 回傳的是 **`int`** 不是 `char`。
 > ```cpp
 > cout << toupper('a');                      // 印出 65，不是 'A'
@@ -401,18 +454,17 @@ getline(cin, line);      // 讀「一整行」，含空白，讀到換行為止
 
 ## 本節重點回顧
 
-- 左邊可能是內建型別（`2 * v`）或是 `cout` 的運算子，**只能寫成非成員函式**；`=`、`[]`、`()`、`->` 則**只能是成員函式**。
+- 左邊可能是內建型別（`2 * v`）或是 `cout`／`cin` 的運算子，**只能是非成員函式**；`=`、`[]`、`()`、`->` **只能是成員函式**。
 - 重載 `<<` 的三件事：回傳 `ostream&`、第一個參數是 `ostream&`（不加 const）、結尾 `return os;`。
-- 前置 `++` 沒有參數、回傳**參考**；後置 `++` 多一個沒名字的 `int`、回傳**改之前的複製品**。
+- 前置 `++` 沒有參數、回傳**參考（改完的自己）**；後置 `++` 多一個沒名字的 `int`、回傳**改之前的複製品**。
 - `friend` 是在封裝上開洞，**能用 getter 就用 getter**，留給 `<<`、`>>` 這種非成員不可的場合。
 - `&&`、`||`、`,` 語法上能重載但**千萬別做**，會失去短路特性。
-- `cin >> x;` 之後接 `getline` 會讀到空行，中間要 `cin.ignore()`。
-- `toupper` / `tolower` 回傳的是 **`int`**，要印出字元得自己轉回 `char`。
+- `cin >> x;` 之後接 `getline` 會讀到空行，中間要 `cin.ignore()`；`toupper` / `tolower` 回傳的是 **`int`**，要印出字元得自己轉回 `char`。
 
 ## 本次練習題
 
 **Q1. Money 類別**
-寫 `class Money`，用「元」與「分」兩個整數存金額（分為 0–99）。重載 `+`、`-`、`==`、`<<`，讓 `cout << m` 輸出成 `$12.05` 的格式。
+寫 `class Money` 表示金額（例如 12 元 50 分）。內部怎麼存由你決定，但**不要用 `double`**。重載 `+`、`-`、`==`、`<<`，讓 `cout << m` 輸出成 `$12.05` 的格式。
 
 ```text
 輸入： 12 50 3 75
@@ -473,24 +525,19 @@ int main() {
 }
 ```
 
-**設計重點**：金額**不要用 `double` 存**，浮點誤差會讓 `0.1 + 0.2 != 0.3`。改存整數「分」，輸出時再除回來。
+**設計重點**：金額**不要用 `double` 存**，浮點誤差會讓 `0.1 + 0.2 != 0.3`。改存整數「分」，輸出時再除回來。`100LL` 的 `LL` 表示「這個 100 是 `long long`」，這樣乘法會直接用 `long long` 算，不會先在 `int` 裡算到溢位。
 
 </details>
 
-**Q2. 字元統計**
-讀入一整行英文句子，統計每個英文字母出現次數（大小寫視為相同），只輸出有出現過的字母。
+**Q2. 幫 Money 加上 `[]` 與 `++`**
+延續 Q1 的 `Money`，加上 `operator[]`（`m[0]` 回傳「元」、`m[1]` 回傳「分」）與前置／後置 `operator++`（每次加一元），並印出 `++m` 與 `m++` 回傳值的差別。
 
 ```text
-輸入： Hello NSYSU
+輸入： 12 50
 輸出：
-e:1
-h:1
-l:2
-n:1
-o:1
-s:2
-u:1
-y:1
+12 dollars 50 cents
+$13.50 $13.50
+$13.50 $14.50
 ```
 
 <details>
@@ -498,27 +545,48 @@ y:1
 
 ```cpp
 #include <iostream>
-#include <string>
-#include <cctype>
+#include <iomanip>
 using namespace std;
 
+class Money {
+private:
+    long long cents;
+
+public:
+    Money(int dollars = 0, int c = 0) : cents(dollars * 100LL + c) { }
+
+    int operator[](int i) const {                   // [] 只能是成員函式
+        return i == 0 ? static_cast<int>(cents / 100)
+                      : static_cast<int>(cents % 100);
+    }
+
+    Money& operator++()    { cents += 100; return *this; }                   // 前置
+    Money  operator++(int) { Money old = *this; cents += 100; return old; }  // 後置
+
+    friend ostream& operator<<(ostream& os, const Money& m);
+};
+
+ostream& operator<<(ostream& os, const Money& m) {
+    os << '$' << m.cents / 100 << '.'
+       << setfill('0') << setw(2) << m.cents % 100 << setfill(' ');
+    return os;
+}
+
 int main() {
-    string line;
-    getline(cin, line);
+    int d, c;
+    cin >> d >> c;
+    Money m(d, c);
+    cout << m[0] << " dollars " << m[1] << " cents\n";
 
-    int count[26] = {};
-    for (char c : line)
-        if (isalpha(static_cast<unsigned char>(c)))
-            count[tolower(static_cast<unsigned char>(c)) - 'a']++;
-
-    for (int i = 0; i < 26; i++)
-        if (count[i] > 0)
-            cout << static_cast<char>('a' + i) << ':' << count[i] << '\n';
+    Money r1 = ++m;              // 前置：回傳改完的自己
+    cout << r1 << ' ' << m << '\n';
+    Money r2 = m++;              // 後置：回傳改之前的複製品
+    cout << r2 << ' ' << m << '\n';
     return 0;
 }
 ```
 
-`c - 'a'` 會得到 0–25 的索引，這是處理英文字母最常用的手法。傳給 `isalpha` / `tolower` 前轉成 `unsigned char` 是標準建議做法，避免中文或特殊字元造成未定義行為。
+**設計重點**：`[]` 只能寫成成員函式，所以不必 `friend`。前置 `++` 回傳 `Money&`（改完的自己），所以 `r1` 和 `m` 都是 `$13.50`；後置 `++` 先把自己複製成 `old` 再改，交回去的是那份複製品，所以 `r2` 停在 `$13.50`，而 `m` 已經是 `$14.50`。
 
 </details>
 
@@ -548,14 +616,20 @@ int main() {
         if (isalpha(static_cast<unsigned char>(c)))
             clean += static_cast<char>(tolower(static_cast<unsigned char>(c)));
 
+    int i = 0, j = static_cast<int>(clean.size()) - 1;
     bool ok = true;
-    for (size_t i = 0, j = clean.size(); i + 1 < j; i++, j--)
-        if (clean[i] != clean[j - 1]) { ok = false; break; }
+    while (i < j) {
+        if (clean[i] != clean[j]) { ok = false; break; }
+        i++;
+        j--;
+    }
 
     cout << (ok ? "yes" : "no") << '\n';
     return 0;
 }
 ```
+
+**設計重點**：`i` 從頭、`j` 從尾往中間夾，碰頭（`i >= j`）就代表全部對上了。這裡用 `int` 而不是 `size_t`，是因為空字串時 `size() - 1` 在無號型別會變成超大的數字（10/29 的雷區①）。
 
 </details>
 

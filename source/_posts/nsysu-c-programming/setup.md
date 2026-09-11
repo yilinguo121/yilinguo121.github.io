@@ -29,12 +29,14 @@ hidden: true
 
 翻譯的動作叫**編譯（compile）**，翻譯失敗叫 **compile error（編譯錯誤）**，通常是你打錯字或少了分號。編譯成功才會產生**執行檔**，然後才能**執行**（run）它。
 
-**② 程式跟你溝通的兩條管子：標準輸入與標準輸出**
+**② 程式的兩個預設出入口：標準輸入與標準輸出**
 
 - **標準輸入（standard input）**：預設是你的鍵盤。程式用 `cin >> x;` 從這裡拿資料。
 - **標準輸出（standard output）**：預設是螢幕。程式用 `cout << x;` 把東西印出來。
 
-之後會看到 `./Q1 < in.txt`，意思就是「把鍵盤這條管子換成 `in.txt` 這個檔案」，程式本身完全不用改。
+`<<` 和 `>>` 各是「兩個符號連寫成的**一個**運算子」，箭頭方向就是資料流動的方向：`cout << 東西` 是東西流向螢幕，`cin >> 變數` 是你鍵盤打的資料流進變數裡。`<<` 還可以一直接下去，`cout << a << b << c;` 就是依序印出三樣東西。（`x`、`a` 這種「用來裝資料的名字」叫**變數**，09/17 那篇會正式教，現在照著看就好。）
+
+這兩個出入口之後都可以換成檔案，很好用，後面〈Terminal 指令〉會教。
 
 **③ 終端機（Terminal）就是「用打字下指令」的視窗**
 
@@ -43,11 +45,9 @@ hidden: true
 ```bash
 cd ~/Desktop        # 「切換到桌面這個資料夾」
 ls                  # 「列出這個資料夾裡有什麼」
-g++ -o Q1 Q1.cpp    # 「把 Q1.cpp 編譯成名為 Q1 的執行檔」
-./Q1                # 「執行目前資料夾裡的 Q1」
 ```
 
-`./` 的意思是「目前這個資料夾」。少打它會出現 `command not found`，這是新手最常見的第一個卡關點。
+`./` 的意思是「目前這個資料夾」，所以等一下要執行自己編出來的程式，得打 `./HelloWorld` 而不是 `HelloWorld`。少打 `./` 會出現 `command not found`，這是新手最常見的第一個卡關點。
 
 看懂這三件事，就可以開始裝環境了。
 
@@ -62,32 +62,32 @@ g++ -o Q1 Q1.cpp    # 「把 Q1.cpp 編譯成名為 Q1 的執行檔」
    - 硬碟：建立新的虛擬硬碟（VDI，動態配置），**建議 20 GB 以上**
 4. 選中剛建立的虛擬機 → **設定（Settings）** → **儲存（Storage）** → 點「空」的光碟機 → 右邊光碟圖示 → **選擇虛擬光碟檔案** → 選剛剛下載的 `.iso` → 確定。
 5. **啟動**，第一次開機會進入 Ubuntu 安裝流程：
-   - 語系**建議選英文**。中文語系會把家目錄變成「桌面 / 下載 / 文件」，之後在 Terminal `cd 桌面` 打中文很煩。
-   - 如果視窗解析度太小、按不到 `Continue`，按住 `Alt` 再用滑鼠拖曳視窗（`Alt + F7` 也可以進入移動模式）。
+   - 語系**選英文**：中文語系的家目錄會叫「桌面／下載／文件」，`cd` 時得切輸入法打中文，之後所有教學與錯誤訊息裡的路徑也都對不上。
+   - 如果視窗解析度太小、按不到 `Continue`：按住 **Super（鍵盤上的 Windows 鍵）** 再用滑鼠拖曳視窗（舊版系統是 `Alt`，兩個都試試看），或按 `Alt + F7` 進入移動模式後用方向鍵移動。
    - 安裝類型維持預設（Erase disk and install Ubuntu，這是抹掉**虛擬**硬碟，不會動到你的實體硬碟）。
    - 填使用者名稱與密碼——**這個密碼之後每次 `sudo` 都要用，一定要記得**。
-6. 安裝完成重開機，右上角選單 → **Settings → Displays**，把解析度調到符合你的螢幕，這樣左下角的應用程式選單才好按，才找得到 Terminal。
+6. 安裝完成重開機後，**先裝 Guest Additions**：虛擬機視窗選單 → 裝置 → 安裝 Guest Additions CD 映像，裝完再重開機一次。沒裝之前能選的解析度很少、畫面小到按不到按鈕；裝完解析度會自動跟著視窗跑，也才能開**雙向剪貼簿**（設定 → 一般 → 進階 → 共用剪貼簿：雙向），把題目文字從主機複製進去。若安裝過程出現找不到 gcc／make 的訊息，先跳到下一節〈安裝 g++ 與 make〉裝好 `build-essential`，再從「裝置 → 安裝 Guest Additions CD 映像」重跑一次。
 
-**三個會讓你之後很爽的設定（強烈建議做）：**
+**兩個之後會感謝自己的設定：**
 
-- **安裝 Guest Additions**：虛擬機視窗選單 → 裝置 → 安裝 Guest Additions CD 映像，之後可以自動調整解析度、開啟**雙向剪貼簿**（設定 → 一般 → 進階 → 共用剪貼簿：雙向）。寫作業時能從主機複製題目文字進去，省很多時間。
 - **建立快照（Snapshot）**：環境弄好後先照一張快照。之後哪天把系統玩壞了（`sudo rm` 砍錯東西），一鍵還原，不用重裝。
 - **共用資料夾**：設定 → 共用資料夾，把主機某個資料夾掛進 Ubuntu，方便把 `.zip` 搬出來上傳。
 
-> 注意：**上機考當天只能用 Ubuntu 與 Ubuntu 內的文字編輯器**。共用剪貼簿與共用資料夾是平常練習的便利設定，考試時請遵照現場助教指示。
+> 共用剪貼簿與共用資料夾是**平常練習**用的便利設定，上機考當天請遵照現場助教指示。
 
 ## 安裝 g++ 與 make
+
+> **以下所有指令都是在虛擬機裡的 Ubuntu 執行**，不是在你原本的 Windows／macOS。之後這篇文章講的「Terminal」一律指 Ubuntu 裡的那個。
 
 開啟 Terminal（左下角九宮格搜尋 `terminal`，或快捷鍵 `Ctrl + Alt + T`），輸入：
 
 ```bash
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install g++
-sudo apt-get install make
+sudo apt-get update && sudo apt-get upgrade
+sudo apt-get install build-essential   # 一次裝好 g++、make 與相關工具
 ```
 
 - `sudo` 代表以系統管理員權限執行，會要求輸入密碼（就是安裝 Ubuntu 時設定的登入密碼）。**輸入密碼時畫面不會有任何顯示，這是正常的**，打完直接按 Enter。
+- `&&` 的意思是「左邊的指令成功執行完，才接著做右邊」，所以第一行是先更新套件清單、成功了再升級。
 - 中途跳出 `Do you want to continue? [Y/n]` 一律回 `y` 再 Enter。
 
 裝完驗證：
@@ -97,13 +97,24 @@ g++ --version
 make --version
 ```
 
-有版本號跑出來就成功（Ubuntu 20.04 預設的 g++ 是 9.x，支援 `-std=c++17`）。
+只看 `g++ --version` 的**第一行**，長得像下面這樣（Ubuntu 20.04 預設是 9.x，支援 `-std=c++17`）就是成功了：
 
-如果出現 `E: Could not get lock /var/lib/dpkg/lock-frontend`，代表背景的自動更新正在跑，等一兩分鐘再試，或重開機後再執行。
+```text
+g++ (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+```
+
+看到 `Command 'g++' not found` 就是**沒裝成功**，回去重跑安裝指令。安裝時若出現 `E: Could not get lock /var/lib/dpkg/lock-frontend`，代表背景的自動更新正在跑，等一兩分鐘再試。
 
 ## 第一支 Hello World
 
-在桌面按右鍵 → **New Document → Empty Document**，改名為 `HelloWorld.cpp`（注意副檔名要是 `.cpp`），用文字編輯器打開，貼入：
+在 Terminal 裡建檔並打開編輯器（順便練一下剛剛的 `cd`）：
+
+```bash
+cd ~/Desktop
+nano HelloWorld.cpp
+```
+
+`nano` 是 Ubuntu 內建的終端機文字編輯器，檔案不存在就等於新建。把下面的程式碼打進去，打完按 `Ctrl + O` → Enter 存檔、`Ctrl + X` 離開（後面〈Terminal 指令〉會再整理一次快捷鍵）：
 
 ```cpp
 #include <iostream>
@@ -115,33 +126,37 @@ int main() {
 }
 ```
 
-回到 Terminal：
-
-```bash
-cd ~/Desktop
-g++ -c HelloWorld.cpp              # 編譯，產生 HelloWorld.o
-g++ -o HelloWorld HelloWorld.o     # 連結，產生執行檔 HelloWorld
-./HelloWorld                       # 執行
-```
-
-看到 `Hello, NSYSU!` 就成功了。
-
-也可以一行完成（平常最常用的寫法）：
+編譯並執行：
 
 ```bash
 g++ -Wall -Wextra -std=c++17 -o HelloWorld HelloWorld.cpp
 ./HelloWorld
 ```
 
-**逐行解釋這支程式：**
+```text
+Hello, NSYSU!
+```
+
+看到這行就成功了。上面那個指令是你之後 99% 的時候會用的寫法，三個選項的意思：
+
+- `-Wall -Wextra`：把編譯器的提醒全部打開（警告在這門課會扣分，平常就該開著）
+- `-std=c++17`：用 C++17 這一版的語法規則編譯
+- `-o HelloWorld`：指定產生的執行檔叫 `HelloWorld`；不寫 `-o` 的話預設會叫 `a.out`
+
+**逐行解釋這支程式**（現在只要知道每一行大概在幹嘛，不用懂細節）：
 
 | 程式碼 | 意義 |
 | --- | --- |
 | `#include <iostream>` | 前置處理指令，把標準輸入輸出函式庫的宣告「貼」進來，之後才能用 `cout` / `cin` |
-| `using namespace std;` | 把 `std` 命名空間拉進來，讓你可以寫 `cout` 而不是 `std::cout` |
-| `int main()` | 程式進入點。作業系統執行你的程式，就是呼叫這個函式 |
-| `cout << "..." << endl;` | 把字串送到標準輸出，`endl` 換行並清空輸出緩衝區 |
-| `return 0;` | 回傳 0 給作業系統，表示「正常結束」。非 0 表示發生錯誤 |
+| `int main()` | 程式進入點，作業系統執行你的程式就是呼叫它。`int` 表示這個函式結束時會交回一個整數（所以最後一行才是 `return 0;`），後面的 `()` 是參數列，空的代表不需要外部給資料 |
+| `cout << "..." << endl;` | 雙引號中間的文字會原封不動印到螢幕上，引號本身不會出現（想改字就改引號中間，但一定要用英文的 `"`，中文全形引號或單引號都會編譯失敗）；`endl` 換行並清空輸出緩衝區。`<<` 可以一直接下去，所以這行有兩個 `<<`：先送出文字，再送出換行 |
+
+另外兩行先照抄，09/17 那篇會正式解釋：`using namespace std;` 讓你可以寫 `cout` 而不是 `std::cout`（`::` 是兩個冒號連寫，意思是「某某裡面的某某」，`std::cout` 就是「std 這組工具裡的 cout」）；`return 0;` 是回傳 0 給作業系統，表示「正常結束」，非 0 表示發生錯誤。
+
+**兩個一定要記住的符號規則：**
+
+1. **分號 `;`**：每一個「命令」結尾都要加分號，像中文的句號。所以 `cout << ...;`、`using namespace std;`、`return 0;` 結尾都有；`int main() {` 是在「開始一個區塊」不是一個命令，所以沒有。少打分號是初學者最高頻的編譯錯誤（下一節錯誤表的 `expected ';'` 就是它）。
+2. **大括號 `{ }`**：`{` 到 `}` 中間包住的是 `main` 的「身體」，程式從 `{` 的下一行一行一行往下執行，執行到 `}` 就結束。大括號永遠成對出現，裡面的程式碼習慣往右縮排四格，方便一眼看出誰跟誰配對。
 
 ## 編譯到底發生了什麼事
 
@@ -151,7 +166,7 @@ g++ -Wall -Wextra -std=c++17 -o HelloWorld HelloWorld.cpp
 HelloWorld.cpp
    │  ① 前置處理 Preprocessing   （展開 #include、#define）
    ▼
-HelloWorld.i  （純 C++ 原始碼，沒有任何 # 開頭的東西）
+HelloWorld.i  （#include、#define 都已經被展開掉的原始碼）
    │  ② 編譯 Compilation         （語法檢查、產生組合語言）
    ▼
 HelloWorld.s  （組合語言）
@@ -163,51 +178,47 @@ HelloWorld.o  （目的檔 object file，還不能執行）
 HelloWorld    （執行檔）
 ```
 
+（`#define` 跟 `#include` 一樣是 `#` 開頭的前置處理指令，用來定義代換用的名字，11/26 做分離編譯那篇才會用到，現在知道它也在第 ① 階段被展開就好。）
+
 想親眼看到中間產物：
 
 ```bash
-g++ -E HelloWorld.cpp -o HelloWorld.i   # 只做前置處理
-g++ -S HelloWorld.cpp                   # 產生 .s 組合語言
-g++ -c HelloWorld.cpp                   # 產生 .o
-g++ -o HelloWorld HelloWorld.o          # 連結
+g++ -E HelloWorld.cpp -o HelloWorld.i   # 只做前置處理，產生 .i
+g++ -c HelloWorld.cpp                   # 做完 ①②③，產生 HelloWorld.o
+g++ -o HelloWorld HelloWorld.o          # ④ 連結，產生執行檔
 ```
 
-**為什麼要懂這個？** 因為錯誤訊息的類型直接告訴你卡在哪一關：
+打開 `HelloWorld.i` 會看到好幾萬行——因為整個 `<iostream>` 被原地貼了進來，這就是 `#include` 實際在做的事（裡面的 `# 1 "HelloWorld.cpp"` 是編譯器留的行號標記，不是你的程式碼）。`g++ -S HelloWorld.cpp` 則會產生組合語言 `.s`，好奇可以看看，這門課不會用到。
+
+**為什麼要懂這個？** 因為錯誤訊息的類型直接告訴你卡在哪一關。這張表現在不用背，遇到訊息回來對就好：
 
 | 訊息長相 | 發生階段 | 常見原因 |
 | --- | --- | --- |
-| `fatal error: xxx.h: No such file or directory` | ① 前置處理 | header 檔名打錯、路徑不對 |
-| `error: expected ';' before '}' token` | ② 編譯 | 少分號、括號沒配對 |
-| `error: 'xxx' was not declared in this scope` | ② 編譯 | 變數沒宣告、忘了 `#include`、拼錯字 |
-| `undefined reference to 'foo()'` | ④ 連結 | 函式只有宣告沒有定義、少編譯某個 `.cpp` |
-| `Segmentation fault (core dumped)` | 執行時期 | 陣列越界、解參考空指標、無窮遞迴 |
+| `fatal error: xxx.h: No such file or directory` | ① 前置處理 | `#include` 後面的檔名打錯，或那個檔案不在該找得到的地方 |
+| `error: expected ';' before '}' token` | ② 編譯 | 少分號、大括號沒成對 |
+| `error: 'xxx' was not declared in this scope` | ② 編譯 | 這個名字沒先宣告過、忘了 `#include`、拼錯字 |
+| `undefined reference to 'foo()'` | ④ 連結 | 你用了某個東西，但它的內容根本沒被編進來。看到它就知道是「連結」這關出事，不是語法錯（11/26 那篇會詳細講） |
+| `Segmentation fault (core dumped)` | 執行時期 | 程式動到不該動的記憶體（陣列越界、空指標、無窮遞迴），這些名詞後面幾篇會學到 |
 
-**分離編譯**（[後面〈分離編譯與命名空間〉那一節](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)）就是刻意把 ③ 與 ④ 拆開：每個 `.cpp` 各自編成 `.o`，改一個檔只要重編那一個，最後再一起連結。Makefile 存在的理由就是自動化這件事。
+**分離編譯**（[後面〈分離編譯與命名空間〉那一節](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)）就是刻意把「產生 `.o`（①②③）」與「連結成執行檔（④）」拆成兩步：每個 `.cpp` 各自 `g++ -c` 編成 `.o`，改一個檔只要重編那一個，最後再一起連結。Makefile 存在的理由就是自動化這件事。
 
 ## 你必須會的 Terminal 指令
 
-上機考期間**只能用文字編輯器 + Terminal**，不能用 VS Code、Dev-C++、任何 IDE 的自動完成或 AI 修正。所以下面這些請練到反射動作：
+兩場上機考**只能用文字編輯器 + Terminal**，不能用 VS Code、Dev-C++ 或任何 IDE 的自動完成——**考場上沒有任何工具會提醒你少打分號**。下面這些請練到反射動作：
 
 | 指令 | 功能 |
 | --- | --- |
 | `pwd` | 顯示目前所在的完整路徑（迷路時第一個下的指令） |
-| `ls` | 列出當前目錄的檔案 |
-| `ls -al` | 列出所有檔案（含隱藏檔）與權限、大小、時間 |
+| `ls` ／ `ls -al` | 列出當前目錄的檔案 ／ 連隱藏檔、權限、大小、時間一起列 |
 | `cd 資料夾名` | 進入子目錄（打前幾個字按 `Tab` 可自動補完） |
-| `cd ..` | 回上一層 |
-| `cd ~` | 回家目錄 |
+| `cd ..` ／ `cd ~` | 回上一層 ／ 回家目錄 |
 | `mkdir 名稱` | 建立資料夾 |
-| `rmdir 名稱` | 移除**空**資料夾 |
-| `rm 檔名` | 刪除檔案 |
-| `rm -i 檔名` | 刪除前逐一確認（比較安全） |
-| `rm -rf 資料夾` | 遞迴強制刪除整個資料夾（**下這個指令前先 `pwd` 確認位置**） |
-| `mv 來源 目的` | 移動或改名 |
-| `cp 來源 目的` | 複製檔案；`cp -r` 複製資料夾 |
-| `cat 檔名` | 把檔案內容印到畫面 |
-| `find . -name "Q*.cpp"` | 從當前目錄往下找符合的檔案 |
-| `du -h` / `df -h` | 看資料夾佔用空間 / 看硬碟剩餘空間 |
-| `zip -r 學號.zip 學號/` | 把資料夾壓縮成 zip（繳交用） |
-| `nano 檔名` | 用終端機文字編輯器開檔 |
+| `nano 檔名` | 用終端機文字編輯器開檔（檔案不存在就是新建） |
+| `g++ -Wall -Wextra -std=c++17 -o Q1 Q1.cpp` ／ `./Q1` | 編譯 `Q1.cpp` 產生執行檔 `Q1` ／ 執行它 |
+| 刪除／搬移／複製 | `rm 檔名`、`rm -rf 資料夾`（**下這個指令前先 `pwd` 確認位置**）、`mv 來源 目的`（也可用來改名）、`cp 來源 目的`（`cp -r` 複製資料夾） |
+| `zip -r 學號.zip 學號/` | 把資料夾壓縮成 zip（繳交必用） |
+
+其他指令（`cat`、`find`、`du`……）用到再查就好，不用背。
 
 **`nano` 速成**（上機考如果不會 vim，就用它）：
 
@@ -224,17 +235,17 @@ g++ -o HelloWorld HelloWorld.o          # 連結
 **一個能省你大量時間的技巧：用檔案餵測資。** 每次手動打輸入很慢，改成：
 
 ```bash
-nano in.txt          # 把測資存成檔案
-./Q1 < in.txt        # 用檔案當標準輸入
+nano in.txt               # 把測資存成檔案
+./Q1 < in.txt             # 用檔案當標準輸入
 ./Q1 < in.txt > out.txt   # 順便把輸出存起來
-diff out.txt ans.txt      # 跟預期答案比對，沒輸出就代表完全一樣
+diff out.txt ans.txt      # ans.txt 是你自己照題目範例打的預期答案；diff 什麼都沒印就代表兩個檔一字不差
 ```
 
-`< 檔案` 叫做**輸入重導向**，`> 檔案` 是輸出重導向。這招在實驗課逐題檢查時特別好用——助教說「換一組測資試試」，你改 `in.txt` 再跑一次就好。
+`< 檔案` 叫**輸入重導向**（把「標準輸入」從鍵盤換成檔案），`> 檔案` 是輸出重導向。助教說「換一組測資試試」時，你改 `in.txt` 再跑一次就好。
 
 ## Makefile：從零到模組化
 
-實驗課與上機考要求**每次交檔都要附一份可用的 Makefile**，能一次編譯當週所有題目。**Makefile 編不過 → 這次 0 分**，這是白紙黑字寫在規範上的。
+實驗課與上機考要求**每次交檔都要附一份可用的 Makefile**，能一次編譯當週所有題目（編不過就是 0 分，扣分規則見文末）。
 
 ### Makefile 的三個組成
 
@@ -243,7 +254,12 @@ diff out.txt ans.txt      # 跟預期答案比對，沒輸出就代表完全一�
 <Tab>	執行的指令(recipe)
 ```
 
-`make` 的運作邏輯只有一句話：**如果「相依檔案」比「目標」新，就執行下面的指令**。所以改了 `Q1.cpp`，`make` 就只重編 `Q1`，沒改的不會重編——這叫**增量編譯**。
+`make` 的運作邏輯就兩句話：
+
+1. **目標檔案不存在 → 執行下面的指令。**
+2. **目標存在，但相依檔案比它新 → 也執行。** 兩者都不是就什麼都不做，印出 `Nothing to be done`。
+
+所以第一次 `make` 會把執行檔通通編出來；之後改了 `Q1.cpp` 再 `make`，畫面上只會印一行指令——只有 `Q1` 被重編，`Q2`–`Q4` 完全沒動。這叫**增量編譯**：四題的時候感覺不出差別，但一個專案有三十個檔案時，這是「等 1 秒」和「等 1 分鐘」的差別。
 
 ### 最基本版本
 
@@ -276,24 +292,41 @@ make Q2         # 只編 Q2
 make clean      # 刪除四個執行檔
 ```
 
+連續下兩次 `make`，就能親眼看到上面那兩句話：
+
+```text
+$ make
+g++ -o Q1 Q1.cpp
+g++ -o Q2 Q2.cpp
+g++ -o Q3 Q3.cpp
+g++ -o Q4 Q4.cpp
+$ make
+make: Nothing to be done for 'all'.
+```
+
 > **最常見的錯誤：`Makefile:3: *** missing separator. Stop.`**
-> 意思是「指令那一行的開頭不是 Tab」。Makefile 規定 recipe 前面**必須是一個 Tab 字元，不能是空格**。很多編輯器會自動把 Tab 轉成空格——在 `nano` 裡按 `Alt + Shift + 3`（顯示行號）+ 手動確認，或直接設定編輯器不要展開 Tab。
+> 意思是「指令那一行的開頭不是 Tab」。Makefile 規定 recipe 前面**必須是一個 Tab 字元，不能是空格**，而很多編輯器會自動把 Tab 換成空格。要確認就在 Terminal 下 `cat -A Makefile`：行首顯示 `^I` 的才是 Tab，顯示成一堆空白的就是被換掉了。修法是把那行開頭的空白全刪掉、重打一個 Tab（在 `nano` 裡直接按 Tab 鍵不會被展開成空格，可以放心）。
 
 ### 加入變數與 `.PHONY`
 
 ```makefile
-CC     := g++
-CFLAGS := -Wall -Wextra -std=c++17
+CXX      := g++
+CXXFLAGS := -Wall -Wextra -std=c++17
 
 .PHONY: all clean
 
 all: Q1 Q2 Q3 Q4
 
 Q1: Q1.cpp
-	$(CC) $(CFLAGS) -o Q1 Q1.cpp
+	$(CXX) $(CXXFLAGS) -o Q1 Q1.cpp
+
+# Q2、Q3、Q4 同理
+
+clean:
+	rm -f Q1 Q2 Q3 Q4
 ```
 
-- `CC`、`CFLAGS` 是變數，用 `$(CC)` 取值。要改編譯選項只要改一個地方。
+- `CXX`、`CXXFLAGS` 是變數，`:=` 是 Makefile 的「把這個名字設成某個值」寫法（跟規則那行 `目標:` 的冒號是兩回事），設好之後用 `$(CXX)` 取值，要改編譯選項只要改一個地方。名字請照慣例：C++ 用 `CXX`／`CXXFLAGS`，C 才用 `CC`／`CFLAGS`，取對了 make 的內建規則才不會跟你打架。
 - `.PHONY: all clean` 告訴 make「`all` 和 `clean` 不是真的檔案名稱」。否則哪天資料夾裡剛好有個叫 `clean` 的檔案，`make clean` 就會說「clean is up to date」什麼都不做。
 
 ### 模組化版本（實驗課要求的形式）
@@ -301,10 +334,10 @@ Q1: Q1.cpp
 題目一多，上面那種寫法就會一直複製貼上。用**自動變數**與 **pattern rule** 讓它自己長出來：
 
 ```makefile
-CC      := g++
-CFLAGS  := -Wall -Wextra -std=c++17
-SRCS    := $(wildcard Q*.cpp)
-TARGETS := $(SRCS:.cpp=)
+CXX      := g++
+CXXFLAGS := -Wall -Wextra -std=c++17
+SRCS     := $(wildcard Q*.cpp)
+TARGETS  := $(SRCS:.cpp=)
 
 .PHONY: all clean
 
@@ -312,7 +345,7 @@ all: $(TARGETS)
 
 # pattern rule：任何 Qx 都對應到 Qx.cpp
 %: %.cpp
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 clean:
 	rm -f $(TARGETS)
@@ -333,31 +366,25 @@ clean:
 
 ### 驗證你的 Makefile 真的能用
 
-交出去之前一定要做這個檢查：
+交出去之前一定要在**乾淨狀態**下重編一次，確認沒問題後再清掉執行檔、回上一層壓縮：
 
 ```bash
-make clean && make
+make clean && make          # 全部刪掉重編一次
+make clean && cd .. && zip -r 學號.zip 學號/
 ```
 
-在**乾淨狀態**下重編一次。很多人是「之前編好的執行檔還在」，Makefile 其實早就壞了卻不知道。
+很多人是「之前編好的執行檔還在」，Makefile 其實早就壞了卻不知道。
 
-### 繳交規則整理
+## 繳交規則與評分
 
-- `.cpp` 命名：`Q題號.cpp`（第二題 → `Q2.cpp`）
-- 執行檔命名：`Q題號`（第二題 → `Q2`）
-- 所有檔案（**含 Makefile**）放在**以學號命名的資料夾**下（例如 `B153040XXX/`）
-- 壓縮成 zip，檔名為 `學號.zip`（例如 `B153040XXX.zip`）
-- 繳交時需確認 Makefile 能成功編譯，**否則以 0 分計算**
-- **任何編譯警告（warning）或錯誤（error）都扣 2 分** → 所以 `-Wall -Wextra` 要平常就開著，別等到考試才發現一堆警告
+- `.cpp` 命名 `Q題號.cpp`、Makefile 產生的執行檔命名 `Q題號`（第二題 → `Q2.cpp`、`Q2`）
+- 所有檔案（**含 Makefile**）放在**以學號命名的資料夾**下（例如 `B153040XXX/`），壓縮成 `學號.zip`
+- **壓縮前先 `make clean`**：zip 裡只放 `.cpp` 和 `Makefile`，不要塞執行檔和 `.o`
+- Makefile 必須能成功編譯，**否則以 0 分計算**
+- **任何編譯警告（warning）或錯誤（error）都扣 2 分**，所以 `-Wall -Wextra` 平常就要開著
+- 每寫完一題就 `make` 一次把警告當場清掉，再 `./Qn < in.txt` 跑一次題目附的範例，不要相信「應該對」的直覺
 
-期中、期末兩場上機考用的是同一套環境與同一套規則，只是多了「只能用純文字編輯器、不能用 IDE 與自動補全」這條。也就是說，**考場上沒有任何工具會提醒你少打分號**，平常練習時就該習慣。
-
-> **什麼是 warning？** 編譯器覺得「這樣寫合法，但你八成寫錯了」時給的提醒——程式還是會編譯成功，所以很容易被忽略。例如宣告了變數卻沒用到、把 `==` 打成 `=`。一個警告 2 分，非常好賺也非常好賠。
-
-### 兩個保命習慣
-
-1. **每寫完一題就 `make` 一次**：警告當場清掉，不要堆到最後十分鐘才發現有五個警告（= 10 分沒了）。
-2. **每寫完一題就 `./Qn` 跑幾組測資**：至少跑「題目給的範例」＋「邊界情況」（0、負數、只有一個元素、剛好等於上限）。不要相信「應該對」的直覺。
+> **什麼是 warning？** 編譯器覺得「這樣寫合法，但你八成寫錯了」時給的提醒——程式還是會編譯成功，所以很容易被忽略。例如宣告了變數卻沒用到，或是把 `==`（比較兩個值是不是一樣）打成 `=`（把右邊的值存進左邊）；這兩個符號長得像但意思完全不同，09/17 那篇會正式介紹。
 
 ---
 
