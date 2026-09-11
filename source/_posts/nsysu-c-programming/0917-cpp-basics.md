@@ -1,15 +1,17 @@
 ---
 title: 09/17｜C++ 基礎（Ch 1）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/0917-cpp-basics/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 09/10｜課程介紹與環境暖身](/2026/09/09/nsysu-c-programming/0910-intro/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [09/24｜流程控制與函式基礎（Ch 2、Ch 3） →](/2026/09/09/nsysu-c-programming/0924-flow-control/)
+[← 09/10｜課程介紹與環境暖身](/2026/09/09/nsysu-c-programming/0910-intro/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [09/24｜流程控制與函式基礎（Ch 2、Ch 3） →](/2026/09/09/nsysu-c-programming/0924-flow-control/)
 
 > 對應課本習題：Ch1: 6, 8, 13；Ch2: 2, 4, 7, 8
 

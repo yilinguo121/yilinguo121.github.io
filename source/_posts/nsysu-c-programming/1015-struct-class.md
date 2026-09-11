@@ -1,15 +1,17 @@
 ---
 title: 10/15｜結構與類別（Ch 5–6）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/1015-struct-class/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 10/08｜陣列（Ch 5）](/2026/09/09/nsysu-c-programming/1008-arrays/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/22｜類別與建構子（Ch 6–7） →](/2026/09/09/nsysu-c-programming/1022-constructors/)
+[← 10/08｜陣列（Ch 5）](/2026/09/09/nsysu-c-programming/1008-arrays/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/22｜類別與建構子（Ch 6–7） →](/2026/09/09/nsysu-c-programming/1022-constructors/)
 
 > 對應課本習題：Ch6: 1, 7, 10, 12
 

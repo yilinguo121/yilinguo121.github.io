@@ -5,7 +5,7 @@ hexo.extend.generator.register('random-posts-data', function(locals) {
   // 生成包含所有文章链接的数据（使用相对路径）
   const postLinks = posts.map(post => {
     // 移除域名，只保留路径部分
-    return '/' + post.path;
+    return '/' + (post.path || '').replace(/^\/+/, '');
   });
 
   // 生成JavaScript文件

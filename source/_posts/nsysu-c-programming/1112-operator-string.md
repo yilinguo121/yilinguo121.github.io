@@ -1,15 +1,17 @@
 ---
 title: 11/12｜運算子重載、friend 與 string（Ch 8、Ch 9）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/1112-operator-string/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 11/05｜期中上機考（範圍 Ch 1–6）](/2026/09/09/nsysu-c-programming/1105-midterm/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10） →](/2026/09/09/nsysu-c-programming/1119-pointers/)
+[← 11/05｜期中上機考（範圍 Ch 1–6）](/2026/09/09/nsysu-c-programming/1105-midterm/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10） →](/2026/09/09/nsysu-c-programming/1119-pointers/)
 
 > 對應課本習題：Ch8: 1, 4, 5, 8, 9
 

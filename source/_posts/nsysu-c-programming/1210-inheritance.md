@@ -1,15 +1,17 @@
 ---
 title: 12/10｜繼承（Ch 14）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/1210-inheritance/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 12/03｜檔案輸入輸出（Ch 12）](/2026/09/09/nsysu-c-programming/1203-file-io/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/17｜期末筆試（範圍 Ch 1–12、Ch 14） →](/2026/09/09/nsysu-c-programming/1217-final-written/)
+[← 12/03｜檔案輸入輸出（Ch 12）](/2026/09/09/nsysu-c-programming/1203-file-io/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/17｜期末筆試（範圍 Ch 1–12、Ch 14） →](/2026/09/09/nsysu-c-programming/1217-final-written/)
 
 > 對應課本習題：Ch14: 4, 6, 8
 

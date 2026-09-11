@@ -1,15 +1,17 @@
 ---
 title: 12/24｜期末上機考（範圍 Ch 1–12、Ch 14）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/1224-final-lab/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 12/17｜期末筆試（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1217-final-written/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [附錄 →](/2026/09/09/nsysu-c-programming/appendix/)
+[← 12/17｜期末筆試（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1217-final-written/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [附錄 →](/2026/09/09/nsysu-c-programming/appendix/)
 
 這是**佔學期 40% 的關鍵一場**，通常直接決定學期成績。而且還有一個好消息：
 

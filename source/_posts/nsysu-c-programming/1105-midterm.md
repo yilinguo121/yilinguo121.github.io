@@ -1,15 +1,17 @@
 ---
 title: 11/05｜期中上機考（範圍 Ch 1–6）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/1105-midterm/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 10/29｜vector 與運算子重載入門（Ch 7）](/2026/09/09/nsysu-c-programming/1029-vector-operator/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/12｜運算子重載、friend 與 string（Ch 8、Ch 9） →](/2026/09/09/nsysu-c-programming/1112-operator-string/)
+[← 10/29｜vector 與運算子重載入門（Ch 7）](/2026/09/09/nsysu-c-programming/1029-vector-operator/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/12｜運算子重載、friend 與 string（Ch 8、Ch 9） →](/2026/09/09/nsysu-c-programming/1112-operator-string/)
 
 期中考是**上機考**，範圍到 Ch6，也就是：
 

@@ -133,6 +133,13 @@ symbols_count_time:
   total_time: true
   exclude_codeblock: false
 
+# 系列子頁：標記 hidden 後不出現在首頁/封存/分類/標籤，但網址照常可開、仍會被搜尋引擎收錄
+hide_posts:
+  enable: true
+  noindex: false
+  allowlist_generators: ['*']
+  blocklist_generators: ['index', 'archive', 'category', 'tag', 'feed', 'random-posts-data']
+
 sitemap:
   path:
     - sitemap.xml

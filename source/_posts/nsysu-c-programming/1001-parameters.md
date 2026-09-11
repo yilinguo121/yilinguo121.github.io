@@ -1,15 +1,17 @@
 ---
 title: 10/01｜參數傳遞與函式重載（Ch 4）
 date: 2026-09-10
+updated: 2026-09-11
+permalink: 2026/09/09/nsysu-c-programming/1001-parameters/
 cover: /images/code-cover.jpg
+categories: [程式設計]
+tags: [C++, 中山大學, 自學指南]
 toc: true
-__post: true
 comments: true
+hidden: true
 ---
 
-> 本文是〈[中山大學 C 程式設計 & 實驗課完整自學指南](/2026/09/09/nsysu-c-programming/)〉系列的一篇，內容為原創說明與自寫範例，不轉載教科書或授課投影片。
->
-> [← 09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/08｜陣列（Ch 5） →](/2026/09/09/nsysu-c-programming/1008-arrays/)
+[← 09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/08｜陣列（Ch 5） →](/2026/09/09/nsysu-c-programming/1008-arrays/)
 
 > 對應課本習題：Ch4: 3, 7, 8, 9, 14, 17
 
