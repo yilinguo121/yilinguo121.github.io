@@ -56,6 +56,13 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+Kuro is eating.
+Kuro says woof!
+```
+
 重點三句話：
 
 1. `class Dog : public Animal` 就是「Dog 公開繼承 Animal」。
@@ -141,6 +148,13 @@ int main() {
     d.Animal::speak();     // some sound（明確指定用父類別版本）
     return 0;
 }
+```
+
+輸出：
+
+```text
+woof
+some sound
 ```
 
 > **覆寫（redefine）vs 重載（overload）——筆試愛考**

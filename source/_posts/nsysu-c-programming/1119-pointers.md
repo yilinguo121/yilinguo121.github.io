@@ -119,6 +119,12 @@ int main() {
 }
 ```
 
+輸入 `3` 再輸入 `10 20 30`，輸出：
+
+```text
+60
+```
+
 **三條鐵律：**
 
 1. **每個 `new` 都要有一個對應的 `delete`**，否則記憶體洩漏（memory leak）。
@@ -155,6 +161,9 @@ void f(int a[], int n);     // 這裡的 int a[] 其實等同 int* a
 ## 指標當參數
 
 ```cpp
+#include <iostream>
+using namespace std;
+
 void addOne(int* p) { (*p)++; }      // 注意括號：*p 先取值再 ++
 
 int main() {
@@ -162,6 +171,12 @@ int main() {
     addOne(&a);        // 要傳位址
     cout << a;         // 6
 }
+```
+
+輸出：
+
+```text
+6
 ```
 
 跟參考（`int&`）效果一樣，只是語法比較囉唆。**現代 C++ 的習慣**：能用參考就用參考，指標留給「可能沒有值（`nullptr`）」或「要做指標算術」的場合。
@@ -283,6 +298,12 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+10 99
+```
+
 **口訣：只要類別裡有 `new`，就要想到「解構子、拷貝建構子、指派運算子」這三個。** 少寫任何一個，程式都可能在某個時候莫名崩潰——而且崩潰的地方通常離錯誤的地方很遠，超難除錯。
 
 > **拷貝建構子什麼時候被呼叫？**
@@ -315,6 +336,15 @@ int main() {
     else                   cout << "different\n";
     return 0;
 }
+```
+
+輸出：
+
+```text
+5
+Hello
+Hello NSYSU
+different
 ```
 
 | 函式（需 `<cstring>`） | 作用 |

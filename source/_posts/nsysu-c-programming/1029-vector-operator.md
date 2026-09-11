@@ -45,6 +45,15 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+3
+3
+3 1 4 
+3 1 4 
+```
+
 `vector<int>` 讀作「裝 int 的 vector」，角括號裡換成別的型別就能裝別的東西：`vector<double>`、`vector<string>`、`vector<Student>`。
 
 **常用成員函式**（這些請背起來，考試不能查）：
@@ -150,6 +159,12 @@ int main() {
     cout << c.x << ' ' << c.y << '\n';  // 4 6
     return 0;
 }
+```
+
+輸出：
+
+```text
+4 6
 ```
 
 也可以寫成**成員函式**，此時左邊的運算元就是物件自己：

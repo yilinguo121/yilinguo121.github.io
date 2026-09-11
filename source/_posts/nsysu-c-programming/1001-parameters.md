@@ -150,6 +150,14 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+7
+7.25
+7
+```
+
 編譯器根據**你傳進去的引數型別與個數**決定呼叫哪一個，這叫**多載解析（overload resolution）**，順序大致是：
 
 1. 找**完全吻合**的版本。
@@ -190,6 +198,14 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+Hello, world!
+Hello, NSYSU!
+Hello, NSYSU?
+```
+
 規則：
 
 - 有預設值的參數**必須放在參數列最右邊**（不然呼叫時無法判斷你省略了哪一個）。
@@ -216,6 +232,12 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+2.5
+```
+
 編譯時加上 `-DNDEBUG` 就會把所有 `assert` 關掉（正式版不做檢查）。實驗課寫作業時放幾個 `assert` 很好用，但**繳交前確認它不會誤觸發**。
 
 ## 測試技巧：stub 與 driver
@@ -231,6 +253,18 @@ int main() {
         cout << t << " -> " << (isPrime(t) ? "prime" : "not prime") << '\n';
     return 0;
 }
+```
+
+輸出：
+
+```text
+1 -> not prime
+2 -> prime
+3 -> prime
+4 -> not prime
+17 -> prime
+25 -> not prime
+97 -> prime
 ```
 
 這兩個名詞筆試可能考定義，實務上也真的好用：**與其整支寫完才編譯，不如寫一個函式測一個**。
@@ -407,6 +441,12 @@ int main() {
     cout << x << ' ' << y << '\n';   // 期望 2 1，實際 1 2
     return 0;
 }
+```
+
+輸出：
+
+```text
+1 2
 ```
 
 <details>

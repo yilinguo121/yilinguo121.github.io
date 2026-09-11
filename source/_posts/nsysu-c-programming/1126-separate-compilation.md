@@ -130,6 +130,13 @@ int main() {
 g++ -c Circle.cpp        # 產生 Circle.o
 g++ -c main.cpp          # 產生 main.o
 g++ -o app main.o Circle.o    # 連結成執行檔
+./app
+```
+
+輸出：
+
+```text
+78.5398 31.4159
 ```
 
 `-c` 的意思是「只編譯，不連結」。每個 `.cpp` 各自變成一個 `.o`，最後一次連結起來。
@@ -196,6 +203,13 @@ int main() {
     cout << physicsUtil::square(3) << '\n';   // 88.2
     return 0;
 }
+```
+
+輸出：
+
+```text
+9
+88.2
 ```
 
 **三種使用方式**：

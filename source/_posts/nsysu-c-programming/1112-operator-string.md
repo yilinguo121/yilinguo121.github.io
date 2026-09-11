@@ -67,6 +67,12 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+2 4
+```
+
 ## `friend`：讓外面的函式能看見 private
 
 非成員函式碰不到 `private` 資料。兩個解法：
@@ -125,6 +131,13 @@ int main() {
     cout << v << " and " << v << '\n';   // (3, 4) and (3, 4)
     return 0;
 }
+```
+
+輸入 `3 4` 後：
+
+```text
+3 4
+(3, 4) and (3, 4)
 ```
 
 三個一定要記住的細節：
@@ -195,6 +208,17 @@ int main() {
     if (a < b) cout << a << " comes first\n";   // 字典序比較，可以直接用 < >
     return 0;
 }
+```
+
+輸出：
+
+```text
+Hello, NSYSU!
+13
+H
+NSYSU
+found at 7
+apple comes first
 ```
 
 | 用法 | 作用 |

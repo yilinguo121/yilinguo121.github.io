@@ -241,6 +241,12 @@ int main() {
 }
 ```
 
+某一次的執行結果（每次都不一樣）：
+
+```text
+3 11
+```
+
 `srand` 整支程式**只呼叫一次**（放在 `main` 開頭）。放在迴圈裡每次都重設種子，反而會一直拿到同一個數。
 
 ## 自訂函式
@@ -275,9 +281,20 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+12
+1
+Hello, NSYSU!
+```
+
 **函式原型（prototype）**：如果想把 `main` 放在最前面，就要先「宣告」函式：
 
 ```cpp
+#include <iostream>
+using namespace std;
+
 int gcd(int a, int b);       // 宣告（prototype），注意結尾有分號
 
 int main() {
@@ -288,6 +305,12 @@ int main() {
 int gcd(int a, int b) {      // 定義寫在後面
     return (b == 0) ? a : gcd(b, a % b);
 }
+```
+
+輸出：
+
+```text
+12
 ```
 
 宣告時參數名可以省略：`int gcd(int, int);` 也合法。
@@ -342,19 +365,29 @@ factorial(4) = 4 * factorial(3)
 ## 作用域（scope）
 
 ```cpp
+#include <iostream>
+using namespace std;
+
 int g = 100;              // 全域變數（盡量少用）
 
 int main() {
     int x = 10;           // 區域變數，只在 main 內有效
     {
         int x = 5;        // 內層區塊的新變數，遮蔽外層的 x
-        cout << x;        // 5
+        cout << x << '\n';        // 5
     }
-    cout << x;            // 10
+    cout << x << '\n';            // 10
     for (int i = 0; i < 3; i++) { /* i 只在這個 for 內有效 */ }
     // cout << i;         // 編譯錯誤：'i' was not declared in this scope
     return 0;
 }
+```
+
+輸出：
+
+```text
+5
+10
 ```
 
 - **區域變數**在函式（或區塊）結束時消失，不同函式裡的同名變數互不相干。

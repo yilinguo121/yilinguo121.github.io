@@ -71,6 +71,13 @@ int main() {
 }
 ```
 
+輸出：
+
+```text
+Yilin 4
+Ann
+```
+
 > **雷區 ①：`struct` 定義後面忘記分號**
 > ```cpp
 > struct Student {
@@ -156,6 +163,12 @@ int main() {
     cout << c.area() << '\n';            // 28.2743
     return 0;
 }
+```
+
+輸出：
+
+```text
+28.2743
 ```
 
 ## 封裝（encapsulation）是什麼、為什麼

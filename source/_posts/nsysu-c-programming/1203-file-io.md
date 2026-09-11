@@ -56,6 +56,12 @@ int main() {
 }
 ```
 
+假設 `input.txt` 內容是 `3 7 11` 與 `20`，輸出：
+
+```text
+sum = 41
+```
+
 `if (!fin)` 檢查開檔是否成功。**沒檢查就直接讀**的話，檔案不存在時程式會安靜地什麼都不做，你會找 bug 找很久。
 
 另一種寫法是先宣告再開檔：
@@ -82,6 +88,13 @@ int main() {
     fout.close();
     return 0;
 }
+```
+
+這支程式螢幕上不會有輸出，但會產生 `output.txt`：
+
+```text
+Hello, file!
+42 3.14
 ```
 
 - `ofstream fout("out.txt");` 預設會**清空**原本的檔案。
@@ -174,6 +187,12 @@ int main() {
     cout << name << " total = " << sum << '\n';   // Yilin total = 283
     return 0;
 }
+```
+
+輸出：
+
+```text
+Yilin total = 283
 ```
 
 反過來，`ostringstream` 可以把數字組成字串：
