@@ -216,6 +216,67 @@ Yilin: 1200.00
 
 注意 `withdraw` 的設計：**用回傳值告訴呼叫者成功與否**，而不是直接印錯誤訊息。這樣同一個類別在不同程式裡都能用（有的想印中文、有的想印英文、有的想記 log）。
 
+## `inline` 函式
+
+呼叫一個函式其實有一點點成本（跳過去、跳回來）。對只有一行的小函式（例如 getter），可以加 `inline` **建議**編譯器把函式內容直接「展開」在呼叫的地方，省掉這個成本：
+
+```cpp
+inline int square(int x) { return x * x; }
+```
+
+兩個重點：
+
+- **寫在類別定義「裡面」的成員函式自動就是 inline**，所以前面那些直接寫在 `class` 內的 `double area() const { ... }` 本來就享有這個待遇，不用自己加關鍵字。
+- `inline` 只是建議，編譯器可以不理你。**不要為了效能到處亂加**，只有很短的函式才有意義。
+
+## 成員也可以是另一個類別的物件
+
+資料成員不一定是 `int`、`double`，也可以是別的類別的物件：
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Engine {
+private:
+    int horsepower;
+public:
+    Engine(int hp = 100) : horsepower(hp) { }
+    void start() const { cout << horsepower << " 匹馬力，引擎發動\n"; }
+};
+
+class Car {
+private:
+    string name;
+    Engine engine;               // Car 裡面「有一個」Engine
+public:
+    Car(const string& n, int hp) : name(n), engine(hp) { }   // 用初始化列表建構成員
+    void start() const { cout << name << "："; engine.start(); }
+};
+
+int main() {
+    Car c("Civic", 180);
+    c.start();
+    return 0;
+}
+```
+
+輸出：
+
+```text
+Civic：180 匹馬力，引擎發動
+```
+
+兩件事要記住：
+
+1. **成員物件會先被建構，才輪到外層類別建構子的大括號**。所以 `engine.start()` 一定拿得到已經初始化好的 `engine`。
+2. 如果 `Engine` **沒有預設建構子**，`Car` 就**一定要**在初始化列表裡寫 `engine(hp)`，不能省略——因為編譯器不知道該怎麼生出那個成員。
+
+這種「A 裡面有一個 B」的寫法叫**組合（composition）**，[講繼承那一節](/2026/09/09/nsysu-c-programming/1210-inheritance/)會把它跟繼承放在一起比較。
+
+> **補充：類別裡面還可以再定義類別**（巢狀類別），用在「只有這個類別內部才用得到的小結構」，例如 `class List { struct Node { int data; Node* next; }; };`。這學期用不到，知道有這回事就好。
+
 ## `static` 成員：屬於「類別」而不是「物件」
 
 ```cpp
@@ -256,6 +317,16 @@ int main() {
 - **一般成員**：每個物件各有一份。
 - **`static` 成員**：整個類別只有一份，所有物件共用。典型用途是「統計目前有幾個物件」「產生不重複的流水號」。
 - `~Widget()` 是**解構子（destructor）**，物件生命結束時自動呼叫，在指標與繼承那兩節會很重要。
+
+## 本節重點回顧
+
+- 建構子**與類別同名、沒有回傳型別、建立物件時自動呼叫**，目的是保證物件一出生就是合理狀態。
+- `Circle a();` 不是建立物件，是宣告函式；無參數就寫 `Circle a;`。
+- 優先用**初始化列表**；成員是 `const` 或參考時**只能**用它。
+- 初始化順序**依照成員宣告順序**，不是你寫的順序——寫反了 `-Wall` 會給 `-Wreorder` 警告。
+- **只要你自己寫了任何建構子，編譯器就不再送你預設建構子**，所以每個類別都補一個。
+- `static` 成員屬於整個類別、所有物件共用，而且必須在類別外面定義一次。
+- 成員可以是別的類別的物件（**組合**），成員會先建構、才輪到外層建構子的大括號。
 
 ## 本週練習題
 

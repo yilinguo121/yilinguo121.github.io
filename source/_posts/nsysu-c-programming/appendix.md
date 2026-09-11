@@ -60,6 +60,177 @@ Student.o: Student.cpp Student.h
 	$(CC) $(CFLAGS) -c $<
 ```
 
+## 一頁語法速查（可以印出來帶去上課）
+
+課堂與上機考都沒有網路，但可以帶紙本。這一節把整學期會用到的骨架濃縮成可以照抄的形式。
+
+### 標頭檔：什麼時候要 include 什麼
+
+| 標頭檔 | 提供什麼 |
+| --- | --- |
+| `<iostream>` | `cin`、`cout`、`cerr`、`endl` |
+| `<iomanip>` | `setw`、`setprecision`、`fixed`、`left`、`setfill` |
+| `<string>` | `string` 類別、`getline`、`stoi`、`to_string` |
+| `<vector>` | `vector` |
+| `<cmath>` | `sqrt`、`pow`、`abs`、`ceil`、`floor`、`round` |
+| `<cstdlib>` | `rand`、`srand`、`exit` |
+| `<ctime>` | `time`（配合 `srand`） |
+| `<cctype>` | `isalpha`、`isdigit`、`toupper`、`tolower` |
+| `<cstring>` | `strlen`、`strcpy`、`strcat`、`strcmp`（C 風格字串） |
+| `<fstream>` | `ifstream`、`ofstream` |
+| `<sstream>` | `istringstream`、`ostringstream` |
+| `<cassert>` | `assert` |
+
+### 輸入輸出
+
+```cpp
+cin >> a >> b;                       // 讀一個值（跳過空白）
+getline(cin, line);                  // 讀一整行（cin >> 之後要先 cin.ignore()）
+while (cin >> x) { }                 // 讀到沒東西為止
+
+cout << fixed << setprecision(2) << x;   // 小數點後兩位（會一直生效）
+cout << setw(8) << x;                    // 欄寬 8，只影響下一個輸出
+cout << setfill('0') << setw(2) << h;    // 補零
+cout << left << setw(10) << name;        // 靠左對齊
+```
+
+### 流程控制
+
+```cpp
+if (cond) { } else if (cond) { } else { }
+
+switch (n) { case 1: ...; break; default: ...; }
+
+for (int i = 0; i < n; i++) { }
+for (int x : arr) { }                // range-based，改值要寫 int&
+while (cond) { }
+do { } while (cond);
+```
+
+### 函式
+
+```cpp
+回傳型別 名稱(參數列);               // 宣告（prototype），結尾有分號
+int  f(int x);                       // 傳值：改不到外面
+void g(int& x);                      // 傳參考：改得到外面
+void h(const string& s);             // 唯讀又不複製
+void k(int a[], int n);              // 陣列一定要另外傳長度
+double area(double w, double h = 1); // 預設引數只能放最右邊
+```
+
+### 陣列 / vector / string
+
+```cpp
+int a[5] = {};                       // 全 0
+const int N = 100; int a[N];         // 大小要是常數
+for (int i = 0; i < n; i++) ...      // 索引 0 ~ n-1
+
+vector<int> v;                       // 動態陣列
+v.push_back(x); v.size(); v.empty(); v.clear();
+v[i];  v.at(i);  v.front();  v.back();
+for (size_t i = 0; i < v.size(); i++) ...
+
+string s = "abc";
+s.length();  s.substr(pos, len);  s.find(t);   // 找不到回傳 string::npos
+s += t;  s[0];  s == t;  s < t;
+stoi(s);  to_string(n);
+```
+
+### 類別骨架
+
+```cpp
+class Name {
+private:
+    型別 成員;
+public:
+    Name();                          // 預設建構子
+    Name(型別 x);                    // 帶參數建構子
+    ~Name();                         // 解構子（有 new 才需要）
+    Name(const Name& o);             // 拷貝建構子（有 new 才需要）
+    Name& operator=(const Name& o);  // 指派運算子（有 new 才需要）
+
+    型別 getX() const;               // 唯讀函式一律加 const
+    void setX(型別 x);
+};
+
+Name::Name() : 成員(初值) { }        // 類別外定義要寫 Name::
+```
+
+### 運算子重載
+
+```cpp
+// 成員函式：左邊一定是自己
+Vec2 operator+(const Vec2& o) const;
+// 非成員：左邊可能是內建型別，或是 cout
+friend ostream& operator<<(ostream& os, const Vec2& v);
+ostream& operator<<(ostream& os, const Vec2& v) { os << ...; return os; }
+// 前置 / 後置
+Vec2& operator++();        // ++v
+Vec2  operator++(int);     // v++
+```
+
+### 指標與動態記憶體
+
+```cpp
+int  a = 5;
+int* p = &a;        // 取位址
+*p = 10;            // 解參考
+
+int* arr = new int[n];
+delete[] arr;  arr = nullptr;
+
+int** g = new int*[n];                       // 動態二維
+for (int i = 0; i < n; i++) g[i] = new int[m];
+for (int i = 0; i < n; i++) delete[] g[i];
+delete[] g;
+```
+
+### 檔案 I/O
+
+```cpp
+ifstream fin("input.txt");
+if (!fin) { cerr << "open failed\n"; return 1; }
+while (fin >> x) { }                  // 或 while (getline(fin, line))
+
+ofstream fout("output.txt");          // 加 ios::app 變成附加
+fout << x << '\n';
+
+istringstream iss(line);              // 拆一行的欄位
+while (iss >> token) { }
+getline(iss, field, ',');             // 用逗號分隔（CSV）
+```
+
+### 分離編譯
+
+```cpp
+// Name.h
+#ifndef NAME_H
+#define NAME_H
+class Name { ... };                   // 只放宣告，不寫 using namespace std
+#endif
+
+// Name.cpp
+#include "Name.h"
+回傳型別 Name::函式(...) { ... }
+```
+
+### 繼承
+
+```cpp
+class Base {
+protected:
+    型別 成員;                        // 子類別碰得到，外面碰不到
+public:
+    Base(型別 x) : 成員(x) { }
+};
+
+class Derived : public Base {
+public:
+    Derived(型別 x, 型別 y) : Base(x), 自己的成員(y) { }   // 先呼叫父類別建構子
+};
+// 建構：先父後子　解構：先子後父
+```
+
 ## 常見錯誤訊息對照表
 
 **編譯錯誤（compile error）**

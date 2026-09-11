@@ -232,6 +232,46 @@ namespace {
 }
 ```
 
+### 巢狀命名空間
+
+命名空間可以包命名空間，用來做更細的分類：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+namespace school {
+    namespace math {
+        double square(double x) { return x * x; }
+    }
+}
+
+// C++17 之後可以直接寫成一行：
+// namespace school::math { double square(double x) { return x * x; } }
+
+int main() {
+    cout << school::math::square(3) << '\n';
+    return 0;
+}
+```
+
+輸出：
+
+```text
+9
+```
+
+名字一長就很囉唆，這時可以取別名：`namespace sm = school::math;`，之後寫 `sm::square(3)` 就好。
+
+## 本節重點回顧
+
+- `.h` 放**宣告**（別人要知道的），`.cpp` 放**定義**（怎麼做到的）。
+- 每個 header 都要加 **include guard**（`#ifndef` / `#define` / `#endif`），否則被引入兩次就會重複定義。
+- `#include <...>` 找系統函式庫，`#include "..."` 找自己的檔案。
+- **`undefined reference` 是連結階段的錯誤**，意思是「有宣告但找不到實作」——通常是少編譯某個 `.cpp`，或定義時忘了寫 `類別名::`。
+- Makefile 要把 header 列進相依清單，否則改了 header 不會重編，編出前後不一致的程式。
+- **header 裡絕對不要寫 `using namespace std;`**，會污染所有引入它的檔案。
+
 ## 本次練習題
 
 **Q1. 拆解 BankAccount**

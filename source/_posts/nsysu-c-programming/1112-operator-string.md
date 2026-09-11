@@ -98,6 +98,20 @@ Vec2 operator+(const Vec2& a, const Vec2& b) {
 
 > **注意**：`friend` 是把封裝**開一個洞**。課本的建議是「能用 getter 就用 getter」，`friend` 留給 `<<`、`>>` 這類無法用成員函式表達的場合。
 
+**`friend` 也可以整個類別一起給**：
+
+```cpp
+class Engine {
+private:
+    int horsepower;
+public:
+    Engine(int hp) : horsepower(hp) { }
+    friend class Car;            // Car 的所有成員函式都能看見 Engine 的 private
+};
+```
+
+`friend class Car;` 表示「Car 是我的夥伴」，Car 裡面可以直接寫 `engine.horsepower`。這個權限是**單向**的：Engine 看不到 Car 的 private。
+
 ## 重載 `<<` 與 `>>`
 
 這是最實用的一組，讓你的類別可以直接 `cout << obj`：
@@ -184,6 +198,121 @@ public:
 - **後置**：多一個沒有名字的 `int` 參數（純粹用來區分，不會真的傳值），回傳**改之前的複製品**。
 - `*this` 代表「物件自己」，`this` 是指向自己的指標（下一節講指標時會再遇到）。
 
+## 一元運算子、`()`，以及不能碰的運算子
+
+**一元運算子**（只有一個運算元，例如負號）寫成成員函式時**不需要參數**，因為運算元就是物件自己：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Vec2 {
+public:
+    double x, y;
+    Vec2(double x = 0, double y = 0) : x(x), y(y) { }
+
+    Vec2 operator-() const { return Vec2(-x, -y); }   // 一元負號：-v
+};
+
+int main() {
+    Vec2 v(3, -4);
+    Vec2 w = -v;
+    cout << w.x << ' ' << w.y << '\n';
+    return 0;
+}
+```
+
+輸出：
+
+```text
+-3 4
+```
+
+**重載函式呼叫運算子 `()`**：讓物件可以「像函式一樣被呼叫」，這種物件叫 **functor（函式物件）**：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Adder {
+private:
+    int base;
+public:
+    Adder(int b) : base(b) { }
+    int operator()(int x) const { return base + x; }   // 重載 ()
+};
+
+int main() {
+    Adder add5(5);
+    cout << add5(3) << '\n';      // 看起來像函式呼叫，其實是 add5.operator()(3)
+    cout << add5(10) << '\n';
+    return 0;
+}
+```
+
+輸出：
+
+```text
+8
+15
+```
+
+**回傳 `const` 值**：課本建議把 `operator+` 的回傳型別寫成 `const Vec2` 而不是 `Vec2`：
+
+```cpp
+const Vec2 operator+(const Vec2& a, const Vec2& b);
+```
+
+理由是這樣可以擋掉 `(a + b) = c;` 這種合法但毫無意義的寫法。（現代 C++ 因為會妨礙效能最佳化，其實不建議這樣做；不過**課本與考試是這個寫法**，知道理由即可。）
+
+**有些運算子不能重載，有些是「能但別做」：**
+
+| 運算子 | 情況 |
+| --- | --- |
+| `.`、`::`、`?:`、`sizeof` | **完全不能重載** |
+| `&&`、`\|\|`、`,` | 語法上可以重載，但**千萬不要** |
+| `=`、`[]`、`()`、`->` | 只能寫成**成員函式** |
+
+為什麼 `&&`、`||` 不能碰？因為內建版本有**短路特性**（左邊決定結果就不算右邊），而重載之後會變成一般的函式呼叫，**兩邊一定都會被求值**——原本靠短路做的防呆（`if (p != nullptr && p->x > 0)`）就全部失效了。
+
+## 建構子也會被拿來做「自動型別轉換」
+
+只有**一個參數**的建構子，編譯器會自動拿它做隱式轉換：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Money {
+private:
+    int dollars;
+public:
+    Money(int d) : dollars(d) { }          // 單參數建構子
+    void print() const { cout << "$" << dollars << '\n'; }
+};
+
+void pay(const Money& m) { m.print(); }
+
+int main() {
+    pay(Money(100));
+    pay(100);            // 100 被自動轉成 Money(100)！
+    return 0;
+}
+```
+
+輸出：
+
+```text
+$100
+$100
+```
+
+方便，但也容易出事（打錯字傳了個數字進去卻默默通過編譯）。不想要這個行為，在建構子前面加 `explicit`：
+
+```cpp
+explicit Money(int d) : dollars(d) { }   // 加了之後 pay(100); 就會編譯錯誤
+```
+
 ## `string` 類別
 
 `string` 是類別不是基本型別，要 `#include <string>`。常用操作：
@@ -269,6 +398,16 @@ getline(cin, line);      // 讀「一整行」，含空白，讀到換行為止
 > cout << toupper('a');                      // 印出 65，不是 'A'
 > cout << static_cast<char>(toupper('a'));   // 印出 A
 > ```
+
+## 本節重點回顧
+
+- 左邊可能是內建型別（`2 * v`）或是 `cout` 的運算子，**只能寫成非成員函式**；`=`、`[]`、`()`、`->` 則**只能是成員函式**。
+- 重載 `<<` 的三件事：回傳 `ostream&`、第一個參數是 `ostream&`（不加 const）、結尾 `return os;`。
+- 前置 `++` 沒有參數、回傳**參考**；後置 `++` 多一個沒名字的 `int`、回傳**改之前的複製品**。
+- `friend` 是在封裝上開洞，**能用 getter 就用 getter**，留給 `<<`、`>>` 這種非成員不可的場合。
+- `&&`、`||`、`,` 語法上能重載但**千萬別做**，會失去短路特性。
+- `cin >> x;` 之後接 `getline` 會讀到空行，中間要 `cin.ignore()`。
+- `toupper` / `tolower` 回傳的是 **`int`**，要印出字元得自己轉回 `char`。
 
 ## 本次練習題
 

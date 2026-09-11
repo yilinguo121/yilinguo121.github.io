@@ -222,6 +222,80 @@ Counter c;
 c.add(3).add(5);              // 因為 add 回傳自己的參考，所以能連著寫
 ```
 
+## 幫指標型別取個名字
+
+`int* p, q;` 只有 `p` 是指標這件事很容易踩到。課本的建議是先幫指標型別取一個名字：
+
+```cpp
+typedef int* IntPtr;      // 傳統寫法
+using   IntPtr2 = int*;   // C++11 寫法，意思完全一樣
+
+IntPtr p, q;              // 現在 p 和 q 都是「指向 int 的指標」
+```
+
+這樣宣告多個指標時就不會漏掉星號，程式也比較好讀。
+
+## 回傳指標的函式
+
+前面說過「函式不能回傳區域陣列」，因為區域變數會在函式結束時消失。但用 `new` 配置的記憶體**不會**跟著函式結束消失，所以可以安全回傳：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int* makeSquares(int n) {          // 回傳一個新配置的動態陣列
+    int* a = new int[n];
+    for (int i = 0; i < n; i++) a[i] = i * i;
+    return a;                      // 安全：這塊記憶體在 heap 上
+}
+
+int main() {
+    int* arr = makeSquares(5);
+    for (int i = 0; i < 5; i++) cout << arr[i] << ' ';
+    cout << '\n';
+
+    delete[] arr;                  // 呼叫端負責歸還！
+    return 0;
+}
+```
+
+輸出：
+
+```text
+0 1 4 9 16
+```
+
+> **這種函式有個責任歸屬問題**：記憶體是函式配的，卻要呼叫端記得 `delete[]`。寫這種函式時，**一定要在註解裡寫清楚「呼叫端要負責釋放」**，否則很容易漏掉造成記憶體洩漏。
+
+## 命令列參數：`argc` 與 `argv`
+
+到目前為止 `main` 都寫成 `int main()`，其實它可以接收你在終端機上打的參數：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main(int argc, char* argv[]) {
+    cout << "argc = " << argc << '\n';
+    for (int i = 0; i < argc; i++)
+        cout << "argv[" << i << "] = " << argv[i] << '\n';
+    return 0;
+}
+```
+
+編譯成 `demo` 之後執行 `./demo hello 123`，輸出：
+
+```text
+argc = 3
+argv[0] = ./demo
+argv[1] = hello
+argv[2] = 123
+```
+
+- `argc`（argument count）：參數個數，**至少是 1**。
+- `argv`（argument vector）：一個 C 風格字串的陣列，`argv[0]` 永遠是程式自己的名字。
+- 參數進來都是**字串**，要當數字用得自己轉（`atoi(argv[1])` 或 `stoi(argv[1])`）。
+
 ## 淺拷貝與深拷貝（本節最重要的觀念）
 
 當類別內部有 `new` 出來的資源時，預設的複製行為會出事：
@@ -389,6 +463,16 @@ string cpp = "Hello";
 const char* c = cpp.c_str();     // string → C-string
 string back = c;                 // C-string → string（直接指派即可）
 ```
+
+## 本節重點回顧
+
+- 指標就是**存位址的變數**：`&a` 取位址、`*p` 取出指向的內容。
+- `int* p, q;` 只有 `p` 是指標；建議一行只宣告一個，或先 `typedef`。
+- **`new` 配 `delete`、`new[]` 配 `delete[]`**，配錯或漏掉就是洩漏或未定義行為；`delete` 後把指標設成 `nullptr`。
+- 陣列名本身就是指向第 0 格的指標，`p[i]` 等於 `*(p + i)`；`p + 1` 是「下一個元素」而不是「下一個 byte」。
+- **只要類別裡有 `new`，就要自己寫解構子、拷貝建構子、指派運算子**（三法則），少一個就可能 double free。
+- 預設的複製是**淺拷貝**（共用同一塊記憶體），深拷貝才會各自配一塊。
+- C 風格字串是以 `'\0'` 結尾的 char 陣列，**不能用 `=` 和 `==`**，要用 `strcpy` / `strcmp`。
 
 ## 本次練習題
 

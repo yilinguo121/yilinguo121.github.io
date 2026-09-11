@@ -165,6 +165,59 @@ Yilin         95.5
 
 做出這種對齊的表格是實驗課很常見的要求。
 
+## 檔名由使用者輸入決定
+
+檔名不一定要寫死在程式裡：
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+int main() {
+    string filename;
+    cout << "要讀哪個檔案？";
+    cin >> filename;
+
+    ifstream fin(filename);          // C++11 起可以直接吃 string
+    if (!fin) {
+        cerr << "開不起來：" << filename << '\n';
+        return 1;
+    }
+
+    string line;
+    while (getline(fin, line)) cout << line << '\n';
+    return 0;
+}
+```
+
+> **舊編譯器要注意**：C++11 以前的 `ifstream` 只吃 C 風格字串，得寫成 `fin.open(filename.c_str());`。課本用的是這個舊寫法，Ubuntu 20.04 的 g++ 兩種都吃得下。
+
+## 隨機存取：`seekg` / `tellg`
+
+前面都是「從頭讀到尾」。串流其實有一個**讀取位置指標**，可以自己搬動：
+
+| 函式 | 作用 |
+| --- | --- |
+| `fin.tellg()` | 目前讀取位置（第幾個 byte） |
+| `fin.seekg(n)` | 跳到第 n 個 byte |
+| `fin.seekg(n, ios::beg)` | 從檔頭往後 n |
+| `fin.seekg(n, ios::end)` | 從檔尾往前（n 用負數） |
+| `fout.tellp()` / `fout.seekp(...)` | 寫入位置的對應版本（p = put） |
+
+最常見的用途是**先量出檔案大小**：
+
+```cpp
+ifstream fin("input.txt");
+fin.seekg(0, ios::end);          // 跳到檔尾
+long long size = fin.tellg();    // 此時位置＝檔案長度
+fin.seekg(0, ios::beg);          // 記得跳回檔頭再開始讀
+cout << "檔案大小 " << size << " bytes\n";
+```
+
+這學期只要知道有這件事、看得懂就好，實驗課題目幾乎都是順序讀寫。
+
 ## `stringstream`：把字串當串流用
 
 需要 `#include <sstream>`。最常用在「解析一行資料」：
@@ -204,6 +257,16 @@ string s = oss.str();        // "score_95"
 ```
 
 **組合技**：`getline` 讀一整行 + `istringstream` 拆欄位，是處理「每列欄位數不固定」的資料的標準做法。
+
+## 本節重點回顧
+
+- 檔案串流的用法跟 `cin` / `cout` 幾乎一樣，只是把管子接到檔案上。
+- **開檔後一定要檢查** `if (!fin)`，否則檔案不存在時程式會安靜地什麼都不做。
+- 讀到檔尾的正確寫法是 `while (fin >> x)` 或 `while (getline(fin, line))`；**用 `while (!fin.eof())` 會多跑一圈**。
+- `fin >> c` 會跳過空白，`fin.get(c)` 不會——要原封不動處理檔案內容就用 `get` / `put`。
+- `ofstream` 預設會清空檔案，要接在後面寫得用 `ios::app`。
+- `setw` 只影響下一個輸出，`fixed`、`setprecision`、`left` / `right` 會一直生效。
+- 「`getline` 讀一整行 ＋ `istringstream` 拆欄位」是處理每列欄位數不固定的標準組合。
 
 ## 本次練習題
 
