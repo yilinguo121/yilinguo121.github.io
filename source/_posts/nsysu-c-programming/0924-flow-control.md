@@ -478,7 +478,7 @@ int gcd(int a, int b) {
 > **雷區 ⑦：無窮遞迴**
 > 忘記 base case 或問題沒變小，會一直往下呼叫直到**堆疊溢位（stack overflow）**，執行時出現 `Segmentation fault`。
 
-## 本節重點回顧
+## 本週重點回顧
 
 看到症狀先查這張表：
 

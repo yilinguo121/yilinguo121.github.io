@@ -15,7 +15,7 @@ hidden: true
 
 > 對應課本習題：Ch9: 2, 4, 6, 10；Ch10: 1, 3, 4, 8
 
-**這次要會什麼**
+**這週要會什麼**
 
 ```text
 指標是什麼 → nullptr → new / delete 與動態陣列 → 指標與陣列 → 指標的指標
@@ -362,7 +362,7 @@ public:
         for (int i = 0; i < n; i++) data[i] = other.data[i];
     }
 
-    // ③ 指派運算子：已存在的物件被賦值時呼叫
+    // ③ 指派運算子：已存在的物件被重新指派時呼叫
     MyArray& operator=(const MyArray& other) {
         if (this == &other) return *this;       // 自我指派保護：a = a
         delete[] data;                          // 先還掉舊的
@@ -494,7 +494,7 @@ argv[2] = 123
 - `argv`（argument vector）：`char* argv[]` 從名字往外讀——`argv` 是陣列（`[]`），每格的型別是 `char*`，也就是剛學的 C 風格字串。所以它就是「一排字串」，`strlen`、`strcmp` 都能直接用在 `argv[i]` 上；寫成等價的 `char** argv` 也可以。`argv[0]` 永遠是程式自己的名字。
 - 參數進來都是**字串**，要當數字用得自己轉：`atoi(argv[1])`（吃 C 風格字串，需 `#include <cstdlib>`，轉不出來回傳 0）或 `stoi(argv[1])`（吃 `string`，需 `#include <string>`，轉不出來會丟例外）。
 
-## 本節重點回顧
+## 本週重點回顧
 
 - 指標就是**存位址的變數**：`&a` 取位址、`*p` 取出指向的內容；`int* p, q;` 只有 `p` 是指標。
 - **`new` 配 `delete`、`new[]` 配 `delete[]`**，漏掉就洩漏、配錯就是未定義行為；`delete` 後把指標設成 `nullptr`（而 `delete nullptr` 本身是安全的空操作）。
@@ -502,7 +502,7 @@ argv[2] = 123
 - 預設的複製是**淺拷貝（兩個物件共用同一塊記憶體，會 double free）**；**只要類別裡有 `new`，就要自己寫解構子、拷貝建構子、指派運算子**（三法則）做深拷貝。
 - C 風格字串是以 `'\0'` 結尾的 char 陣列，**不能用 `=` 和 `==`**，要用 `strcpy` / `strcmp`；`const char*` 表示「指到的內容不能改」。
 
-## 本次練習題
+## 本週練習題
 
 **Q1. 動態陣列的統計**
 讀入 `n`，用 `new int[n]` 配置陣列，讀入 `n` 個數字後輸出最大值、最小值與平均（兩位小數），最後正確釋放記憶體。

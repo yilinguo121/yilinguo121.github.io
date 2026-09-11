@@ -15,7 +15,7 @@ hidden: true
 
 > 對應課本習題：Ch11: 1, 3
 
-**這次要會什麼**
+**這週要會什麼**
 
 ```text
 header 檔與實作檔 → include guard → 多檔案編譯與連結 → Makefile 增量編譯 → namespace
@@ -281,14 +281,14 @@ int main() {
 
 名字一長就很囉唆，這時可以取別名：`namespace sm = school::math;`，之後寫 `sm::square(3)` 就好。
 
-## 本節重點回顧
+## 本週重點回顧
 
 - `.h` 放**宣告**、`.cpp` 放**定義**；**函式實作不要放進 header**，兩個 `.cpp` 一起連結會 `multiple definition`，include guard 救不了。
 - 每個 header 都要加 **include guard**（`#ifndef` / `#define` / `#endif`）；`#include <...>` 找系統函式庫，`#include "..."` 找自己的檔案。
 - **`undefined reference` 是連結階段的錯誤**，意思是「有宣告但找不到實作」——通常是少編譯某個 `.cpp`，或定義時忘了寫 `類別名::`／`namespace 名::`。
 - **header 裡絕對不要寫 `using namespace std;`**；Makefile 的相依清單一定要含 header，否則改了 header 不會重編。
 
-## 本次練習題
+## 本週練習題
 
 **Q1. 拆解 BankAccount**
 把前面寫過的 `BankAccount` 拆成 `BankAccount.h`、`BankAccount.cpp`、`main.cpp` 三個檔案，加上 include guard，並寫一份 Makefile 讓 `make` 可以編出執行檔、`make clean` 清乾淨。

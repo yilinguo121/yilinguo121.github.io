@@ -13,7 +13,7 @@ hidden: true
 
 [← 10/22｜類別與建構子（Ch 6–7）](/2026/09/09/nsysu-c-programming/1022-constructors/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/05｜期中上機考（範圍 Ch 1–6） →](/2026/09/09/nsysu-c-programming/1105-midterm/)
 
-**這次要會什麼**
+**這週要會什麼**
 
 ```text
 vector 基本操作 → vector 傳參 → vector 裝物件 → 運算子重載的概念
@@ -240,14 +240,14 @@ int main() {
 
 > **也可以寫成非成員函式**：把 `Vec2 operator+(const Vec2& a, const Vec2& b)` 放在類別外面，兩個參數分別是左右運算元。但它看不到 `private` 成員（本例的 `x`、`y` 是 `public` 才看得到，`private` 要靠下週的 `friend`），而且**不能跟成員版同時定義**——`a + b` 會變成 ambiguous，g++ 丟 `warning: ISO C++ says that these are ambiguous`，又是 2 分。**這週一律用成員函式版**，非成員版留到下週講 `friend` 與 `k * v`（數字在左邊）時再用。
 
-## 本節重點回顧
+## 本週重點回顧
 
 - `vector` 是會自己長大的陣列：`push_back` 加、`size()` 問長度、`empty()` 判空，記得 `#include <vector>`。
 - `v.size()` 是無號的 `size_t`、`v[i]` 不檢查範圍——迴圈條件直接跟 `v.size()` 比（`i < v.size()`、`i + 1 < v.size()`），**永遠不要對 `v.size()` 做減法**。
 - 傳參數：只讀用 `const vector<int>&`、要改用 `vector<int>&`，忘了 `&` 就整包複製；但 `vector` 可以整包指派，也可以當回傳值。
 - **運算子重載**＝定義 `+`、`==` 這些符號對自訂型別的意義，函式名字就是 `operator` 加那個符號；不能發明新符號，也不能改變運算元個數與優先順序。
 
-## 本次練習題
+## 本週練習題
 
 **Q1. 去重排序**
 讀入 `n` 與 `n` 個整數，存進 `vector<int>`，輸出**去除重複後由小到大**的結果。

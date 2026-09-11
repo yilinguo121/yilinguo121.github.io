@@ -298,7 +298,7 @@ double Circle::area() const {           // 宣告有 const，定義就一定要�
 
 `::` 叫做**範圍解析運算子（scope resolution operator）**，意思是「這個名字屬於哪裡」。**`const` 宣告與定義兩邊都要寫**：只寫一邊會被當成兩個不同的函式，g++ 給 `error: no declaration matches 'double Circle::area()'`。
 
-## 本節重點回顧
+## 本週重點回顧
 
 - `struct` / `class` 定義的**大括號後面要加分號**，忘了會出現指在別行的怪錯誤。
 - `struct` 預設 `public`、`class` 預設 `private`；把資料設 private、只留少數 public 函式當介面，就是**封裝**。

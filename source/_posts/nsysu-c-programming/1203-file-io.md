@@ -15,7 +15,7 @@ hidden: true
 
 > 對應課本習題：Ch12: 2, 3, 5
 
-**這次要會什麼**
+**這週要會什麼**
 
 ```text
 ifstream / ofstream → 檢查開檔 → 讀到檔尾 → 追加模式 → get / put 逐字元 → 對齊輸出 → getline + stringstream 拆欄位
@@ -289,14 +289,14 @@ oss << "score_" << 95;
 string s = oss.str();        // "score_95"
 ```
 
-## 本節重點回顧
+## 本週重點回顧
 
 - 開檔後一定要 `if (!fin)`；開不起來通常不是程式錯，是檔案沒跟 `a.out` 放在同一個資料夾。
 - 讀到檔尾用 `while (fin >> x)` 或 `while (getline(fin, line))`，**永遠不要用 `eof()`**；`>>` 之後要接 `getline` 記得先 `fin.ignore()`。
 - 要保留空白與換行就用 `get` / `put`，`>>` 會把空白吃掉。
 - 每列欄位數不固定 → `getline` 抓整列 ＋ `istringstream` 拆欄位；逗號分隔就用三參數 `getline`。
 
-## 本次練習題
+## 本週練習題
 
 > 以下題目請先 `cd` 到你放程式的資料夾，再用 `nano input.txt` 建一個測試檔。
 
