@@ -54,26 +54,26 @@ mermaid: false
 
 ### 整學期進度表
 
-下表是我把公開 Syllabus 的日期、主題與課本習題編號整理成的對照表。後面每週的教學段落都以**日期**當標題，可以直接對照：
+下表是我把公開 Syllabus 的日期、主題與課本習題編號整理成的對照表。**點「課程內容」欄的連結可以直接跳到該週的教學段落**：
 
 | 日期 | 課程內容 | 課本指定習題 |
 | --- | --- | --- |
-| 09/10 | Introduction to the Course | — |
-| 09/17 | C++ Basics | Ch1: 6, 8, 13；Ch2: 2, 4, 7, 8 |
-| 09/24 | C++ Basics；Function Basics | Ch3: 1, 5, 10, 11, 13 |
-| 10/01 | Parameters and Overloading | Ch4: 3, 7, 8, 9, 14, 17 |
-| 10/08 | Function Overloading；Arrays | Ch5: 4, 8, 10, 14, 17 |
-| 10/15 | Arrays；Structures and Classes | Ch6: 1, 7, 10, 12 |
-| 10/22 | Structures and Classes；Constructors | — |
-| 10/29 | Constructors；Vectors；Operator Overloading | — |
-| 11/05 | **Midterm Exam（上機，Ch1–Ch6）** | Ch7: 1, 5, 6, 8, 11 |
-| 11/12 | Operator Overloading；String | Ch8: 1, 4, 5, 8, 9 |
-| 11/19 | Pointers | Ch9: 2, 4, 6, 10；Ch10: 1, 3, 4, 8 |
-| 11/26 | Separate Compilation and Namespaces | Ch11: 1, 3 |
-| 12/03 | Streams and File I/O | Ch12: 2, 3, 5 |
-| 12/10 | Inheritance | Ch14: 4, 6, 8 |
-| 12/17 | **Final Exam I（筆試，Ch1–Ch12、Ch14）** | — |
-| 12/24 | **Final Exam II（上機，Ch1–Ch12、Ch14）** | — |
+| 09/10 | [Introduction to the Course](#0910課程介紹與環境暖身) | — |
+| 09/17 | [C++ Basics](#0917c-基礎ch-1) | Ch1: 6, 8, 13；Ch2: 2, 4, 7, 8 |
+| 09/24 | [C++ Basics；Function Basics](#0924流程控制與函式基礎ch-2-ch-3) | Ch3: 1, 5, 10, 11, 13 |
+| 10/01 | [Parameters and Overloading](#1001參數傳遞與函式重載ch-4) | Ch4: 3, 7, 8, 9, 14, 17 |
+| 10/08 | [Function Overloading；Arrays](#1008陣列ch-5) | Ch5: 4, 8, 10, 14, 17 |
+| 10/15 | [Arrays；Structures and Classes](#1015結構與類別ch-56) | Ch6: 1, 7, 10, 12 |
+| 10/22 | [Structures and Classes；Constructors](#1022類別與建構子ch-67) | — |
+| 10/29 | [Constructors；Vectors；Operator Overloading](#1029vector-與運算子重載入門ch-7) | — |
+| 11/05 | **[Midterm Exam（上機，Ch1–Ch6）](#1105期中上機考範圍-ch-16)** | Ch7: 1, 5, 6, 8, 11 |
+| 11/12 | [Operator Overloading；String](#1112運算子重載-friend-與-stringch-8-ch-9) | Ch8: 1, 4, 5, 8, 9 |
+| 11/19 | [Pointers](#1119指標-動態記憶體與-c-風格字串ch-9-ch-10) | Ch9: 2, 4, 6, 10；Ch10: 1, 3, 4, 8 |
+| 11/26 | [Separate Compilation and Namespaces](#1126分離編譯與命名空間ch-11) | Ch11: 1, 3 |
+| 12/03 | [Streams and File I/O](#1203檔案輸入輸出ch-12) | Ch12: 2, 3, 5 |
+| 12/10 | [Inheritance](#1210繼承ch-14) | Ch14: 4, 6, 8 |
+| 12/17 | **[Final Exam I（筆試，Ch1–Ch12、Ch14）](#1217期末筆試範圍-ch-112-ch-14)** | — |
+| 12/24 | **[Final Exam II（上機，Ch1–Ch12、Ch14）](#1224期末上機考範圍-ch-112-ch-14)** | — |
 
 幾個從這張表就能讀出來的重點：
 
