@@ -111,7 +111,7 @@ switch (op) {
 
 - `switch` 的條件必須是**整數型別或字元或列舉**，**不能是 `double` 或 `string`**。
 - `case` 後面必須是**常數**。
-- 沒寫 `break` 會**穿透（fall-through）**到下一個 `case`。
+- 沒寫 `break` 會**穿透**（fall-through）到下一個 `case`。
 
 > **雷區 ④：忘記 `break`**
 > ```cpp

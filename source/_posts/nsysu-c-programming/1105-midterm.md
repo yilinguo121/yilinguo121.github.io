@@ -25,17 +25,17 @@ hidden: true
 
 把下面每一項都做到「不看筆記能寫出來」：
 
-- [ ] 讀入不定數量的整數直到 EOF（`while (cin >> x)`）
-- [ ] `fixed << setprecision(n)` 控制小數位數
-- [ ] `setw` + `setfill('0')` 補零對齊
-- [ ] 寫一個回傳 `bool` 的判斷函式（質數、回文、閏年）
-- [ ] 用 `int&` 參數一次帶回兩個結果
-- [ ] 函式重載三個版本
-- [ ] 一維陣列：讀入、反轉、找最大值與索引、手寫排序
-- [ ] 二維陣列：讀入、印出、轉置、每列每行求和
-- [ ] `struct`：定義、陣列、傳進函式、整包交換
-- [ ] `class`：private 資料 + public setter/getter + `const` 成員函式
-- [ ] 從零寫出模組化 Makefile，`make clean && make` 通過且**零警告**
+- ☐ 讀入不定數量的整數直到 EOF（`while (cin >> x)`）
+- ☐ `fixed << setprecision(n)` 控制小數位數
+- ☐ `setw` + `setfill('0')` 補零對齊
+- ☐ 寫一個回傳 `bool` 的判斷函式（質數、回文、閏年）
+- ☐ 用 `int&` 參數一次帶回兩個結果
+- ☐ 函式重載三個版本
+- ☐ 一維陣列：讀入、反轉、找最大值與索引、手寫排序
+- ☐ 二維陣列：讀入、印出、轉置、每列每行求和
+- ☐ `struct`：定義、陣列、傳進函式、整包交換
+- ☐ `class`：private 資料 + public setter/getter + `const` 成員函式
+- ☐ 從零寫出模組化 Makefile，`make clean && make` 通過且**零警告**
 
 ## 模擬上機考（建議計時 90 分鐘）
 
