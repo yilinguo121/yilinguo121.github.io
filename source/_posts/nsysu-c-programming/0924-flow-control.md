@@ -269,7 +269,7 @@ bool isPrime(int n) {
     return true;
 }
 
-void greet(const string& name) {             // void：不回傳值
+void greet(string name) {                    // void：不回傳值
     cout << "Hello, " << name << "!\n";
 }
 
@@ -314,6 +314,8 @@ int gcd(int a, int b) {      // 定義寫在後面
 ```
 
 宣告時參數名可以省略：`int gcd(int, int);` 也合法。
+
+（`greet` 的參數之後可以再改良成 `const string&`，效率比較好，但那要等到[下一節講參數傳遞](/2026/09/09/nsysu-c-programming/1001-parameters/)才會解釋 `&` 是什麼，這裡先用最單純的寫法。）
 
 **要點：**
 

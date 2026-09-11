@@ -54,6 +54,8 @@ int main() {
 3 1 4 
 ```
 
+上面用 `size_t` 當迴圈變數而不是 `int`：**`size_t` 是一種「保證不會是負數」的整數型別**，`v.size()` 回傳的就是這個型別。用 `int` 去跟它比大小會被編譯器警告（下面雷區①會細講），所以先記得這個寫法。
+
 `vector<int>` 讀作「裝 int 的 vector」，角括號裡換成別的型別就能裝別的東西：`vector<double>`、`vector<string>`、`vector<Student>`。
 
 **常用成員函式**（這些請背起來，考試不能查）：
