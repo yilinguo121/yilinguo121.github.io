@@ -6,7 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/0910-intro/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
-toc: false
+toc: true
 comments: true
 hidden: true
 ---
