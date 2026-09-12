@@ -64,12 +64,12 @@ Kuro is eating.
 Kuro says woof!
 ```
 
-`Dog` 什麼都沒寫就有了 `eat()`——**父類別的 public 與 protected 成員自動繼承過來**。
+`Dog` 什麼都沒寫就有了 `eat()`——**父類別的成員全部都跟著進到 `Dog` 物件裡**，其中 `public` 與 `protected` 的部分 `Dog` 可以直接拿來用（`private` 的也在，只是碰不到，後面詳談）。
 
 ### 心裡先有這張圖
 
 ```text
-Dog d("Kuro") 在記憶體裡長這樣：
+Dog d("Kuro") 這個物件的組成（資料存在物件裡，成員函式是整個類別共用一份，不佔物件空間）：
 ┌─────────────────────┐
 │ Animal 的部分       │ ← name = "Kuro"、eat()
 ├─────────────────────┤
@@ -241,24 +241,38 @@ Derived dtor
 Base dtor
 ```
 
-為什麼是這個順序？回到那張圖：`Derived` 裡面包著 `Base`，**要先把 Base 那塊蓋好，才有東西往上疊**；拆的時候當然是先拆上面那層。
+為什麼？因為 `Derived` 的建構子裡隨時可能用到 `Base` 的成員（像最前面的 `bark()` 就用了 `name`），所以 `Base` 那塊一定要先準備好；解構時反過來，先拆掉「可能還在用 `Base`」的那一層，`Base` 才敢收工。
 
 那 10/22 學過的「成員物件先建構」插在哪裡？完整順序是 **父類別建構子 → 自己的成員物件（依宣告順序）→ 自己建構子的大括號**，解構完全相反：
 
 ```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    Base()  { cout << "Base ctor\n"; }
+    ~Base() { cout << "Base dtor\n"; }
+};
+
 class Engine {
 public:
     Engine()  { cout << "Engine ctor\n"; }
     ~Engine() { cout << "Engine dtor\n"; }
 };
 
-class Derived : public Base {          // Base 同上
+class Derived : public Base {
 private:
     Engine e;                          // 自己的成員物件
 public:
     Derived()  { cout << "Derived ctor\n"; }
     ~Derived() { cout << "Derived dtor\n"; }
 };
+
+int main() {
+    Derived d;
+    return 0;
+}
 ```
 
 輸出：
@@ -336,6 +350,8 @@ public:
 | `private` | 存取不到 | 存取不到 | 存取不到 |
 
 用 `public` 的理由很簡單：只有它表達得出「Dog 是一種 Animal」。
+
+> **別漏掉 `public` 這個字**：繼承方式不寫的話，`class` 預設是 **`private` 繼承**（`struct` 才預設 `public`）。所以 `class D : A { };` 寫完，在 `main` 裡呼叫 `d.f()` 會得到 `error: 'A' is not an accessible base of 'D'`——訊息裡完全沒有「繼承」兩個字，很難聯想到只是少打了 `public`。
 
 ## 多重繼承（知道就好）
 
@@ -476,14 +492,14 @@ int main() {
 }
 ```
 
-注意初始化列表的順序：`Shape("Circle")` 要寫在最前面（父類別先建構），後面才是自己的成員。
+注意初始化列表的順序：`Shape("Circle")` 寫在最前面、後面才是自己的成員。**真正的執行順序永遠是「父類別 → 成員依宣告順序」，跟你寫的順序無關**；但寫反了 `-Wall` 會給 10/22 那個 `[-Wreorder]` 警告，上機考照樣扣分，所以照順序寫就對了。
 
 還有：這裡刻意用三個獨立變數，而**不是** `Shape* shapes[3]`。因為 `area()` 沒有 `virtual`，用 `Shape*` 呼叫一律叫到 `Shape::area()`，三行都會印 `0.00`——就是〈補充：為什麼還有 `virtual`〉講的那件事，要印出真的面積得等 Ch15。
 
 </details>
 
 **Q2. Employee 家族**
-`Employee` 有姓名與月薪，提供 `monthlyPay()`。派生 `Manager`（多一筆固定加給）與 `Engineer`（多加班時數 × 時薪）。讀入資料後印出每個人的實領金額。
+`Employee` 有姓名與月薪，提供 `monthlyPay()`。派生 `Manager`（多一筆固定加給）與 `Engineer`（多加班時數 × 時薪）。輸入固定兩行：**第一行是 Manager**（姓名 月薪 加給），**第二行是 Engineer**（姓名 月薪 加班時數 時薪）。讀入後印出每個人的實領金額。
 
 ```text
 輸入：
@@ -547,7 +563,7 @@ int main() {
 }
 ```
 
-這題沒用 `setprecision`——`cout` 印 `double` 時，值剛好是整數就不會補小數點，所以是 `60000` 不是 `60000.00`。另外 `Manager` 與 `Engineer` 的 `monthlyPay()` 是各自**重新定義**的（算法不同）；`Employee::monthlyPay()` 只有在直接用 `Employee` 物件時才叫得到。
+這題沒用 `setprecision`——`cout` 印 `double` 預設給 **6 位有效數字**，`60000` 在這個範圍內又剛好是整數，所以印出來就是 `60000` 而不是 `60000.00`。但要小心：超過 6 位就會轉成科學記號，實測 `cout << 1000000.0;` 印的是 `1e+06`。月薪可能破百萬時，加一行 `cout << fixed << setprecision(0);` 才保險（實測會印 `1000000`）。另外 `Manager` 與 `Engineer` 的 `monthlyPay()` 是各自**重新定義**的（算法不同）；`Employee::monthlyPay()` 只有在直接用 `Employee` 物件時才叫得到。
 
 </details>
 
@@ -615,7 +631,7 @@ A dtor
 </details>
 
 **Q4. 帶動態記憶體的繼承**
-寫 `class Stack`（用動態陣列實作，有解構子），再派生 `class TracedStack`，多記錄「總共 push 過幾次」。驗證物件消滅時記憶體有正確釋放。
+寫 `class Stack`（用動態陣列實作，建構子可指定容量，有解構子），再派生 `class TracedStack`，多記錄「**成功** push 進去幾筆」（堆疊滿了被擋下來的不算）。請用容量 3 的 `TracedStack` 連續 push 四個值、印出成功筆數，再把值全部 pop 出來，順便驗證物件消滅時記憶體有正確釋放。
 
 <details>
 <summary><b>參考解答</b></summary>

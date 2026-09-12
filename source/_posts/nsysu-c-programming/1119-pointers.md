@@ -88,8 +88,8 @@ int main() {
 > **雷區 ①：`int* p, q;` 只有 `p` 是指標**
 > `int* p;`、`int *p;`、`int * p;` 對編譯器**完全一樣**，空白位置只是排版習慣；關鍵在於 `*` 是跟著**變數名**走的。所以 `int* p, q;` 的意思是「`*p` 是 int、`q` 是 int」——`q` 就變成普通整數了。兩個解法：**一行只宣告一個指標**，或先幫指標型別取個名字——
 > ```cpp
-> typedef int* IntPtr;      // 傳統寫法
-> using   IntPtr = int*;    // C++11 寫法，意思一樣
+> typedef int* IntPtr;      // 傳統寫法：幫「int*」這個型別取一個新名字叫 IntPtr
+> using   IntPtr = int*;    // C++11 寫法，意思完全一樣（跟 using namespace std; 只是剛好共用同一個字，用途不同）
 > IntPtr p, q;              // 現在 p、q 都是指標
 > ```
 
@@ -105,9 +105,7 @@ if (p != nullptr) cout << *p;    // 使用前一定要檢查
 
 ## 動態記憶體：`new` 與 `delete`
 
-10/29 的 `vector` 可以邊跑邊長大，但它不是魔法——內部就是用 `new` 和 `delete` 做出來的。這節就是把那層拆開來看：`new` 讓你在**執行時**才決定要多少記憶體。
-
-（**平常寫程式請直接用 `vector`**；學 `new` / `delete` 是為了看懂課本與考題，而且不懂它就不會懂 `vector` 為什麼要那樣設計。）
+10/29 的 `vector` 能邊跑邊長大，靠的就是這節要拆開來看的 `new` 和 `delete`——它讓你在**執行時**才決定要多少記憶體。（**平常寫程式請直接用 `vector`**，學 `new` / `delete` 是為了看懂課本與考題。）
 
 > **記憶體大致分兩塊**：**stack**（堆疊）放區域變數，函式一結束就整批回收；**heap**（堆積，又叫 free store）是 `new` 拿記憶體的地方，除非你 `delete`，否則它一直都在。這就是等一下「`new` 出來的東西可以安全回傳、區域陣列不行」的原因。
 
@@ -211,7 +209,7 @@ delete[] a;                                  // 再還外層
 #include <iostream>
 using namespace std;
 
-void addOne(int* p) { (*p)++; }      // 注意括號：*p 先取值再 ++
+void addOne(int* p) { (*p)++; }      // 括號不能省：沒括號的 *p++ 等於 *(p++)，動到的是「指標」不是「值」
 
 int main() {
     int a = 5;
@@ -335,7 +333,7 @@ Aborted (core dumped)
 要做深拷貝，需要自己寫三個函式，合稱 **Rule of Three（三法則）**。
 
 > 其中**拷貝建構子**是新東西：長得像建構子，但參數是 `const 自己的型別&`。它在三種場合被自動呼叫：
-> ① `MyArray b = a;` 或 `MyArray b(a);`　② 物件**傳值**進函式時　③ 函式**回傳物件**時。
+> ① `MyArray b = a;` 或 `MyArray b(a);`　② 物件**傳值**進函式時　③ 函式**回傳物件**時（這條課本與考題會寫，但實測印不出來——g++ 會把回傳值直接就地建構在呼叫端，省掉這次複製）。
 > 這也是為什麼 10/01 說「大物件要用 `const&` 傳」——不然每次呼叫都做一次深拷貝。
 
 下面是補完版（比上面那個壞掉的版本多了初始化、`operator[]`、`size()`，方便驗證）：
@@ -447,14 +445,14 @@ different
 > ```cpp
 > char a[10] = "abc", b[10];
 > b = a;              // 編譯錯誤
-> if (a == b) { }     // 編譯得過（g++ 會警告 -Warray-compare），但比的是「位址」不是內容！
+> if (a == b) { }     // 編譯得過，但比的是「位址」不是內容！
 > ```
 > 一定要用 `strcpy` 和 `strcmp`。**這就是 `string` 類別存在的理由**——它讓 `=`、`==`、`+` 都正常運作。
 
 > **雷區 ④：陣列大小要夠**
-> `char s[5] = "Hello";` 會溢位（需要 6 格放 `'\0'`）。`strcpy`、`strcat` 都**不檢查目標空間夠不夠**，這是 C 語言最經典的安全漏洞來源。
+> `char s[5] = "Hello";` 連編譯都過不了——g++ 會報 `error: initializer-string for 'char [5]' is too long`，因為 `"Hello"` 連同結尾的 `'\0'` 要 6 格。真正危險的是編譯器擋不住的那種：`char s[5];` 之後 `strcpy(s, "Hello");` 編譯一聲不響，執行時卻把第 6 個位元組寫到別人家去。`strcpy`、`strcat` 都**不檢查目標空間夠不夠**，這是 C 語言最經典的安全漏洞來源。
 
-**兩者互轉**（用到 `string` 記得 `#include <string>`）：
+**兩者互轉**（這段用到 `string` 和 `strlen`，兩個 include 都要：`#include <string>`、`#include <cstring>`）：
 
 ```cpp
 string cpp = "Hello";
@@ -505,7 +503,7 @@ argv[2] = 123
 ## 本週練習題
 
 **Q1. 動態陣列的統計**
-讀入 `n`，用 `new int[n]` 配置陣列，讀入 `n` 個數字後輸出最大值、最小值與平均（兩位小數），最後正確釋放記憶體。
+讀入 `n`（`1 ≤ n ≤ 1000`），用 `new int[n]` 配置陣列，讀入 `n` 個數字後輸出最大值、最小值與平均（兩位小數），最後正確釋放記憶體。
 
 ```text
 輸入：
@@ -590,7 +588,7 @@ int main() {
 </details>
 
 **Q3. 深拷貝練習**
-完成 `class IntVector`：內部用 `int*` 與 `size`，支援 `push_back`（滿了就把容量加倍）、`operator[]`、`size()`，並正確實作解構子、拷貝建構子與指派運算子。寫一段 `main` 驗證複製後兩個物件互不影響。
+完成 `class IntVector`：內部用一個 `int*` 加上兩個整數——**目前元素個數**與**容量**（兩者不同：容量是已經配好的格子數，元素個數是真正塞了幾格），支援 `push_back`（滿了就把容量加倍）、`operator[]`、`size()`，並正確實作解構子、拷貝建構子與指派運算子。寫一段 `main` 驗證複製後兩個物件互不影響。
 
 <details>
 <summary><b>參考解答</b></summary>

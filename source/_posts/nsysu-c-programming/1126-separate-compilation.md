@@ -60,7 +60,7 @@ public:
 #endif
 ```
 
-最外面的 `#ifndef` / `#define` / `#endif` 三行叫 **include guard**，每個 header 都要寫，下一節解釋它在擋什麼——先照抄。單參數建構子加 `explicit` 是 11/12 講過的習慣，只寫在 header 這一邊。
+最外面的 `#ifndef` / `#define` / `#endif` 三行叫 **include guard**，每個 header 都要寫，等一下的〈Include guard〉那一節會解釋它在擋什麼——先照抄。單參數建構子加 `explicit` 是 11/12 講過的習慣，只寫在 header 這一邊。
 
 **`Circle.cpp`**
 
@@ -118,7 +118,7 @@ int main() {
 
 第二次引入時 `CIRCLE_H` 已經存在，整段就被跳過。**每個 header 都要寫**，巨集名稱通常用檔名大寫加底線。（另外有個一行版的 `#pragma once`，效果一樣，但課本與考試請寫 `#ifndef` 三行式。）
 
-**guard 擋得住什麼、擋不住什麼**：它只保證同一個 `.cpp` 裡展開一次，擋不住「兩個 `.cpp` 各含一次」。所以 **header 裡只能放宣告**——類別定義、函式原型、`const` 常數可以；把函式實作（`int twice(int x) { return x * 2; }`）寫進 header，兩個 `.cpp` 各引入一次再一起連結，就會爆 `multiple definition of 'twice(int)'`，而且 include guard 救不了，因為那是**連結**階段的錯，不是前置處理階段。（範例把 `const double PI` 放在 `Circle.cpp` 而不是 `Circle.h`，就是因為只有實作用得到。）
+**guard 擋得住什麼、擋不住什麼**：它只保證同一個 `.cpp` 裡展開一次，擋不住「兩個 `.cpp` 各含一次」。所以 **header 裡只能放「宣告，或寫在 class 大括號裡面的東西」**——類別定義（含直接寫在 class 大括號內的成員函式本體，它們自動算 `inline`，被兩個 `.cpp` 各引入一次也不會撞，所以 10/15 到 11/12 那種一體成型的類別整個搬進 header 是合法的）、函式原型、`const` 常數可以；把函式實作（`int twice(int x) { return x * 2; }`）寫進 header，兩個 `.cpp` 各引入一次再一起連結，就會爆 `multiple definition of 'twice(int)'`，而且 include guard 救不了，因為那是**連結**階段的錯，不是前置處理階段。（範例把 `const double PI` 放在 `Circle.cpp` 而不是 `Circle.h`，就是因為只有實作用得到。）
 
 ## 多檔案怎麼編譯
 
@@ -139,10 +139,11 @@ g++ -o app main.o Circle.o    # 連結成執行檔
 
 `-c` 的意思是「只編譯，不連結」。每個 `.cpp` 各自變成一個 `.o`，最後一次連結起來。趕時間時也可以 `g++ -o app main.cpp Circle.cpp` 一行搞定，但那是**整份重編**；拆成 `.o` 的意義是「只有改過的 `.cpp` 需要重編」——幫你判斷哪些要重編的，就是下一節的 `make`。
 
-> **雷區：`undefined reference to 'Circle::area()'`**
+> **雷區：`undefined reference to 'Circle::area() const'`**
+> （`const` 成員函式的訊息尾巴會帶著 `const`；忘了編 `Circle.cpp` 時第一行其實是 `undefined reference to 'Circle::Circle(double)'`，缺幾個就印幾行。）
 > 這是**連結階段**的錯誤，代表「有宣告但找不到實作」。最常見原因：
 > 1. 忘了把 `Circle.cpp` 一起編譯（只 `g++ -o app main.cpp`）。
-> 2. 定義時忘了寫 `Circle::`，變成定義了一個全域函式。
+> 2. 定義時忘了寫 `Circle::`／`mathUtil::`，變成定義了一個全域函式。（注意分兩種：漏的是 **namespace** 前綴一定是連結錯；漏的是**類別**的 `Circle::`，只有該函式完全不碰資料成員時才會拖到連結，像 `area()` 要用到 `r`，編 `Circle.cpp` 當下就先報 `error: 'r' was not declared in this scope`，若原本是 `const` 成員還會多一句 `non-member function 'double area()' cannot have cv-qualifier`。）
 > 3. **非成員**函式的簽名跟 header 不一致（header 宣告 `int twice(int);`，cpp 卻定義成 `double twice(double)`）——連結器照著 header 的簽名去找，找不到。（成員函式漏寫 `const` 則是編譯 `.cpp` 時就報 `no declaration matches`，不會拖到連結。）
 >
 > 另外：**永遠不要 `#include "Circle.cpp"`**。`#include` 只拿 `.h`；把 `.cpp` 貼進來再跟它自己一起連結，會得到一整串 `multiple definition of 'Circle::Circle()'`。
@@ -252,6 +253,8 @@ namespace {
 }
 ```
 
+順帶一提：匿名 namespace 裡的函式如果**同一個 `.cpp` 裡沒人呼叫**，`-Wall -Wextra` 會提醒 `warning: 'double {anonymous}::helper(double)' defined but not used [-Wunused-function]`。這是正常的——因為編譯器很確定外面也不會有人叫它。把它真的用起來，警告就消失。
+
 ### 巢狀命名空間
 
 命名空間可以包命名空間，做更細的分類：
@@ -283,7 +286,7 @@ int main() {
 
 ## 本週重點回顧
 
-- `.h` 放**宣告**、`.cpp` 放**定義**；**函式實作不要放進 header**，兩個 `.cpp` 一起連結會 `multiple definition`，include guard 救不了。
+- `.h` 放**宣告**、`.cpp` 放**定義**；**class 大括號外的函式實作不要放進 header**（寫在 class 裡面的成員函式是例外，自動算 `inline`，不會撞），兩個 `.cpp` 一起連結會 `multiple definition`，include guard 救不了。
 - 每個 header 都要加 **include guard**（`#ifndef` / `#define` / `#endif`）；`#include <...>` 找系統函式庫，`#include "..."` 找自己的檔案。
 - **`undefined reference` 是連結階段的錯誤**，意思是「有宣告但找不到實作」——通常是少編譯某個 `.cpp`，或定義時忘了寫 `類別名::`／`namespace 名::`。
 - **header 裡絕對不要寫 `using namespace std;`**；Makefile 的相依清單一定要含 header，否則改了 header 不會重編。
@@ -291,7 +294,7 @@ int main() {
 ## 本週練習題
 
 **Q1. 拆解 BankAccount**
-把前面寫過的 `BankAccount` 拆成 `BankAccount.h`、`BankAccount.cpp`、`main.cpp` 三個檔案，加上 include guard，並寫一份 Makefile 讓 `make` 可以編出執行檔、`make clean` 清乾淨。
+把 10/22〈類別與建構子〉那篇的 `BankAccount`（`deposit`、`withdraw`、`getBalance`、`getOwner`、`print`）拆成 `BankAccount.h`、`BankAccount.cpp`、`main.cpp` 三個檔案，加上 include guard，並寫一份 Makefile 讓 `make` 可以編出執行檔、`make clean` 清乾淨。
 
 <details>
 <summary><b>參考解答</b></summary>
@@ -355,7 +358,7 @@ void BankAccount::print() const {
 }
 ```
 
-header 寫 `std::string`、`.cpp` 因為有 `using namespace std;` 而寫 `string`，兩者是同一個型別，簽名算一致——編譯器比對的是**型別**，不是字面上的文字。header 不能靠 `using` 省略（會污染引入它的人），所以要寫全名。
+header 寫 `std::string`、`.cpp` 因為有 `using namespace std;` 而寫 `string`，兩者是同一個型別，簽名算一致——編譯器比對的是**型別**，不是字面上的文字。
 
 **main.cpp**
 
@@ -399,7 +402,7 @@ clean:
 </details>
 
 **Q2. 自己的工具函式庫**
-建立 `utils.h` / `utils.cpp`，放進 `namespace utils`，包含 `gcd`、`lcm`、`isPrime`、`reverseNumber` 四個函式，在 `main.cpp` 用 `utils::` 前綴呼叫。
+建立 `utils.h` / `utils.cpp`，放進 `namespace utils`，包含 `gcd`、`lcm`、`isPrime`、`reverseNumber` 四個函式，在 `main.cpp` 用 `utils::` 前綴呼叫。規格：參數都是 `int`，`isPrime` 回傳 `bool`、其餘回傳 `int`；`gcd`／`lcm` 要能吃負數（先取絕對值），`lcm(0, x)` 回傳 `0`；`reverseNumber` 保留正負號、反轉後的前導零直接丟掉（`-1230` → `-321`）。`main.cpp` 請依序各印一行：`utils::gcd(24, 36)`、`utils::lcm(4, 6)`、`utils::isPrime(97)`、`utils::reverseNumber(-1230)`，預期輸出是 `12` / `12` / `1` / `-321`。
 
 <details>
 <summary><b>參考解答</b></summary>
@@ -484,7 +487,7 @@ int main() {
 
 - **只改 `main.cpp`**：只有 `main.o` 被重編，`BankAccount.o` 沒動，最後重新連結。因為 `BankAccount.o` 的相依檔案都沒有變新。
 - **只改 `BankAccount.h`**：`main.o` 與 `BankAccount.o` **都會**重編，因為兩條規則都把 `BankAccount.h` 列為相依。
-- 如果 Makefile 忘了把 header 寫進相依清單，改 header 時 `make` 會以為沒事做（顯示 `make: 'app' is up to date.`），編出來的程式就可能不一致——這是很難查的 bug。
+- 如果 Makefile 忘了把 header 寫進相依清單，改 header 時 `make` 會以為沒事做（Q1 的 Makefile 預設目標是 `all`，所以印的是 `make: Nothing to be done for 'all'.`；直接下 `make app` 才會看到 `make: 'app' is up to date.`），編出來的程式就可能不一致——這是很難查的 bug。
 
 </details>
 

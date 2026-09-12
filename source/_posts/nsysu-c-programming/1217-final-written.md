@@ -19,7 +19,7 @@ hidden: true
 2. **手寫程式片段**：寫一個函式、一個類別的骨架。
 3. **觀念選擇 / 填空**：`const` 放哪裡、`static` 的意義、繼承的存取表格。
 
-筆試考的是觀念與讀程式的能力，一週後的 12/24 上機考才考從零把程式寫出來，兩場的準備方式完全不同，這篇只處理前者。**考試時間與佔分比重依課堂公告為準，考前務必確認。**
+一週後的 12/24 上機考才考從零把程式寫出來，兩場的準備方式完全不同，這篇只處理前者。，兩場的準備方式完全不同，這篇只處理前者。**考試時間與佔分比重依課堂公告為準，考前務必確認。**
 
 ## 全學期複習清單
 
@@ -28,7 +28,7 @@ hidden: true
 | 主題 | 一定要會 |
 | --- | --- |
 | 基本語法（09/17） | 整數除法、型別轉換（→ 第 1 題）、`setprecision`、未初始化變數 |
-| 流程控制（09/24） | `switch` 穿透（→ 第 2 題）、短路求值、`0 < x < 10` 的陷阱（→ 第 3 題）、作用域遮蔽（→ 第 4 題） |
+| 流程控制（09/24） | `switch` 穿透（→ 第 2 題）、短路求值、`0 < x < 3` 的陷阱（→ 第 3 題）、作用域遮蔽（→ 第 4 題） |
 | 函式（10/01） | 傳值 vs 傳參考（→ 第 5 題）、重載規則（→ 第 6 題）、預設引數位置、遞迴終止條件 |
 | 陣列（10/08） | 索引從 0、傳進函式只會傳第一格的位址、長度資訊在傳遞過程中消失（11/19）、二維陣列第二維要寫死 |
 | struct / class（10/15） | `private` / `public`、封裝、`const` 成員函式（→ 第 12 題） |
@@ -38,13 +38,13 @@ hidden: true
 | 運算子重載（10/29、11/12） | 成員 vs 非成員、`<<` 回傳 `ostream&`（→ 第 9 題）、前置後置 `++` |
 | 字串（11/12） | `string` 常用函式（→ 第 10 題）、`cin >>` 後接 `getline` 的坑、C-string 要用 `strcmp` |
 | 指標（11/19） | `*` 與 `&`、指標算術（→ 第 7 題）、`new`/`delete` 配對、淺拷貝 vs 深拷貝、三法則（→ 第 13 題） |
-| 分離編譯（11/26） | header / 實作檔、include guard（→ 快問快答 6）、連結錯誤的意義 |
+| 分離編譯（11/26） | header / 實作檔、include guard（→ 快問快答 6）、`undefined reference`（少編一個 `.cpp` 或忘了 `類別名::`）vs `multiple definition`（函式實作寫進 header）、`namespace` 與 `using` 的三種寫法（`using namespace std;` 不可寫在 header） |
 | 檔案 I/O（12/03） | 開檔要檢查、`while (fin >> x)`（→ 快問快答 5）、`get`/`put` 與 `>>` 的差別 |
 | 繼承（12/10） | `protected`（→ 快問快答 3）、建構解構順序（→ 第 11 題）、覆寫 vs 重載（→ 快問快答 4）、is-a vs has-a |
 
 ## 筆試模擬題
 
-> 先自己在紙上把答案寫完，**整份寫完再一起編譯驗證**——考場上沒有電腦，所以練習時也要先把答案定死，不能邊改邊試。以下片段都假設已經 `#include <iostream>`、`#include <string>` 並 `using namespace std;`。
+> 先自己在紙上把答案寫完，**整份寫完再一起編譯驗證**——考場上沒有電腦，所以練習時也要先把答案定死，不能邊改邊試。以下片段都假設已經 `#include <iostream>`、`#include <string>` 並 `using namespace std;`；沒有寫出 `int main()` 的那幾題（第 1、2、3、7、10 題）是裸的敘述，要自己包進 `int main() { ... }` 才編得起來。
 
 ### 看程式答輸出（第 1–11 題）
 
@@ -108,7 +108,7 @@ cout << '\n';
 two three
 ```
 
-從 `case 2` 開始執行，因為沒有 `break` 而穿透到 `case 3`，直到 `case 3` 的 `break` 才停。
+從 `case 2` 開始執行，因為沒有 `break` 而穿透到 `case 3`，直到 `case 3` 的 `break` 才停。（這段用 `-Wall -Wextra` 編會跳三個 `warning: this statement may fall through`——那就是編譯器在提醒「這裡少了 `break`」，本題是刻意的。）
 
 </details>
 
@@ -362,7 +362,7 @@ not found
 
 - `substr(3, 4)` 從索引 3 開始取 4 個字元；索引從 0 起算：`p(0) r(1) o(2) g(3)`。
 - `find` 回傳的是子字串的**起始索引**（不是「有沒有找到」），所以 `find("gram")` 是 3。
-- 找不到時回傳 `string::npos`——它是一個**極大的無號數，不是 −1**，所以判斷一定要寫 `== string::npos`，不能寫 `== -1` 或 `< 0`。
+- 找不到時回傳 `string::npos`——它是一個**極大的無號數，不是 −1**，所以判斷一定要寫 `== string::npos`，- 找不到時回傳 `string::npos`——它是一個**極大的無號數**（這台機器上是 18446744073709551615）。所以**絕對不能寫 `< 0`**：無號數永遠不會小於 0，這個條件恆為 false，`-Wextra` 會直接警告 `comparison of unsigned expression in '< 0' is always false`。至於 `== -1`，因為 `npos` 的定義就是「把 −1 塞進無號型別」，`-1` 比較時會被轉成同一個極大值，**其實會成立**——但 `-Wall` 會丟 `comparison of integer expressions of different signedness` 的警告。結論：**一律寫 `== string::npos` / `!= string::npos`**，別的寫法不是錯就是有警告。。
 
 </details>
 
@@ -468,10 +468,19 @@ int main() {
 
 ## 觀念快問快答
 
-選擇 / 填空題考的就是這種一句話講得完的規則。先蓋住答案自己回答一次：
+選擇 / 填空題考的就是這種一句話講得完的規則。八題題目先列在下面，自己回答完再打開對答案：
+
+1. `const` 放在成員函式括號後面是什麼意思？
+2. `static` 成員變數為什麼要在類別外再寫一次？
+3. `public` 繼承下，父類別的 `protected` 成員在子類別裡是什麼權限？
+4. 覆寫（redefinition）與重載（overload）差在哪？
+5. `while (fin >> x)` 為什麼比 `while (!fin.eof())` 正確？
+6. include guard 沒寫會發生什麼？
+7. 三法則是哪三個？
+8. `v[i]` 與 `v.at(i)` 差在哪？
 
 <details>
-<summary><b>八題問答與答案</b></summary>
+<summary><b>八題答案</b></summary>
 
 1. **`const` 放在成員函式括號後面是什麼意思？** 保證這個函式不會改到成員；`const` 物件（例如 `const Box&` 參數）只能呼叫這種函式。
 2. **`static` 成員變數為什麼要在類別外再寫一次？** 類別內那行只是宣告，真正配置記憶體要靠類別外的 `int Item::count = 0;`，整個程式只寫一次，而且那一行不再寫 `static`。
@@ -547,15 +556,23 @@ public:
 ```
 
 ```cpp
-// (4) 讀檔流程：開檔一定要檢查（需 #include <fstream>）
-ifstream fin("data.txt");
-if (!fin) {
-    cout << "開檔失敗\n";
-    return 1;
+// (4) 讀檔流程：開檔一定要檢查
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main() {
+    ifstream fin("data.txt");
+    if (!fin) {
+        cout << "開檔失敗\n";
+        return 1;
+    }
+    int x, sum = 0;
+    while (fin >> x) sum += x;
+    fin.close();
+    cout << sum << '\n';
+    return 0;
 }
-int x, sum = 0;
-while (fin >> x) sum += x;
-fin.close();
 ```
 
 </details>

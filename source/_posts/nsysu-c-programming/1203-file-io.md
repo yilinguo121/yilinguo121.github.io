@@ -69,7 +69,7 @@ sum = 41
 ```
 
 - `cerr` 就是 0917 提過的**標準錯誤輸出**：一樣印到螢幕，但不緩衝、專門用來印錯誤訊息。
-- `if (!fin)` 檢查開檔是否成功。**沒檢查就直接讀**的話，檔案不存在時程式會安靜地什麼都不做。開不起來最常見的原因不是程式寫錯，是**檔案不在你執行 `./a.out` 的那個資料夾**——程式裡的 `"input.txt"` 找的是「目前工作目錄」底下的檔案；先 `ls` 確認兩個在一起再重跑。
+- `if (!fin)` 檢查開檔是否成功。**沒檢查就直接讀**的話，`while (fin >> x)` 一圈都不會跑，上面那支會若無其事地印出 `sum = 0`——看起來像個正常答案，你根本不會發現檔案壓根沒打開。開不起來最常見的原因不是程式寫錯，是**檔案不在你執行 `./a.out` 的那個資料夾**——程式裡的 `"input.txt"` 找的是「目前工作目錄」底下的檔案；先 `ls` 確認兩個在一起再重跑。
 
 > **為什麼串流可以當條件？**
 > 兩件事。(1) `fin >> x` 的**回傳值是 `fin` 自己**，所以 `>>` 才能一路串下去寫成 `fin >> a >> b`——這就是 11/12 你親手寫過的「`operator>>` 要回傳 `istream&`」。(2) 串流身上記著一個**狀態**（上一次讀寫成功了沒），被放進 `if` / `while` 的括號裡時會自動變成 `true`（狀態正常）或 `false`（讀失敗、到檔尾、格式不合）。
@@ -83,7 +83,7 @@ fin.open("input.txt");
 if (fin.fail()) { /* 錯誤處理 */ }
 ```
 
-`fin.fail()` 問的是「上一個動作失敗了嗎」，在開檔檢查上跟 `!fin` 同一件事，挑一種寫就好（課本兩種都有）。分開寫是為了檔名要等程式跑起來才決定，或同一個串流要換檔案重開（先 `close()` 再 `open()`）。
+`fin.fail()` 問的是「上一個動作失敗了嗎」，在開檔檢查上跟 `!fin` 同一件事，挑一種寫就好（課本兩種都有）。分開寫真正的用途是**同一個串流要換檔案重開**（先 `close()` 再 `open()`）；檔名等程式跑起來才決定並不需要分開寫——後面〈檔名由使用者輸入決定〉那支就是直接 `ifstream fin(filename);`。
 
 ## 寫檔
 
@@ -110,7 +110,7 @@ Hello, file!
 42 3.14
 ```
 
-- `ofstream fout("output.txt");` 預設會**清空**原本的檔案（本來的內容就沒了）。
+- `ofstream fout("output.txt");` **檔案不存在會自動新建**（這點跟 `ifstream` 相反），存在的話預設會**清空**（本來的內容就沒了）。所以 `ofstream` 開檔失敗通常是資料夾沒有寫入權限，不是檔案不見。
 - `fout.close();`：寫完要**在同一支程式裡再讀回來**時一定要先 `close()`，否則資料可能還卡在緩衝區裡、讀到的是空檔；單純寫完就結束程式可以不寫。
 - 想**接在後面**寫，用追加模式：
 
@@ -118,7 +118,7 @@ Hello, file!
 ofstream fout("log.txt", ios::app);     // append
 ```
 
-`ios` 是所有串流共同的祖先類別，`::` 就是 10/15 的「屬於」，所以 `ios::app` ＝「`ios` 裡那個叫 `app`（append）的旗標」。常用的只有三個：`ios::in`（讀）、`ios::out`（寫，預設清空）、`ios::app`（接在後面寫）；`ios::binary` 是給圖片影音用的，這學期用不到。要一次要好幾種模式就用 `|` 串起來：`ios::in | ios::out` ＝「**又要能讀、又要能寫**」。這個 `|` 是位元 OR，跟 09/24 的邏輯 `||`（兩根）不是同一個東西，這學期不必深究。
+`ios` 是所有串流共同的祖先類別，`::` 就是 10/15 的「屬於」，所以 `ios::app` ＝「`ios` 裡那個叫 `app`（append）的旗標」。常用的只有三個：`ios::in`（讀）、`ios::out`（寫，預設清空）、`ios::app`（接在後面寫）；`ios::binary` 是給圖片影音用的，這學期用不到。要一次指定好幾種模式就用 `|` 串起來，例如 `ofstream fout("log.txt", ios::out | ios::app);`。這個 `|` 跟 09/24 的邏輯 `||`（兩根）不是同一個東西，這學期照抄就好。
 
 ## 讀到檔尾的正確寫法
 
@@ -146,13 +146,24 @@ while (!fin.eof()) {
 
 ## 逐字元讀寫
 
-下面這段把 `input.txt` 一個字元不漏地抄進 `output.txt`，順便把小寫轉大寫（`fin`、`fout` 就是前面開好的那兩個，`toupper` 要 `#include <cctype>`）：
+下面這支把 `input.txt` 一個字元不漏地抄進 `output.txt`，順便把小寫轉大寫（`toupper` 要 `#include <cctype>`）：
 
 ```cpp
-char c;
-while (fin.get(c)) {          // get 連空白與換行都會讀進來
-    c = static_cast<char>(toupper(static_cast<unsigned char>(c)));   // 11/12 教過的寫法
-    fout.put(c);
+#include <fstream>
+#include <cctype>
+using namespace std;
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+    if (!fin || !fout) return 1;
+
+    char c;
+    while (fin.get(c)) {              // get 連空白與換行都會讀進來
+        c = static_cast<char>(toupper(static_cast<unsigned char>(c)));  // 11/12 教過的寫法
+        fout.put(c);
+    }
+    return 0;
 }
 ```
 
@@ -170,7 +181,7 @@ while (fin.get(c)) {          // get 連空白與換行都會讀進來
 | --- | --- |
 | `setw(n)` | 設定欄寬 |
 | `setfill(c)` | 補位字元 |
-| `setprecision(n)` | 精度 |
+| `setprecision(n)` | 搭配 `fixed` ＝**小數點後 n 位**；沒有 `fixed` 時是**有效位數** n 位（10/22 那個 `1.2e+03` 的坑） |
 | `fixed` | 固定小數點表示法 |
 | `left` / `right` | 靠左 / 靠右對齊 |
 | `showpoint` | 強制顯示小數點 |
@@ -221,7 +232,7 @@ int main() {
 
 ## 隨機存取：`seekg` / `tellg`
 
-串流內部有一個「讀到第幾個 byte」的位置指標。`fin.tellg()` 問現在在哪；`fin.seekg(n)`（等同 `fin.seekg(n, ios::beg)`）跳到檔頭往後第 n 個 byte，`fin.seekg(n, ios::end)` 則從檔尾往前算（n 用負數）；寫入端是 `fout.tellp()` / `fout.seekp(...)`（p = put）。最常見的用途是量檔案大小：
+串流內部有一個「現在讀到第幾個 byte」的位置指標：`fin.tellg()` 問位置，`fin.seekg(...)` 換位置。最常見的用途是量檔案大小：
 
 ```cpp
 fin.seekg(0, ios::end);          // 跳到檔尾

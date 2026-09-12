@@ -13,7 +13,7 @@ hidden: true
 
 [← 12/24｜期末上機考（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1224-final-lab/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/)
 
-這一頁是**查的，不是讀的**：編譯或執行冒出看不懂的訊息 → 跳到〈常見錯誤訊息對照表〉；忘記某個語法長怎樣 → 〈語法速查〉；名詞對不上 → 最後的〈名詞速查表〉。
+這一頁是**查的，不是讀的**：忘了編譯指令或 Makefile 怎麼寫 → 〈常用 g++ 編譯選項〉、〈整學期通用的 Makefile〉；編譯或執行冒出看不懂的訊息 → 〈常見錯誤訊息對照表〉；忘記某個語法長怎樣 → 〈語法速查〉；名詞對不上 → 最後的〈名詞速查表〉。
 
 ## 常用 g++ 編譯選項
 
@@ -21,12 +21,12 @@ hidden: true
 g++ -Wall -Wextra -std=c++17 -o app main.cpp   # 開全部警告 + 指定 C++17（平常就用這個）
 g++ -c foo.cpp                                  # 只編譯成 .o，不連結
 g++ -E foo.cpp -o foo.i                         # 只做前置處理（看 #include 展開的結果）
-g++ -g -o app main.cpp                          # 加入行號與變數名（錯誤報告才印得出「錯在第幾行」）
+g++ -g -o app main.cpp                          # 編進行號與變數名，給 gdb 和下一行的 sanitizer 用（編譯錯誤本來就有行號，不必加這個）
 g++ -O2 -o app main.cpp                         # 最佳化（本課用不到，除錯時不要開）
 g++ -fsanitize=address -g -o app main.cpp       # 執行時偵測陣列越界與記憶體錯誤
 ```
 
-除錯就用最後這組 `-fsanitize=address -g`：越界、記憶體洩漏、重複 `delete` 會在執行當下直接印出錯在第幾行。交出去的 Makefile 不要留這個選項。
+除錯就用最後這組 `-fsanitize=address -g`：陣列越界、重複 `delete` 會在出事當下停下來並指出第幾行；記憶體洩漏則是等程式跑完才補印一段 `LeakSanitizer: detected memory leaks`，指到當初 `new` 的那一行。交出去的 Makefile 不要留這個選項。
 
 ## 整學期通用的 Makefile
 
@@ -51,7 +51,28 @@ clean:
 	rm -f $(TARGETS) $(EXTRA) *.o
 ```
 
-兩個常做錯的細節：變數名照慣例用 `CXX`／`CXXFLAGS`（`CC`／`CFLAGS` 是 C 用的，取錯會跟 make 的內建規則打架）；`clean` 要連 `*.o` 一起刪，因為 zip 裡只能放 `.cpp` 和 Makefile。
+把 /home/yilin/website/yilin/source/_posts/nsysu-c-programming/1224-final-lab.md 裡 Q6 參考解答的 Makefile 區塊整段換成：
+
+CXX      := g++
+CXXFLAGS := -Wall -Wextra -std=c++17
+
+.PHONY: all clean
+
+all: Q6
+
+Q6: main.o Student.o
+	$(CXX) -o $@ $^
+
+main.o: main.cpp Student.h
+	$(CXX) $(CXXFLAGS) -c $<
+
+Student.o: Student.cpp Student.h
+	$(CXX) $(CXXFLAGS) -c $<
+
+clean:
+	rm -f *.o Q6
+
+（附錄這一行不必動。）
 
 某一題要拆成多個檔案時（例如 `.h` / `.cpp`），`TARGETS` 只掃得到 `Q*.cpp`，不會掃到沒有 `Q6.cpp` 的 Q6：先把上面改成 `EXTRA := Q6`（不改的話只有手打 `make Q6` 編得出來，`make` 和 `make clean` 都會漏掉它），再到檔案最後補規則：
 
@@ -68,7 +89,7 @@ Student.o: Student.cpp Student.h
 
 ## 語法速查（建議印出來）
 
-上機考的機器不能上網查語法。**若該場考試允許攜帶紙本（開學第一堂先跟老師或助教確認）**，這一節可以印出來帶去。
+上機考在實驗課的虛擬機上考。**能不能上網查語法、能不能帶紙本，開學第一堂一定要先跟老師或助教確認**；若允許帶紙本，這一節可以印出來帶去。
 
 **讀法**：底下的 `型別`、`成員`、`回傳型別`、`名稱`、`Name` 這類中文代稱與 `...` 都是**佔位符**，要換成自己的內容，照打一定編譯失敗；其餘英文關鍵字與符號（`class`、`const`、`:`、`;`、`&`）要一字不差照打。
 
@@ -77,12 +98,12 @@ Student.o: Student.cpp Student.h
 | 標頭檔 | 提供什麼 |
 | --- | --- |
 | `<iostream>` | `cin`、`cout`、`cerr`、`endl` |
-| `<iomanip>` | `setw`、`setprecision`、`fixed`、`left`、`setfill` |
+| `<iomanip>` | `setw`、`setprecision`、`setfill`（`fixed`、`defaultfloat`、`left`、`right` 其實 `<iostream>` 就有，一起 include 也不會錯） |
 | `<string>` | `string` 類別、`getline`、`stoi`、`to_string` |
 | `<vector>` | `vector` |
 | `<algorithm>` | `sort`、`max`、`min`、`swap` |
 | `<cmath>` | `sqrt`、`pow`、`fabs`（浮點絕對值）、`ceil`、`floor`、`round` |
-| `<cstdlib>` | `rand`、`srand`、`abs`（整數絕對值）、`exit(n)`（立刻結束程式，等同 `main` 裡的 `return n;`） |
+| `<cstdlib>` | `rand`、`srand`、`abs`（整數絕對值）、`exit(n)`（在任何函式裡都能立刻結束整個程式，離開碼是 `n`；但它**不會跑區域物件的解構子**，所以在 `main` 裡還是用 `return n;`） |
 | `<ctime>` | `time`（配合 `srand`） |
 | `<cctype>` | `isalpha`、`isdigit`、`toupper`、`tolower` |
 | `<climits>` | `INT_MAX`、`INT_MIN` |
@@ -186,6 +207,9 @@ Vec2 operator+(const Vec2& o) const;   // 成員函式：左邊一定是自己
 Vec2& operator++();                    // 前置 ++v
 Vec2  operator++(int);                 // 後置 v++，那個 int 只是用來區分
 friend ostream& operator<<(ostream& os, const Vec2& v);   // 非成員：左邊是 cout，要 friend 才看得到 private
+// 拆成 .h / .cpp 時，.h 裡沒有 using namespace std，這一行要改寫成
+//   friend std::ostream& operator<<(std::ostream& os, const Vec2& v);
+// 少了 std:: 會報 error: 'ostream' does not name a type
 
 // ── 寫在 class 外 ──
 ostream& operator<<(ostream& os, const Vec2& v) {
@@ -261,6 +285,16 @@ public:
 | `invalid conversion from 'int' to 'int*'` | 型別不合，多半是漏了 `&` 或多寫了 `*` |
 | `redefinition of 'class X'` | header 忘了 include guard，補 `#ifndef` / `#define` / `#endif` |
 | `fatal error: xxx.h: No such file or directory` | 檔名拼錯，或自己寫的 header 用了 `<>`（應該用 `""`） |
+| `'X::a' is private within this context` | 從類別外面碰到 private 成員：漏了 `public:`，或應該改走 getter／setter |
+| `no match for 'operator<<' (operand types are 'std::ostream' and 'X')` | 自訂型別還沒重載 `<<`，或重載了卻忘了在 class 裡宣告成 `friend` |
+
+**警告（warning）——一個扣 2 分，不能放著不管**
+
+| 訊息 | 怎麼修 |
+| --- | --- |
+| `unused variable 'x'` / `unused parameter 'x'` | 宣告了卻沒用到：刪掉它，或確認是不是漏寫了那段程式 |
+| `'x' is used uninitialized` | 變數宣告完沒給初值就拿來用，補上初值 |
+| `comparison of integer expressions of different signedness` | `int i` 拿去跟 `v.size()` 比：迴圈變數改成 `size_t i` |
 
 **連結錯誤（link error）**
 
@@ -277,9 +311,12 @@ public:
 | --- | --- |
 | `Segmentation fault (core dumped)` | 陣列越界、對 `nullptr` 解參考、無窮遞迴；用 `-fsanitize=address -g` 重編會直接指出第幾行 |
 | `free(): double free detected` / `double free or corruption` | 同一塊記憶體被釋放兩次：淺拷貝沒補三法則，或 `delete` 寫了兩次 |
-| `std::bad_alloc` | `new` 要的量太大，例如 `int n;` 忘了 `cin >> n` 就 `new int[n]`，`n` 是垃圾值（可能幾十億） |
+| `std::bad_array_new_length` | 完整訊息是 `terminate called after throwing an instance of 'std::bad_array_new_length'`。`new T[n]` 的 `n` 是負數或算到溢位——最常見就是 `int n;` 忘了 `cin >> n` 就 `new int[n]` |
+| `std::bad_alloc` | 真的要不到那麼多記憶體（要到 GB 等級才會發生）：檢查 `new` 後面的數量算式是不是乘錯了 |
 | 程式卡住不動 | 無窮迴圈：迴圈變數沒更新，或條件用 `!=` 剛好跳過 |
 | 輸出多一筆或少一筆 | 讀檔用了 `while (!fin.eof())`，改成 `while (fin >> x)` 或 `while (getline(fin, line))` |
+| `terminate called after throwing an instance of 'std::out_of_range'` | `v.at(i)` / `s.at(i)` 越界；下一行的 `what():` 會直接告訴你索引是多少、長度是多少 |
+| `Assertion 'cond' failed.` | `assert(cond)` 沒通過；前面的 `檔名:行號:` 就是那個 `assert` 的位置 |
 
 **Makefile 錯誤**
 
@@ -287,7 +324,7 @@ public:
 | --- | --- |
 | `missing separator` | recipe 開頭必須是 **Tab** 不能是空格；用 `cat -A Makefile` 確認行首是 `^I` |
 | `No rule to make target 'Q3.cpp'` | 檔名打錯，或檔案不在這個目錄 |
-| `make: 'app' is up to date.` | 沒改過檔案時這是正常的；**剛改過檔案卻還看到它**，才是相依關係漏寫（最常見：改了 `.h`，但規則沒把 `.h` 列為相依） |
+| `make: 'Q1' is up to date.` / `make: Nothing to be done for 'all'.` | 沒改過檔案時這兩句都正常（直接打 `make` 會看到後者，`make Q1` 會看到前者）；**剛改過檔案卻還看到它**，才是相依關係漏寫（最常見：改了 `.h`，但規則沒把 `.h` 列為相依） |
 
 ## 名詞速查表
 
@@ -298,6 +335,7 @@ public:
 | **傳值 / 傳參考** | 傳複製品（改不到外面）／傳本人的別名（改得到外面） |
 | **重載（overload）** | 同名函式、不同參數列表並存 |
 | **越界（out of range）** | 存取了陣列合法範圍以外的格子，C++ 不會幫你擋 |
+| **未定義行為（UB）** | 標準沒規定該產生什麼結果的寫法（越界、`delete` 兩次、用未初始化的變數…）：可能看起來正常、可能當掉、換台電腦又是另一個答案 |
 | **結構（struct）** | 把幾個相關欄位綁成一包的自訂型別 |
 | **類別（class）** | 資料 + 操作資料的函式綁在一起；預設成員是 private |
 | **封裝（encapsulation）** | 資料設成 private，只開放少數 public 函式操作 |

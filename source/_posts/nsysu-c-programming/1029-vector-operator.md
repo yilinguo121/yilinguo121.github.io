@@ -58,7 +58,7 @@ int main() {
 
 `vector<int>` 讀作「裝 int 的 vector」，角括號裡換成別的型別就能裝別的東西：`vector<double>`、`vector<string>`、`vector<Student>`。
 
-**常用成員函式**（上機考不能查資料，這幾個要背起來）：
+**常用成員函式**（上機考只能用文字編輯器，這幾個要背起來）：
 
 | 用法 | 作用 |
 | --- | --- |
@@ -90,13 +90,13 @@ vector<vector<int>> grid(3, vector<int>(4, 0));   // 3 個元素、每個都是�
 > ```cpp
 > for (int i = 0; i < v.size(); i++)     // warning: comparison of integer expressions of different signedness
 > ```
-> `-Wall -Wextra` 會警告——**上機考一個警告 2 分**。解法二選一：把迴圈變數宣告成 `size_t i`，或寫 `int n = v.size();` 之後用 `i < n`。
+> `-Wall -Wextra` 會警告——**上機考有警告就扣 2 分**。解法二選一：把迴圈變數宣告成 `size_t i`，或寫 `int n = v.size();` 之後用 `i < n`。
 >
 > 更嚴重的是這種寫法：
 > ```cpp
 > for (size_t i = 0; i <= v.size() - 1; i++)   // v 為空時 v.size()-1 會變成超大的數字！
 > ```
-> 無號整數沒有位置存負數，減過頭會從最大值繞回來（像時鐘從 0 點往回撥一格變成 23 點）。所以空 vector 時 `v.size() - 1` 是天文數字，迴圈會跑到天荒地老。
+> 無號整數沒有位置存負數，減過頭會從最大值繞回來（像時鐘從 0 點往回撥一格變成 23 點）。所以空 vector 時 `v.size() - 1` 是天文數字，迴圈條件等於永遠成立。不過你實際看到的通常不是「跑不完」而是**當場閃退**——第一圈的 `v[0]` 就已經越界了（實測：迴圈體是空的才會真的無限跑；只要裡面有 `v[i]`，馬上 `Segmentation fault (core dumped)`）。所以「卡住」和「莫名閃退」都要回頭檢查有沒有對 `size()` 做減法。
 
 > **雷區 ②：`v[i]` 不會幫你檢查範圍**
 > ```cpp
@@ -243,7 +243,7 @@ int main() {
 ## 本週重點回顧
 
 - `vector` 是會自己長大的陣列：`push_back` 加、`size()` 問長度、`empty()` 判空，記得 `#include <vector>`。
-- `v.size()` 是無號的 `size_t`、`v[i]` 不檢查範圍——迴圈條件直接跟 `v.size()` 比（`i < v.size()`、`i + 1 < v.size()`），**永遠不要對 `v.size()` 做減法**。
+- `v.size()` 是無號的 `size_t`、`v[i]` 不檢查範圍——迴圈變數宣告成 `size_t`（或先 `int n = v.size();`），條件寫成 `i < v.size()`、`i + 1 < v.size()`，**永遠不要對 `v.size()` 做減法**。
 - 傳參數：只讀用 `const vector<int>&`、要改用 `vector<int>&`，忘了 `&` 就整包複製；但 `vector` 可以整包指派，也可以當回傳值。
 - **運算子重載**＝定義 `+`、`==` 這些符號對自訂型別的意義，函式名字就是 `operator` 加那個符號；不能發明新符號，也不能改變運算元個數與優先順序。
 
@@ -297,7 +297,7 @@ int main() {
 </details>
 
 **Q2. 成績統計類別**
-寫 `class ScoreBoard`，內部用 `vector<double>` 存分數，提供 `add(double)`、`size()`、`average()`、`highest()`、`lowest()`。空的時候平均回傳 0。
+寫 `class ScoreBoard`，內部用 `vector<double>` 存分數，提供 `add(double)`、`size()`、`average()`、`highest()`、`lowest()`。空的時候平均回傳 0。`main` 讀入 `n` 與 `n` 個分數（0–100），照下面格式印出四行，其中平均、最高、最低都**固定兩位小數**（`fixed << setprecision(2)`）。
 
 ```text
 輸入：
@@ -365,7 +365,7 @@ int main() {
 </details>
 
 **Q3. Vec2 的四則運算**
-幫 `Vec2` 加上 `+`、`-`、純量乘法（`v * k`）、`==`，並印出結果。
+幫 `Vec2` 加上 `+`、`-`、純量乘法（`v * k`）、`==`。讀入五個數 `ax ay bx by k`，組成 `a = (ax, ay)`、`b = (bx, by)`，依序各印一行：`a + b`、`a - b`、`a * k`（格式都是 `(x, y)`），最後一行印 `a == b` 的結果——相等印 `equal`，否則印 `not equal`。
 
 ```text
 輸入： 1 2 3 4 2
@@ -413,7 +413,7 @@ int main() {
 
 `operator==` 這裡為了簡潔直接比 `double`；實務上浮點數要寫成 `fabs(x - o.x) < 1e-9 && fabs(y - o.y) < 1e-9`（`#include <cmath>`），理由是 09/24 講過的精度誤差。（`1e-9` 是**科學記號**寫法：1 乘以 10 的 -9 次方 = 0.000000001，`1e6` 就是 1000000。）
 
-**補充**：`a * k` 可以用成員函式，但 `k * a`（數字在左邊）**只能**寫成非成員函式，因為你不能修改 `double` 這個內建型別。下一節會講。
+**補充**：`a * k` 可以用成員函式，但 `k * a`（數字在左邊）**只能**寫成非成員函式，因為你不能修改 `double` 這個內建型別——寫法見 [11/12](/2026/09/09/nsysu-c-programming/1112-operator-string/)。
 
 </details>
 
