@@ -563,7 +563,7 @@ int main() {
 }
 ```
 
-這題沒用 `setprecision`——`cout` 印 `double` 預設給 **6 位有效數字**，`60000` 在這個範圍內又剛好是整數，所以印出來就是 `60000` 而不是 `60000.00`。但要小心：超過 6 位就會轉成科學記號，實測 `cout << 1000000.0;` 印的是 `1e+06`。月薪可能破百萬時，加一行 `cout << fixed << setprecision(0);` 才保險（實測會印 `1000000`）。另外 `Manager` 與 `Engineer` 的 `monthlyPay()` 是各自**重新定義**的（算法不同）；`Employee::monthlyPay()` 只有在直接用 `Employee` 物件時才叫得到。
+這題沒用 `setprecision`——`cout` 印 `double` 預設給 **6 位有效數字**，`60000` 在這個範圍內又剛好是整數，所以印出來就是 `60000` 而不是 `60000.00`。但要小心：超過 6 位就會轉成科學記號，實測 `cout << 1000000.0;` 印的是 `1e+06`。月薪可能破百萬時，加一行 `cout << fixed << setprecision(0);` 才保險（實測會印 `1000000`）。另外 `Manager` 與 `Engineer` 的 `monthlyPay()` 是各自**重新定義**的（算法不同）；透過 `Manager` 物件也叫得到 `Employee` 那一版，只是要寫全名 `m.Employee::monthlyPay()`（正文 `d.Animal::speak()` 那招）；不指定的話 `m.monthlyPay()` 一律是 `Manager` 自己的版本。
 
 </details>
 
@@ -631,7 +631,7 @@ A dtor
 </details>
 
 **Q4. 帶動態記憶體的繼承**
-寫 `class Stack`（用動態陣列實作，建構子可指定容量，有解構子），再派生 `class TracedStack`，多記錄「**成功** push 進去幾筆」（堆疊滿了被擋下來的不算）。請用容量 3 的 `TracedStack` 連續 push 四個值、印出成功筆數，再把值全部 pop 出來，順便驗證物件消滅時記憶體有正確釋放。
+堆疊（stack）是「後進先出」的容器：`push` 把值放到最上面、`pop` 取走最上面那個——先放 10 再放 20，取出來的順序是 20、10；空的時候不能 `pop`，滿的時候不能 `push`。[11/19 Q7](/2026/09/09/nsysu-c-programming/1119-pointers/#本週練習題) 用鏈結串列做過一次，這題改用**動態陣列**、容量固定。寫 `class Stack`（用動態陣列實作，建構子可指定容量，有解構子），再派生 `class TracedStack`，多記錄「**成功** push 進去幾筆」（堆疊滿了被擋下來的不算）。請用容量 3 的 `TracedStack` 連續 push 四個值、印出成功筆數，再把值全部 pop 出來，順便驗證物件消滅時記憶體有正確釋放。
 
 <details>
 <summary><b>參考解答</b></summary>

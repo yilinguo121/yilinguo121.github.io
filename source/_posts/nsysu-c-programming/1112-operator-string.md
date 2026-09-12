@@ -404,7 +404,7 @@ found at 7
 apple comes first
 ```
 
-`substr(pos, len)` 的 `len` 省略就是取到結尾。`find` 找到時回傳「第一次出現的索引」，找不到時回傳 `string::npos`——它是一個**極大的無號數，不是 −1**（10/29 雷區①的同一件事），所以判斷一定要寫 `!= string::npos`，寫成 `>= 0` 或 `!= -1` 都會永遠成立。上面沒示範到、但一樣常用的：
+`substr(pos, len)` 的 `len` 省略就是取到結尾。`find` 找到時回傳「第一次出現的索引」，找不到時回傳 `string::npos`——它是一個**極大的無號數，不是 −1**（10/29 雷區①的同一件事），所以判斷一定要寫 `!= string::npos`。寫成 `>= 0` 永遠成立（無號數不可能小於 0）；寫成 `!= -1` 在 g++ 上其實會動——`-1` 轉成無號數剛好就是 `npos`（12/17 第 10 題會考這個轉換）——但那是在依賴型別轉換的巧合，還會招來有號／無號比較的警告，所以一律寫 `npos`。上面沒示範到、但一樣常用的：
 
 | 用法 | 作用 |
 | --- | --- |
@@ -463,7 +463,7 @@ getline(cin, line);      // 讀「一整行」，含空白，讀到換行為止
 - `&&`、`||`、`,` 語法上能重載但**千萬別做**，會失去短路特性。
 - **只要「呼叫時可以只給一個引數」的建構子，編譯器就會拿它做隱式轉換**（`pay(100)` 會變成 `pay(Money(100))`）；不想要就在建構子前加 `explicit`——單參數建構子加 `explicit` 是預設習慣。
 - `string` 常用：`length()`／`size()`、`substr(pos, len)`、`find(t)`（找不到回 `string::npos`）、`s[i]` 不檢查範圍而 `s.at(i)` 會，`+`／`+=` 串接，`<` `==` 直接做字典序比較。
-- `cin >> x;` 之後接 `getline` 會讀到空行，中間要 `cin.ignore()`；`toupper` / `tolower` 回傳的是 **`int`**，要印出字元得自己轉回 `char`。
+- `cin >> x;` 之後接 `getline` 會讀到空行，中間要 `cin.ignore(numeric_limits<streamsize>::max(), '\n')` 把那一行剩下的東西全丟掉；`toupper` / `tolower` 回傳的是 **`int`**，要印出字元得自己轉回 `char`。
 
 ## 本週練習題
 
@@ -574,9 +574,10 @@ public:
     friend ostream& operator<<(ostream& os, const Money& m);
 };
 
-ostream& operator<<(ostream& os, const Money& m) {
-    os << '$' << m.cents / 100 << '.'
-       << setfill('0') << setw(2) << m.cents % 100 << setfill(' ');
+ostream& operator<<(ostream& os, const Money& m) {          // 跟 Q1 同一份：負數也印得對
+    long long v = m.cents < 0 ? -m.cents : m.cents;
+    if (m.cents < 0) os << '-';
+    os << '$' << v / 100 << '.' << setfill('0') << setw(2) << v % 100 << setfill(' ');
     return os;
 }
 
@@ -702,12 +703,13 @@ Hello, World!
 #include <iostream>
 #include <string>
 #include <cctype>
+#include <limits>
 using namespace std;
 
 int main() {
     int k;
     cin >> k;
-    cin.ignore();                     // 吃掉數字後面的換行
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');   // 丟掉數字那一行剩下的東西（含換行）
     string line;
     getline(cin, line);
 
@@ -723,7 +725,7 @@ int main() {
 }
 ```
 
-`for (char& c : line)` 的 `&` 很關鍵——沒有它就只是改複製品，原字串不會變。
+`for (char& c : line)` 的 `&` 很關鍵——沒有它就只是改複製品，原字串不會變。`ignore` 用的是正文那個「丟到換行為止」的完整寫法：單獨一個 `cin.ignore()` 只丟一個字元，數字後面若多打了空白，`getline` 就會讀到那些空白而不是下一行。
 
 </details>
 

@@ -438,12 +438,14 @@ int gcd(int a, int b) {
 
 int lcm(int a, int b) {
     if (a == 0 || b == 0) return 0;
+    if (a < 0) a = -a;                 // gcd 裡取絕對值改的是它自己的複本（10/01 傳值），這裡要再做一次
+    if (b < 0) b = -b;
     return a / gcd(a, b) * b;          // 先除再乘，避免中途溢位
 }
 
 bool isPrime(int n) {
     if (n < 2) return false;
-    for (int i = 2; i * i <= n; i++)
+    for (int i = 2; i <= n / i; i++)
         if (n % i == 0) return false;
     return true;
 }
@@ -475,7 +477,7 @@ int main() {
 }
 ```
 
-`lcm` 寫成 `a / gcd(a,b) * b` 而不是 `a * b / gcd(a,b)`，是為了避免 `a * b` 先溢位——這種小細節在寫函式庫時很重要。
+`lcm` 寫成 `a / gcd(a,b) * b` 而不是 `a * b / gcd(a,b)`，是為了避免 `a * b` 先溢位——但這只擋得住**中間**的溢位；`lcm(100000, 99999)` 這種答案本身就超過 `int` 的函式，回傳型別是 `int` 就不可能正確，所以規格應該說清楚「結果在 `int` 範圍內才保證正確」。另一個容易漏的是負數：`gcd` 裡的 `a = -a` 改的是它自己的參數複本，`lcm` 的 `a`、`b` 還是負的，不再取一次絕對值的話 `lcm(-4, 6)` 會回 `-12`——正是 10/01 傳值的觀念。
 
 </details>
 

@@ -284,7 +284,7 @@ Yilin total = 283
 Ann total = 150
 ```
 
-欄位改用逗號之類的符號隔開時，`getline` 的**第三個參數**可以自訂分隔字元（這就是解析 CSV 的標準做法）：
+欄位改用逗號之類的符號隔開時，`getline` 的**第三個參數**可以自訂分隔字元（簡單的逗號分隔格式這樣就夠了；正式的 CSV 還允許用引號包住逗號，得另外處理）：
 
 ```cpp
 istringstream iss("Ann,90,85");
@@ -426,6 +426,7 @@ int main() {
             if (v[j].score > v[i].score) { Record t = v[i]; v[i] = v[j]; v[j] = t; }
 
     ofstream fout("sorted.txt");
+    if (!fout) { cerr << "cannot open sorted.txt\n"; return 1; }   // 輸出檔一樣要檢查
     long long sum = 0;
     for (const Record& x : v) {
         fout << x.name << ' ' << x.score << '\n';
@@ -441,8 +442,8 @@ int main() {
 
 </details>
 
-**Q4. CSV 解析**
-`data.csv` 每列格式為 `姓名,國文,英文,數學`。讀入後輸出每個人的總分與平均，並對齊成表格。
+**Q4. 簡化版 CSV**
+`data.csv` 每列格式為 `姓名,國文,英文,數學`，欄位裡保證**沒有逗號、引號和換行**（正式的 CSV 允許 `"Wang, Ann",90,85,95` 這種用引號包住逗號的欄位，那要另外處理，本題不考慮）。讀入後輸出每個人的總分與平均，並對齊成表格。
 
 ```text
 data.csv:

@@ -34,7 +34,7 @@ hidden: true
 比照正式規則：只用文字編輯器、附 Makefile、零警告。單檔題的檔名是 `Q1.cpp` ~ `Q5.cpp`、執行檔同名；Q6 是多檔案題，檔案是 `Student.h`／`Student.cpp`／`main.cpp`，Makefile 要能編出名為 `Q6` 的執行檔。
 
 **Q1. 分數類別與運算子重載**
-寫 `class Fraction`，支援 `+`、`-`、`*`、`/`、`==`、`<`，以及 `<<`、`>>`。結果一律化為最簡分數，負號放分子。讀入兩個分數後，依序輸出四則運算結果、是否相等（`equal` / `not equal`）、以及大小比較（`a < b` / `a >= b`），共六行。
+寫 `class Fraction`，支援 `+`、`-`、`*`、`/`、`==`、`<`，以及 `<<`、`>>`。結果一律化為最簡分數，負號放分子；分母為 0（包括除以 0）時印 `zero denominator` 並結束程式。輸入的分子分母都在 `int` 範圍內，中間乘積要用 `long long` 算。讀入兩個分數後，依序輸出四則運算結果、是否相等（`equal` / `not equal`）、以及大小比較（`a < b` / `a >= b`），共六行。
 
 ```text
 輸入： 1 2 1 3
@@ -128,27 +128,31 @@ Bob             1002   220    73.33
 
 ```cpp
 #include <iostream>
+#include <cstdlib>          // exit
 using namespace std;
 
 class Fraction {
 private:
-    int num, den;
+    long long num, den;      // 兩個 int 範圍的數相乘不會超過 long long，中間乘積才安全
 
-    static int gcd(int a, int b) {
+    static long long gcd(long long a, long long b) {
         if (a < 0) a = -a;
         if (b < 0) b = -b;
         return (b == 0) ? a : gcd(b, a % b);
     }
 
     void normalize() {
-        if (den == 0) den = 1;      // 只在 b 是 0（除以零）時會走到；題目沒要求處理，這裡先把它壓成合法值避免當掉。真要嚴謹應該在 operator/ 裡檢查 o.num == 0 並回報錯誤
+        if (den == 0) {             // 讀入分母 0，或除以一個分子為 0 的分數，都會走到這裡
+            cerr << "zero denominator\n";
+            exit(1);                // 除以零不能靠改分母混過去，直接結束
+        }
         if (den < 0) { num = -num; den = -den; }
-        int g = gcd(num, den);
+        long long g = gcd(num, den);
         if (g != 0) { num /= g; den /= g; }
     }
 
 public:
-    Fraction(int n = 0, int d = 1) : num(n), den(d) { normalize(); }
+    Fraction(long long n = 0, long long d = 1) : num(n), den(d) { normalize(); }
 
     Fraction operator+(const Fraction& o) const {
         return Fraction(num * o.den + o.num * den, den * o.den);
@@ -940,7 +944,7 @@ int main() {
 
 六題全對、`make` 零警告、`make clean && make` 乾淨重編，這場就穩了。哪一題寫不出來，回去補對應的那一篇：
 
-- Q1 → [11/12 運算子重載、friend 與 string](/2026/09/09/nsysu-c-programming/1112-operator-string/)：`+ - * /`、比較運算子、`<<` 與 `>>` 要寫成 friend
+- Q1 → [11/12 運算子重載、friend 與 string](/2026/09/09/nsysu-c-programming/1112-operator-string/)：`+ - * /`、比較運算子、`<<` 與 `>>` 只能是非成員函式（用 friend 直接讀 private，或透過 getter 都可以）
 - Q2 → [11/19 指標、動態記憶體與 C 風格字串](/2026/09/09/nsysu-c-programming/1119-pointers/)：`new[]`／`delete[]` 與三法則
 - Q3 → [12/03 檔案輸入輸出](/2026/09/09/nsysu-c-programming/1203-file-io/)：`ifstream`／`ofstream`、開檔檢查、`setw` 對齊
 - Q4 → 同上（`istringstream` 拆單字）＋ [11/12](/2026/09/09/nsysu-c-programming/1112-operator-string/)：`string` 的操作

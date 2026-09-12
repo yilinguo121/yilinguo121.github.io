@@ -289,8 +289,8 @@ public:
 | `Segmentation fault (core dumped)` | 陣列越界、對 `nullptr` 解參考、無窮遞迴；用 `-fsanitize=address -g` 重編會直接指出第幾行 |
 | `free(): double free detected` / `double free or corruption` | 同一塊記憶體被釋放兩次：淺拷貝沒補三法則，或 `delete` 寫了兩次 |
 | `std::bad_array_new_length` | 完整訊息是 `terminate called after throwing an instance of 'std::bad_array_new_length'`。`new T[n]` 的 `n` 是負數或算到溢位——最常見就是 `int n;` 忘了 `cin >> n` 就 `new int[n]` |
-| `std::bad_alloc` | 真的要不到那麼多記憶體（要到 GB 等級才會發生）：檢查 `new` 後面的數量算式是不是乘錯了 |
-| 程式卡住不動 | 無窮迴圈：迴圈變數沒更新，或條件用 `!=` 剛好跳過 |
+| `std::bad_alloc` | 要不到那麼多記憶體：最常見是 `new` 後面的數量算錯（乘法算爆、負數轉成超大的無號數）；虛擬機的記憶體本來就少，不必到 GB 等級就可能失敗 |
+| 程式卡住不動 | 兩種可能：**程式正在等你輸入**——`cin >>` 沒東西可讀就停在那裡，看起來跟當掉一樣，先打個值按 Enter 或改用 `./Q1 < in.txt` 餵檔案；不然就是無窮迴圈：迴圈變數沒更新，或條件用 `!=` 剛好跳過 |
 | 輸出多一筆或少一筆 | 讀檔用了 `while (!fin.eof())`，改成 `while (fin >> x)` 或 `while (getline(fin, line))` |
 | `terminate called after throwing an instance of 'std::out_of_range'` | `v.at(i)` / `s.at(i)` 越界；下一行的 `what():` 會直接告訴你索引是多少、長度是多少 |
 | `Assertion 'cond' failed.` | `assert(cond)` 沒通過；前面的 `檔名:行號:` 就是那個 `assert` 的位置 |
