@@ -524,6 +524,204 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習的題型改寫。這週實驗課的三個固定題型：巢狀 `struct`（結構裡放結構）、`class` 裡放陣列並自己算統計、還有一題「薪水／費用計算」把輸入、計算、輸出拆成三個成員函式。
+
+**Q5. 兩向量是否垂直（巢狀結構）**
+定義 `struct Point { int x, y; }` 與 `struct Segment { Point p1, p2; }`（結構的成員本身是另一個結構）。讀入 A、B、C、D 四個點，AB 與 CD 各構成一個向量，印出兩個向量與內積，內積為 0 就印 `perpendicular`。
+
+```text
+輸入：
+0 0 2 1
+3 3 1 7
+輸出：
+AB = (2, 1)
+CD = (-2, 4)
+dot = 0
+perpendicular
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Point { int x, y; };
+struct Segment { Point p1, p2; };        // 巢狀結構：成員本身也是 struct
+
+Point toVector(const Segment& s) {       // 線段 → 向量（終點減起點）
+    Point v = { s.p2.x - s.p1.x, s.p2.y - s.p1.y };
+    return v;
+}
+
+int main() {
+    Segment ab, cd;
+    cin >> ab.p1.x >> ab.p1.y >> ab.p2.x >> ab.p2.y;
+    cin >> cd.p1.x >> cd.p1.y >> cd.p2.x >> cd.p2.y;
+    Point u = toVector(ab), v = toVector(cd);
+    cout << "AB = (" << u.x << ", " << u.y << ")\n";
+    cout << "CD = (" << v.x << ", " << v.y << ")\n";
+    int dot = u.x * v.x + u.y * v.y;
+    cout << "dot = " << dot << '\n';
+    cout << (dot == 0 ? "perpendicular" : "not perpendicular") << '\n';
+    return 0;
+}
+```
+
+巢狀結構的存取就是多寫一層點：`ab.p1.x`。`toVector` 接收 `const Segment&`、回傳一個 `Point`，示範結構可以像一般型別一樣進出函式。這題常見的錯是內積寫成 `u.x * v.y + u.y * v.x`——那是外積的一部分，不是內積。
+
+</details>
+
+**Q6. 測驗成績類別（陣列成員）**
+寫 `class Quiz`，private 有一個長度 5 的分數陣列與一個「是否完成」旗標；public 提供 `setScore(index, score)`、`getScore(index)`、`check()`（任一分數 ≤ 0 就算未完成）、`isDone()`、`average()`、`highest()`、`lowest()`。讀入五個分數後印出完成與否（1 或 0）與三個統計值；**統計要自己用迴圈算，不能呼叫函式庫**。
+
+```text
+輸入： 80 95 70 100 88
+輸出：
+done: 1
+average: 86.6
+highest: 100
+lowest: 70
+```
+
+```text
+輸入： 80 0 70 100 88
+輸出：
+done: 0
+average: 67.6
+highest: 100
+lowest: 0
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+const int SIZE = 5;
+
+class Quiz {
+public:
+    void setScore(int index, int score) { scores[index] = score; }
+    int getScore(int index) const { return scores[index]; }
+    void check() {                       // 有任何一題 <= 0 就算未完成
+        done = true;
+        for (int i = 0; i < SIZE; i++)
+            if (scores[i] <= 0) done = false;
+    }
+    bool isDone() const { return done; }
+    double average() const {
+        int sum = 0;
+        for (int i = 0; i < SIZE; i++) sum += scores[i];
+        return static_cast<double>(sum) / SIZE;
+    }
+    int highest() const {
+        int best = scores[0];
+        for (int i = 1; i < SIZE; i++) if (scores[i] > best) best = scores[i];
+        return best;
+    }
+    int lowest() const {
+        int worst = scores[0];
+        for (int i = 1; i < SIZE; i++) if (scores[i] < worst) worst = scores[i];
+        return worst;
+    }
+private:
+    int scores[SIZE];
+    bool done;
+};
+
+int main() {
+    Quiz q;
+    for (int i = 0; i < 5; i++) {
+        int s;
+        cin >> s;
+        q.setScore(i, s);
+    }
+    q.check();
+    cout << "done: " << (q.isDone() ? 1 : 0) << '\n';
+    cout << "average: " << q.average() << '\n';
+    cout << "highest: " << q.highest() << '\n';
+    cout << "lowest: " << q.lowest() << '\n';
+    return 0;
+}
+```
+
+陣列當資料成員時，成員函式可以直接用它，不必再把陣列當參數傳來傳去——這正是「把資料和操作包在一起」的好處。`average` 要先 `static_cast<double>` 再除，否則整數除法會把 86.6 截成 86。三個唯讀函式都加 `const`，`check()` 會改 `done` 所以不能加。
+
+</details>
+
+**Q7. 週薪計算**
+寫 `class Salary`，private 存一週七天的每日工時；`set()` 讀入七個整數，`calculate()` 算薪水，`show()` 印出結果。計算規則：每天前 8 小時時薪 190；第 9、10 小時時薪乘 1.33；第 11 小時起乘 1.66。輸出要列出三種時段各累積了幾小時。`main` 固定是：
+
+```cpp
+Salary sa;
+sa.set();
+sa.calculate();
+sa.show();
+```
+
+```text
+輸入： 8 9 10 11 8 0 0
+輸出：
+working hours: 40 x 1 + 5 x 1.33 + 1 x 1.66
+salary: 9178.9
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+const int DAYS = 7;
+const int RATE = 190;      // 基本時薪
+
+class Salary {
+public:
+    void set() {
+        for (int i = 0; i < DAYS; i++) cin >> hours[i];
+    }
+    void calculate() {
+        normal = extra = overtime = 0;
+        for (int i = 0; i < DAYS; i++) {
+            int h = hours[i];
+            if (h > 10) { overtime += h - 10; h = 10; }   // 第 11 小時起
+            if (h > 8)  { extra += h - 8; h = 8; }        // 第 9、10 小時
+            normal += h;                                  // 前 8 小時
+        }
+        total = normal * RATE + extra * RATE * 1.33 + overtime * RATE * 1.66;
+    }
+    void show() const {
+        cout << "working hours: " << normal << " x 1 + "
+             << extra << " x 1.33 + " << overtime << " x 1.66\n";
+        cout << fixed << setprecision(1);
+        cout << "salary: " << total << '\n';
+    }
+private:
+    int hours[DAYS];
+    int normal, extra, overtime;   // 三種時段的小時數
+    double total;
+};
+
+int main() {
+    Salary sa;
+    sa.set();
+    sa.calculate();
+    sa.show();
+    return 0;
+}
+```
+
+「先扣超過 10 的、再扣超過 8 的、剩下是正常時數」由高往低剝，每天三行就分完。時薪、天數這種固定值放在檔案開頭的 `const`，題目改成時薪 200 只改一處。`set`／`calculate`／`show` 三段式是這門課從這週開始一路用到期末的物件寫法：**輸入、計算、輸出分開**，每個函式只做一件事。
+
+</details>
+
 ---
 
 [← 10/08｜陣列（Ch 5）](/2026/09/09/nsysu-c-programming/1008-arrays/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/22｜類別與建構子（Ch 6–7） →](/2026/09/09/nsysu-c-programming/1022-constructors/)

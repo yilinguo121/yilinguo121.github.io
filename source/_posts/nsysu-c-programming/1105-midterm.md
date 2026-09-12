@@ -181,33 +181,42 @@ int main() {
 #include <iostream>
 using namespace std;
 
-bool isPerfect(int n) {
-    if (n < 2) return false;           // 1 不是完全數
-    int sum = 0;
-    for (int i = 1; i < n; i++)        // 掃過所有比 n 小的數
-        if (n % i == 0) sum += i;      // 整除就是因數，累加起來
-    return sum == n;
+bool isPrime(int n) {
+    if (n < 2) return false;
+    for (int i = 2; i * i <= n; i++)
+        if (n % i == 0) return false;
+    return true;
 }
 
 int main() {
-    int n;
-    cin >> n;
-    bool first = true;
-    for (int i = 2; i <= n; i++) {
-        if (isPerfect(i)) {
-            if (!first) cout << ' ';   // 第一個數字前不印空白，避免行尾多一格
-            cout << i;
-            first = false;
+    const int MAX = 1024;
+    int a[MAX], n;
+    while (true) {
+        n = 0;
+        int x;
+        while (true) {                              // 一串數字以 0 結尾
+            cin >> x;
+            if (x == 0) break;
+            a[n++] = x;
         }
+        if (n == 0) break;                          // 空的一串：結束
+
+        // 只對「是質數的位置」做選擇排序（由大到小），其他位置不動
+        for (int i = 0; i < n; i++) {
+            if (!isPrime(a[i])) continue;
+            int best = i;
+            for (int j = i + 1; j < n; j++)
+                if (isPrime(a[j]) && a[j] > a[best]) best = j;
+            int t = a[i]; a[i] = a[best]; a[best] = t;
+        }
+        for (int i = 0; i < n; i++) cout << a[i] << (i + 1 < n ? " " : "\n");
     }
-    cout << '\n';
+    cout << "Finish!\n";
     return 0;
 }
 ```
 
-**考點與常見扣分**：題目明講「寫成獨立函式」，寫在 `main` 裡就不合規格。邊界是 `1`（不是完全數，所以 `n < 2` 直接回 `false`）。`first` 旗標只是為了讓數字之間有空白、行尾沒有多餘空白。
-
-> **進階**：因數成雙成對出現（找到 2 就同時知道 6 / 2 = 3），所以有一種只掃到 `i * i <= n` 的寫法快很多，但要另外處理 `i = 1`（配出來的 `n / 1` 是 `n` 自己）與平方數（那一對是同一個因數）兩個特例。`n ≤ 500` 用不到——上機考先求對，別急著優化。
+**考點與常見扣分**：排序骨架還是選擇排序，只是「參與排序的位置」加了條件——`i` 不是質數就跳過，找最大值時也只看質數。這樣非質數自然留在原地。第三組資料只有一個質數 2，所以跟原本一樣。每一串讀完要把 `n` 歸零，這是連續輸入題最常忘的一行。
 
 </details>
 
@@ -345,6 +354,350 @@ int main() {
 ```
 
 **考點與常見扣分**：唯讀的成員函式一律加 `const`，漏掉必扣分。`isSquare()` 直接用 `==` 比兩個 `double` 在這題是安全的，因為 `w`、`h` 直接來自輸入、沒經過任何運算；**一旦值是算出來的**（例如 `w * 3 / 3`），就要改成 `fabs(w - h) < 1e-9`（`fabs` 在 `<cmath>`、`1e-9` 的科學記號寫法 10/29 講過），意思是「差距小到可以當作相等」。這題刻意不寫建構子（期中不考），但 10/22 已經學過了，考完之後自己寫類別請一律補上，否則物件一建立、setter 還沒呼叫之前就是垃圾值。
+
+</details>
+
+## 第二份模擬上機考：實驗課考古題型
+
+第一份模擬考照主課的題型出；這一份照**實驗課期中上機考**的題型出（歷年題目的共同特徵：連續輸入、讀到 `0` 或 `0 0` 結束、輸出格式要一模一樣、一題只有全對或零分）。六題建議 90 分鐘。
+
+實驗課考題有個習慣要先適應：**多半不給你數量 `n`**，而是「一直讀到某個結束值」，所以大部分題目的骨架都是 `while (true) { cin >> ...; if (結束條件) break; ... }`。
+
+**Q1. 沙漏**
+反覆讀入整數 `N`，`N` 是正奇數時印出高 `N` 列的沙漏（第一列 `N` 顆星、每列少兩顆到 1 顆、再加回 `N` 顆），否則印 `invalid`；讀到 `0` 結束。星號前面要補空白讓圖形置中，星號後面不印空白。
+
+```text
+輸入：
+5
+4
+1
+0
+輸出：
+*****
+ ***
+  *
+ ***
+*****
+invalid
+*
+```
+
+**Q2. 質數原地降冪**
+反覆讀入一串正整數（以 `0` 結尾，最多 1024 個），把其中**是質數的那些**由大到小重新排列，其他數字的位置不動；讀到空的一串（直接輸入 `0`）就印 `Finish!` 結束。
+
+```text
+輸入：
+1 2 3 4 5 6 7 8 9 10 0
+2 4 6 8 3 5 7 11 13 17 19 0
+10 8 6 4 2 0
+0
+輸出：
+1 7 5 4 3 6 2 8 9 10
+19 4 6 8 17 13 11 7 5 3 2
+10 8 6 4 2
+Finish!
+```
+
+**Q3. 區間內的質數**
+反覆讀入 `x y`，印出 `x` 到 `y` 之間（含）所有質數，同一行用空白隔開；`x > y` 或有負數印 `Invalid input`；區間內沒有質數就不印任何東西；讀到 `0 0` 結束。
+
+```text
+輸入：
+10 30
+24 28
+30 10
+1 10
+0 0
+輸出：
+11 13 17 19 23 29
+Invalid input
+2 3 5 7
+```
+
+**Q4. 爬樓梯**
+一次可以爬 1 階或 2 階，問爬到第 `n` 階有幾種走法（`0 < n < 45`，其他值印 `invalid`）。反覆讀入直到 `0`。
+
+```text
+輸入：
+2
+4
+10
+44
+0
+輸出：
+2
+5
+89
+1134903170
+```
+
+**Q5. 狀態機計算器**
+先讀 `n`，再讀 `n` 個整數。程式有五個狀態輪流切換：第 1 個數進入 `RST`（直接記下來）；之後依序 `ADD`（結果 + 輸入）、`SUB`（結果 − 輸入）、`MUL`（結果 × 輸入）、`DIV`（**輸入 ÷ 結果**，整數除法）；`DIV` 之後回到 `ADD` 循環。`DIV` 時若結果是 0，印 `division by zero => reset`，下一個數重新從 `RST` 開始。每一步印 `(State XXX) => 結果`。
+
+```text
+輸入：
+7
+3 4 1 5 10 2 6
+輸出：
+(State RST) => 3
+(State ADD) => 7
+(State SUB) => 6
+(State MUL) => 30
+(State DIV) => 0
+(State ADD) => 2
+(State SUB) => -4
+```
+
+```text
+輸入：
+6
+5 0 5 0 9 1
+輸出：
+(State RST) => 5
+(State ADD) => 5
+(State SUB) => 0
+(State MUL) => 0
+division by zero => reset
+(State RST) => 1
+```
+
+**Q6. 成績結構排序**
+`struct Student` 存五科分數與總分。讀入 `n` 個學生（每行五個整數），分數不在 0–100 的視為 0，依總分**由高到低**印出每人的五科與總分。
+
+```text
+輸入：
+3
+80 20 30 40 50
+30 40 70 70 30
+20 30 30 100 120
+輸出：
+30 40 70 70 30 | 240
+80 20 30 40 50 | 220
+20 30 30 100 0 | 180
+```
+
+<details>
+<summary><b>Q1 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    while (true) {
+        cin >> n;
+        if (n == 0) break;
+        if (n <= 0 || n % 2 == 0) {
+            cout << "invalid\n";
+            continue;
+        }
+        // 上半部（含中間那顆星）：星星數 n, n-2, ..., 1
+        for (int stars = n; stars >= 1; stars -= 2) {
+            for (int s = 0; s < (n - stars) / 2; s++) cout << ' ';
+            for (int s = 0; s < stars; s++) cout << '*';
+            cout << '\n';
+        }
+        // 下半部：3, 5, ..., n
+        for (int stars = 3; stars <= n; stars += 2) {
+            for (int s = 0; s < (n - stars) / 2; s++) cout << ' ';
+            for (int s = 0; s < stars; s++) cout << '*';
+            cout << '\n';
+        }
+    }
+    return 0;
+}
+```
+
+**考點與常見扣分**：每列的空白數是 `(N - 星數) / 2`；下半部從 3 顆開始（1 顆那列已經在上半部印過）。`N = 1` 只有一列，兩個迴圈剛好一個印一個不印，不需要特判。行尾多印空白就是零分，`-Wall` 抓不到這種錯，要自己拿題目範例對。
+
+</details>
+
+<details>
+<summary><b>Q2 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+long long gcd(long long a, long long b) {
+    while (b != 0) {
+        long long r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+int main() {
+    long long a, b;
+    while (true) {
+        cin >> a >> b;
+        if (a == 0 && b == 0) break;
+        cout << a / gcd(a, b) * b << '\n';
+    }
+    return 0;
+}
+```
+
+**考點與常見扣分**：`a * b / gcd` 會先溢位，一定寫成 `a / gcd(a, b) * b`；兩個 $10^9$ 等級的質數乘起來約 $10^{18}$，`int` 裝不下，全程用 `long long`。這裡示範迴圈版的輾轉相除，跟 [10/01 Q9](/2026/09/09/nsysu-c-programming/1001-parameters/#本週練習題) 的遞迴版是同一件事。
+
+</details>
+
+<details>
+<summary><b>Q3 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+bool isPrime(int n) {
+    if (n < 2) return false;
+    for (int i = 2; i * i <= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}
+
+int main() {
+    int x, y;
+    while (true) {
+        cin >> x >> y;
+        if (x == 0 && y == 0) break;
+        if (x < 0 || y < 0 || x > y) {
+            cout << "Invalid input\n";
+            continue;
+        }
+        bool any = false;
+        for (int i = x; i <= y; i++) {
+            if (isPrime(i)) {
+                if (any) cout << ' ';
+                cout << i;
+                any = true;
+            }
+        }
+        if (any) cout << '\n';
+    }
+    return 0;
+}
+```
+
+**考點與常見扣分**：三個判斷的順序——先檢查結束、再檢查不合法、最後才算；「沒有質數就不印」包含**不印換行**，所以用 `any` 旗標決定要不要 `'\n'`。`isPrime` 直接沿用 09/24 那份。
+
+</details>
+
+<details>
+<summary><b>Q4 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    while (true) {
+        cin >> n;
+        if (n == 0) break;
+        if (n < 0 || n >= 45) {
+            cout << "invalid\n";
+            continue;
+        }
+        long long ways1 = 1, ways2 = 1;   // 到第 0 階和第 1 階各只有 1 種走法
+        for (int i = 2; i <= n; i++) {
+            long long cur = ways1 + ways2;    // 最後一步踩 1 階或 2 階
+            ways1 = ways2;
+            ways2 = cur;
+        }
+        cout << ways2 << '\n';
+    }
+    return 0;
+}
+```
+
+**考點與常見扣分**：走到第 `n` 階的最後一步不是 1 階就是 2 階，所以 `ways(n) = ways(n-1) + ways(n-2)`——就是費氏數列，用 09/24 Q6 的迴圈寫法。`n = 44` 的答案超過 11 億，`int` 剛好還裝得下，但再大一點就不行，直接用 `long long` 最保險。
+
+</details>
+
+<details>
+<summary><b>Q5 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    long long result = 0;
+    int state = 0;                     // 0 RST, 1 ADD, 2 SUB, 3 MUL, 4 DIV
+    for (int i = 0; i < n; i++) {
+        long long x;
+        cin >> x;
+        switch (state) {
+            case 0: result = x;          cout << "(State RST) => " << result << '\n'; break;
+            case 1: result += x;         cout << "(State ADD) => " << result << '\n'; break;
+            case 2: result -= x;         cout << "(State SUB) => " << result << '\n'; break;
+            case 3: result *= x;         cout << "(State MUL) => " << result << '\n'; break;
+            case 4:
+                if (result == 0) {
+                    cout << "division by zero => reset\n";
+                    state = 0;           // 下一筆回到 RST
+                    continue;            // 跳過下面的 state++
+                }
+                result = x / result;
+                cout << "(State DIV) => " << result << '\n';
+                break;
+        }
+        state = (state + 1) % 5;         // RST 之後 ADD、SUB、MUL、DIV，再回 ADD
+        if (state == 0) state = 1;
+    }
+    return 0;
+}
+```
+
+**考點與常見扣分**：`DIV` 是「輸入除以結果」，方向跟前面三個相反；除以零那一筆**不算一步**，狀態直接回 `RST`，所以要 `continue` 跳過 `state` 的推進。`switch` 裡每個 `case` 都有 `break`，除以零那條用 `continue` 離開的是外面的 `for`——`continue` 跳的是迴圈、不是 `switch`。
+
+</details>
+
+<details>
+<summary><b>Q6 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+const int SUBJECTS = 5;
+struct Student { int score[SUBJECTS]; int total; };
+
+void printStudent(const Student& s) {
+    for (int i = 0; i < SUBJECTS; i++) cout << s.score[i] << ' ';
+    cout << "| " << s.total << '\n';
+}
+
+int main() {
+    const int MAX = 10;
+    Student cls[MAX];
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        cls[i].total = 0;
+        for (int j = 0; j < SUBJECTS; j++) {
+            cin >> cls[i].score[j];
+            if (cls[i].score[j] < 0 || cls[i].score[j] > 100) cls[i].score[j] = 0;
+            cls[i].total += cls[i].score[j];
+        }
+    }
+    for (int i = 0; i < n - 1; i++) {                 // 依總分由高到低
+        int best = i;
+        for (int j = i + 1; j < n; j++)
+            if (cls[j].total > cls[best].total) best = j;
+        Student t = cls[i]; cls[i] = cls[best]; cls[best] = t;
+    }
+    for (int i = 0; i < n; i++) printStudent(cls[i]);
+    return 0;
+}
+```
+
+**考點與常見扣分**：總分要在讀入時順便算好存進結構，排序時才不用一直重算；交換的是整個 `Student`。這題實驗課的正式版本會讓每行分數「可能缺少幾科」，要用 `getline` + `stringstream` 一行一行拆，那是 12/03 的內容，期中不會考。
 
 </details>
 

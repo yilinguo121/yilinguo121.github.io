@@ -718,6 +718,466 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+下面幾題是照實驗課歷年課堂練習與上機考的題型改寫的。實驗課的分數是每週當場檢查給的，題目每年會換，但題型很固定：前三週一定是「判斷 → 迴圈 → 拆成函式 → 亂數」這條線。其中九九乘法表、猜拳、河內塔幾乎年年出現。
+
+**Q7. 奇偶與在校時間**
+分兩段。先讀入一個整數，印出它是奇數還是偶數；再讀入現在的時、分（24 小時制），假設週四 9:30 前要到校、16:00 放學：在校時間內印 `At School` 並算出距離放學還有多久，不在校時間印 `Off School`，時間不合法（小時不在 0–23、分不在 0–59）印 `Invalid time`。
+
+```text
+輸入：
+7
+14 45
+輸出：
+7 is odd
+At School
+left: 1 h 15 m
+```
+
+```text
+輸入：
+10
+17 5
+輸出：
+10 is even
+Off School
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    if (n % 2 == 0) cout << n << " is even\n";
+    else            cout << n << " is odd\n";
+
+    int h, m;
+    cin >> h >> m;
+    if (h < 0 || h > 23 || m < 0 || m > 59) {
+        cout << "Invalid time\n";
+        return 0;
+    }
+    int now = h * 60 + m;                 // 換成分鐘數，比較就只剩一個數字
+    int start = 9 * 60 + 30, end = 16 * 60;
+    if (now >= start && now <= end) {
+        int left = end - now;
+        cout << "At School\n";
+        cout << "left: " << left / 60 << " h " << left % 60 << " m\n";
+    } else {
+        cout << "Off School\n";
+    }
+    return 0;
+}
+```
+
+「合法性檢查放最前面、不合法就 `return 0`」是這類題目的固定寫法，後面的判斷就不必再考慮怪輸入。時間先換算成分鐘數，「在不在區間內」就只剩一個 `now >= start && now <= end`。
+
+</details>
+
+**Q8. 三個數的眾數與去重**
+讀入三個整數，先印出「出現最多次的數字出現了幾次」，再把三個數**去掉重複**後由大到小印出。這週還沒有陣列，請只用 `if` 和三個變數解決。
+
+```text
+輸入： 5 9 5
+輸出：
+most: 2
+9 5
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+
+    // 出現最多次的數字出現幾次：三個都一樣 3，兩個一樣 2，否則 1
+    int most;
+    if (a == b && b == c)               most = 3;
+    else if (a == b || b == c || a == c) most = 2;
+    else                                most = 1;
+    cout << "most: " << most << '\n';
+
+    // 先排成 a >= b >= c（三次「比大小就交換」）
+    int tmp;
+    if (a < b) { tmp = a; a = b; b = tmp; }
+    if (a < c) { tmp = a; a = c; c = tmp; }
+    if (b < c) { tmp = b; b = c; c = tmp; }
+
+    // 由大到小印，跟前一個相同就跳過
+    cout << a;
+    if (b != a) cout << ' ' << b;
+    if (c != b) cout << ' ' << c;
+    cout << '\n';
+    return 0;
+}
+```
+
+三個數只有三種情況：全部相同、恰有兩個相同、全部不同，一個 `if / else if / else` 就分完了。去重的關鍵是**先排序再印**：排好之後重複的數字一定相鄰，只要跟前一個比就知道要不要跳過。那三行「比大小就交換」是 10/08 排序的雛形。
+
+</details>
+
+**Q9. 三角形分類**
+讀入三個正整數當三邊長，先判斷能不能構成三角形（任兩邊之和大於第三邊），可以的話再判斷是直角、銳角還是鈍角三角形：設最長邊為 $c$，$a^2 + b^2 = c^2$ 是直角、$>$ 是銳角、$<$ 是鈍角。
+
+```text
+輸入： 5 3 4
+輸出： right triangle
+```
+
+```text
+輸入： 2 3 4
+輸出： obtuse triangle
+```
+
+```text
+輸入： 1 2 3
+輸出： not a triangle
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    if (a <= 0 || b <= 0 || c <= 0) {
+        cout << "invalid\n";
+        return 0;
+    }
+    // 把最大的邊換到 c，之後只要比 a*a + b*b 和 c*c
+    int tmp;
+    if (a > c) { tmp = a; a = c; c = tmp; }
+    if (b > c) { tmp = b; b = c; c = tmp; }
+
+    if (a + b <= c) {
+        cout << "not a triangle\n";
+        return 0;
+    }
+    int lhs = a * a + b * b, rhs = c * c;
+    if (lhs == rhs)     cout << "right triangle\n";
+    else if (lhs > rhs) cout << "acute triangle\n";
+    else                cout << "obtuse triangle\n";
+    return 0;
+}
+```
+
+先把最長邊換到 `c`，之後所有判斷都只寫一次；不這樣做的話要對三種「誰最長」各寫一遍。「兩邊之和大於第三邊」只要檢查最短的兩邊加起來是否大於最長邊就夠了。
+
+</details>
+
+**Q10. 進位次數**
+反覆讀入兩個正整數，數一數直式相加時總共發生幾次進位（例如 509 + 104 = 613，只有個位 9 + 4 進了一次；999 + 1 三個位數都進位）。沒有進位印 `no carry`，讀到 `0 0` 結束。九九乘法表本週正文已經示範過，實驗課通常也會要你印一次，記得回去看〈巢狀迴圈〉那段。
+
+```text
+輸入：
+123 456
+555 555
+999 1
+509 104
+0 0
+輸出：
+no carry
+3 carry operations
+3 carry operations
+1 carry operations
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 兩個正整數相加時，總共發生幾次進位
+int carryCount(long long a, long long b) {
+    int count = 0, carry = 0;
+    while (a > 0 || b > 0) {
+        int sum = a % 10 + b % 10 + carry;    // 這一位的和，要把上一位的進位加進來
+        carry = (sum >= 10) ? 1 : 0;
+        if (carry == 1) count++;
+        a /= 10;
+        b /= 10;
+    }
+    return count;
+}
+
+int main() {
+    long long a, b;
+    while (true) {
+        cin >> a >> b;
+        if (a == 0 && b == 0) break;
+        int c = carryCount(a, b);
+        if (c == 0) cout << "no carry\n";
+        else        cout << c << " carry operations\n";
+    }
+    return 0;
+}
+```
+
+一位一位加，跟小學直式一樣：這一位的和要把**上一位的進位**算進去（999 + 1 的十位是 9 + 0 + 1 才會進位）。`while (a > 0 || b > 0)` 用 `||`，兩數位數不同時較短的那個補 0 繼續。
+
+</details>
+
+**Q11. 奇數位與偶數位的和**
+讀入一個正整數，**從個位數往左數**，第 1、3、5… 位的數字和為 `A`，第 2、4、6… 位的和為 `B`，輸出 `A`、`B` 與 $|A - B|$。兩個和**各寫成一個函式**，在 `main` 呼叫。例如 263417：個位 7、百位 4、萬位 6 是奇數位，$A = 17$；$B = 1 + 3 + 2 = 6$。
+
+```text
+輸入： 263417
+輸出：
+A = 17
+B = 6
+|A - B| = 11
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <cstdlib>       // abs
+using namespace std;
+
+// 從個位數算起，第 1、3、5… 位的和
+int oddPositionSum(int n) {
+    int sum = 0, pos = 1;
+    while (n > 0) {
+        if (pos % 2 == 1) sum += n % 10;
+        n /= 10;
+        pos++;
+    }
+    return sum;
+}
+
+// 第 2、4、6… 位的和
+int evenPositionSum(int n) {
+    int sum = 0, pos = 1;
+    while (n > 0) {
+        if (pos % 2 == 0) sum += n % 10;
+        n /= 10;
+        pos++;
+    }
+    return sum;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    int a = oddPositionSum(n), b = evenPositionSum(n);
+    cout << "A = " << a << '\n';
+    cout << "B = " << b << '\n';
+    cout << "|A - B| = " << abs(a - b) << '\n';
+    return 0;
+}
+```
+
+跟 Q3 一樣用 `n % 10` 取個位、`n /= 10` 去掉個位，只是多了一個計數器 `pos` 記「現在是第幾位」。兩個函式長得幾乎一樣——10/01 學會傳參考之後，可以改成一個函式一次帶回兩個和。`abs` 在 `<cstdlib>`。
+
+</details>
+
+**Q12. 猜拳**
+玩家輸入 `0`（石頭）、`2`（剪刀）或 `5`（布），電腦用 `rand()` 出拳，印出雙方的拳與勝負；輸入 `q` 結束。規則：0 贏 2、2 贏 5、5 贏 0，相同平手。要求寫兩個函式：一個回傳電腦的選擇、一個判定勝負。
+
+因為輸入裡混了數字和字母 `q`，用 `char` 讀比較單純：讀到 `'5'` 這個**字元**之後，`c - '0'` 就是整數 5（09/17 講過 `char` 存的是 ASCII 碼，`'5'` 減 `'0'` 剛好差 5）。
+
+```text
+（互動範例：電腦的拳是隨機的，每次執行結果不同）
+輸入：
+0
+2
+5
+7
+q
+輸出：
+you: 0, computer: 2 -> you win
+you: 2, computer: 5 -> you win
+you: 5, computer: 0 -> you win
+invalid
+bye
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+// 電腦隨機出拳：回傳 0（石頭）、2（剪刀）或 5（布）
+int computerChoice() {
+    int r = rand() % 3;             // 0, 1, 2
+    if (r == 0) return 0;
+    if (r == 1) return 2;
+    return 5;
+}
+
+// 回傳 1 代表玩家贏、-1 代表電腦贏、0 平手
+int judge(int player, int computer) {
+    if (player == computer) return 0;
+    if ((player == 0 && computer == 2) ||    // 石頭贏剪刀
+        (player == 2 && computer == 5) ||    // 剪刀贏布
+        (player == 5 && computer == 0))      // 布贏石頭
+        return 1;
+    return -1;
+}
+
+int main() {
+    srand(time(nullptr));
+    char c;
+    while (true) {                           // 一直玩，直到輸入 q
+        cin >> c;
+        if (c == 'q') break;
+        if (c != '0' && c != '2' && c != '5') {
+            cout << "invalid\n";
+            continue;
+        }
+        int player = c - '0';                // 字元 '5' 變成整數 5
+        int computer = computerChoice();
+        cout << "you: " << player << ", computer: " << computer << " -> ";
+        int r = judge(player, computer);
+        if (r == 1)       cout << "you win\n";
+        else if (r == -1) cout << "computer wins\n";
+        else              cout << "draw\n";
+    }
+    cout << "bye\n";
+    return 0;
+}
+```
+
+「贏的三種組合」直接列出來比寫數學規律清楚，而且對應題目的規則描述，助教檢查時一眼看得懂。`srand` 只在 `main` 開頭呼叫一次（正文講過：放在迴圈裡會一直拿到同一個數）。
+
+</details>
+
+**Q13. 阿姆斯壯數**
+一個 $n$ 位數若等於「各位數字的 $n$ 次方和」，就叫阿姆斯壯數，例如 $153 = 1^3 + 5^3 + 3^3$、$1634 = 1^4 + 6^4 + 3^4 + 4^4$。讀入上限 `N`（10 ≤ N ≤ 10000000），印出 10 到 `N` 之間所有阿姆斯壯數，每行一個。請把「判斷是不是阿姆斯壯數」寫成函式。
+
+```text
+輸入： 100000
+輸出：
+153
+370
+371
+407
+1634
+8208
+9474
+54748
+92727
+93084
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int digitCount(int n) {
+    int count = 0;
+    while (n > 0) { n /= 10; count++; }
+    return count;
+}
+
+int power(int base, int exp) {            // 整數版的次方，避免 pow 的浮點誤差
+    int result = 1;
+    for (int i = 0; i < exp; i++) result *= base;
+    return result;
+}
+
+bool isArmstrong(int n) {
+    int k = digitCount(n), sum = 0, m = n;
+    while (m > 0) {
+        sum += power(m % 10, k);
+        m /= 10;
+    }
+    return sum == n;
+}
+
+int main() {
+    int limit;
+    cin >> limit;
+    if (limit < 10 || limit > 10000000) {
+        cout << "out of range\n";
+        return 0;
+    }
+    for (int i = 10; i <= limit; i++)
+        if (isArmstrong(i)) cout << i << '\n';
+    return 0;
+}
+```
+
+次方自己用迴圈乘，不用 `pow`——`pow` 回傳 `double`，`pow(5, 3)` 有可能算出 124.99999，轉回整數就錯了。`N` 開到一千萬時要跑幾秒，是正常的。
+
+</details>
+
+**Q14. 河內塔**
+三根柱子 A、B、C，A 上有 `n` 個盤子（1 最小、`n` 最大，小的在上）。每次只能移動一根柱子最上面的盤子，且大盤子不能壓在小盤子上。讀入 `n`（1 ≤ n ≤ 10），用**遞迴**印出把全部盤子從 A 搬到 C 的每一步，最後印出總步數。
+
+```text
+輸入： 3
+輸出：
+disk 1: A -> C
+disk 2: A -> B
+disk 1: C -> B
+disk 3: A -> C
+disk 1: B -> A
+disk 2: B -> C
+disk 1: A -> C
+total moves: 7
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int moves = 0;
+
+// 把 n 個盤子從 from 搬到 to，中途可以借用 via
+void hanoi(int n, char from, char via, char to) {
+    if (n == 0) return;                       // 沒有盤子要搬：結束條件
+    hanoi(n - 1, from, to, via);              // 先把上面 n-1 個搬到中繼柱
+    cout << "disk " << n << ": " << from << " -> " << to << '\n';
+    moves++;
+    hanoi(n - 1, via, from, to);              // 再把那 n-1 個從中繼柱搬到目的柱
+}
+
+int main() {
+    int n;
+    cin >> n;
+    if (n < 1 || n > 10) {
+        cout << "invalid\n";
+        return 0;
+    }
+    hanoi(n, 'A', 'B', 'C');
+    cout << "total moves: " << moves << '\n';
+    return 0;
+}
+```
+
+這是遞迴的經典題，想法只有三行：要把 `n` 個盤子從 A 搬到 C，就「先把上面 `n-1` 個搬到 B，把最大的那個搬到 C，再把那 `n-1` 個從 B 搬到 C」。搬 `n-1` 個的方法跟搬 `n` 個一模一樣，只是柱子的角色換了——所以函式呼叫自己，只把三根柱子的順序調換。結束條件是 `n == 0`（沒盤子可搬）。總步數是 $2^n - 1$，`n = 10` 就是 1023 行。
+
+</details>
+
 ---
 
 [← 09/17｜C++ 基礎（Ch 1）](/2026/09/09/nsysu-c-programming/0917-cpp-basics/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/01｜參數傳遞與函式重載（Ch 4） →](/2026/09/09/nsysu-c-programming/1001-parameters/)

@@ -757,6 +757,341 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習與上機考的題型改寫。指標這週實驗課會出一題**鏈結串列（linked list）**的堆疊與佇列——這個資料結構課本要到 Ch17 才教，但實驗課直接拿它來練 `new`／`delete` 和 `->`，所以這裡先用兩題把它講完；上機考的 `char**` 迷你資料庫和 `strtok` 關鍵字統計也是年年出現。
+
+**Q6. 給值與給址的差別**
+宣告 `int i1 = 8, i2 = 10, i3 = 12` 與三個指標 `p1`、`p2`、`p3` 分別指向它們。依序執行 `i1 = i2`、`p1 = p3`、`*p3 = *p2`、`p2 = p1`，每一步之後印出三個變數的值與三個指標指到的值，最後判斷 `p1 == p2` 是否成立。要能口頭說明每一步發生了什麼。
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+void show(const char* step, int i1, int i2, int i3, int* p1, int* p2, int* p3) {
+    cout << step << "  i1=" << i1 << " i2=" << i2 << " i3=" << i3
+         << "  *p1=" << *p1 << " *p2=" << *p2 << " *p3=" << *p3 << '\n';
+}
+
+int main() {
+    int i1 = 8, i2 = 10, i3 = 12;
+    int *p1 = &i1, *p2 = &i2, *p3 = &i3;
+    show("start   ", i1, i2, i3, p1, p2, p3);
+    i1 = i2;    show("i1 = i2 ", i1, i2, i3, p1, p2, p3);   // 改「值」：p1 指的那格也跟著變
+    p1 = p3;    show("p1 = p3 ", i1, i2, i3, p1, p2, p3);   // 改「指向」：p1 現在指著 i3
+    *p3 = *p2;  show("*p3 = *p2", i1, i2, i3, p1, p2, p3);  // 透過 p3 改 i3 的值
+    p2 = p1;    show("p2 = p1 ", i1, i2, i3, p1, p2, p3);   // p2 也改指向 i3
+    cout << "p1 == p2 ? " << (p1 == p2 ? "yes" : "no") << '\n';
+    return 0;
+}
+```
+
+輸出：
+
+```text
+start     i1=8 i2=10 i3=12  *p1=8 *p2=10 *p3=12
+i1 = i2   i1=10 i2=10 i3=12  *p1=10 *p2=10 *p3=12
+p1 = p3   i1=10 i2=10 i3=12  *p1=12 *p2=10 *p3=12
+*p3 = *p2  i1=10 i2=10 i3=10  *p1=10 *p2=10 *p3=10
+p2 = p1   i1=10 i2=10 i3=10  *p1=10 *p2=10 *p3=10
+p1 == p2 ? yes
+```
+
+四句話對應四種操作：`i1 = i2` 改**值**，`p1` 指的那格跟著變；`p1 = p3` 改**指向**，`i1` 完全沒動；`*p3 = *p2` 透過指標改值，改到的是 `i3`；`p2 = p1` 之後兩個指標指同一格，所以 `p1 == p2` 為真（比的是位址）。實驗課檢查時助教會指著某一行問「這時候 p1 指誰」，要答得出來。
+
+</details>
+
+**Q7. 用鏈結串列做堆疊**
+**鏈結串列**是「每個節點除了存資料，還存一個指向下一個節點的指標」的資料結構：
+
+```cpp
+struct Node {
+    int value;
+    Node* next;     // 指向下一個節點；最後一個節點的 next 是 nullptr
+};
+```
+
+節點不放在陣列裡，而是需要時 `new` 一個、用 `next` 串起來，所以長度不必事先決定。**堆疊（stack）**是「後進先出」：只從同一端放入（push）與取出（pop）。用鏈結串列實作時只要記住最頂端的節點 `top`：push 是「新節點的 `next` 指向舊的 `top`，再把 `top` 換成新節點」；pop 是「`top` 往下移一格，把原本的頂端 `delete`」。
+
+寫 `class Stack`，提供 `push(int)`、`pop()`（空的回傳 `false`）、`display()`（從頂端印到底），並在解構子釋放所有節點。不能用陣列或 `vector`。反覆讀入 `push 值`／`pop`，每次操作後印出內容，`end` 結束。
+
+```text
+輸入：
+push 1
+push 5
+push 4
+pop
+pop
+pop
+pop
+end
+輸出：
+top -> 1
+top -> 5 1
+top -> 4 5 1
+top -> 5 1
+top -> 1
+top ->
+empty
+top ->
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int value;
+    Node* next;          // 指向下一個節點；最後一個節點是 nullptr
+};
+
+class Stack {
+public:
+    Stack() : top(nullptr) {}
+    ~Stack() {                            // 物件消失時把所有節點還給系統
+        while (top != nullptr) pop();
+    }
+    void push(int v) {
+        Node* n = new Node;               // 配一個新節點
+        n->value = v;
+        n->next = top;                    // 新節點壓在原本的頂端上面
+        top = n;                          // 頂端換成新節點
+    }
+    bool pop() {                          // 空的就回傳 false
+        if (top == nullptr) return false;
+        Node* old = top;
+        top = top->next;                  // 頂端往下移一格
+        delete old;                       // 再釋放原本的頂端
+        return true;
+    }
+    void display() const {
+        cout << "top ->";
+        for (Node* p = top; p != nullptr; p = p->next) cout << ' ' << p->value;
+        cout << '\n';
+    }
+private:
+    Node* top;
+};
+
+int main() {
+    Stack s;
+    string cmd;
+    while (cin >> cmd && cmd != "end") {
+        if (cmd == "push") { int v; cin >> v; s.push(v); }
+        else if (cmd == "pop") { if (!s.pop()) cout << "empty\n"; }
+        s.display();
+    }
+    return 0;
+}
+```
+
+三個必考細節：`push` 裡**先** `n->next = top` **再** `top = n`，順序反了舊的串列就丟了；`pop` 先用 `old` 記住頂端、移動 `top`，最後才 `delete old`——`delete` 完再去讀 `top->next` 就是本篇雷區的懸空指標；解構子把 `pop` 呼叫到空為止，程式結束時才不會漏記憶體。走訪用 `for (Node* p = top; p != nullptr; p = p->next)`，這個形狀之後所有鏈結串列題都一樣。
+
+</details>
+
+**Q8. 用鏈結串列做佇列**
+**佇列（queue）**是「先進先出」：從尾巴放入、從頭取出，所以要同時記住 `head` 和 `tail` 兩個指標。寫 `class Queue`，介面與 Q7 相同（`push`、`pop`、`display`、解構子），不能用陣列或 `vector`。
+
+```text
+輸入：
+push 1
+push 5
+push 4
+pop
+push 9
+pop
+pop
+pop
+end
+輸出：
+head -> 1 <- tail
+head -> 1 5 <- tail
+head -> 1 5 4 <- tail
+head -> 5 4 <- tail
+head -> 5 4 9 <- tail
+head -> 4 9 <- tail
+head -> 9 <- tail
+head -> <- tail
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int value;
+    Node* next;
+};
+
+class Queue {
+public:
+    Queue() : head(nullptr), tail(nullptr) {}
+    ~Queue() { while (head != nullptr) pop(); }
+    void push(int v) {                       // 從尾巴進
+        Node* n = new Node;
+        n->value = v;
+        n->next = nullptr;
+        if (tail == nullptr) head = tail = n;   // 原本是空的：頭尾都是它
+        else { tail->next = n; tail = n; }      // 接在尾巴後面，尾巴往後移
+    }
+    bool pop() {                             // 從頭出
+        if (head == nullptr) return false;
+        Node* old = head;
+        head = head->next;
+        if (head == nullptr) tail = nullptr;    // 拿光了：尾巴也要清掉
+        delete old;
+        return true;
+    }
+    void display() const {
+        cout << "head ->";
+        for (Node* p = head; p != nullptr; p = p->next) cout << ' ' << p->value;
+        cout << " <- tail\n";
+    }
+private:
+    Node* head;
+    Node* tail;
+};
+
+int main() {
+    Queue q;
+    string cmd;
+    while (cin >> cmd && cmd != "end") {
+        if (cmd == "push") { int v; cin >> v; q.push(v); }
+        else if (cmd == "pop") { if (!q.pop()) cout << "empty\n"; }
+        q.display();
+    }
+    return 0;
+}
+```
+
+跟堆疊只差兩個邊界狀況，也正是最容易寫錯的地方：**推進空佇列**時 `head` 和 `tail` 都要指向新節點（不然 `tail->next` 會對 `nullptr` 解參考）；**取出最後一個**之後 `tail` 也要清成 `nullptr`，否則它指著已經 `delete` 的節點，下一次 `push` 就寫到壞掉的記憶體。
+
+</details>
+
+**Q9. 迷你資料庫（`char**`）**
+第一行是資料筆數 `n`。接著是指令：`INSERT 長度` 換行後接一個那個長度的字串，或 `OUTPUT`（把所有資料**倒序**印出並結束）。限制：只能用 `char**` 與 `new` 配置空間，**不能用任何陣列宣告**（`char rows[100][100]`、`char* rows[100]` 都不行）。
+
+```text
+輸入：
+3
+INSERT 3
+abc
+INSERT 5
+abcde
+INSERT 6
+abcdef
+OUTPUT
+輸出：
+abcdef
+abcde
+abc
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    char** rows = new char*[n];            // n 個「指向字串的指標」
+    int count = 0;
+    char cmd[16];
+    while (cin >> cmd) {
+        if (strcmp(cmd, "INSERT") == 0) {
+            int len;
+            cin >> len;
+            rows[count] = new char[len + 1];   // +1 給結尾的 '\0'
+            cin >> rows[count];
+            count++;
+        } else if (strcmp(cmd, "OUTPUT") == 0) {
+            for (int i = count - 1; i >= 0; i--) cout << rows[i] << '\n';
+            break;
+        }
+    }
+    for (int i = 0; i < count; i++) delete[] rows[i];   // 先內層
+    delete[] rows;                                      // 再外層
+    return 0;
+}
+```
+
+`char** rows` 是「指向（指向字元的指標）的指標」：外層 `new char*[n]` 配 `n` 個指標，每收到一筆再 `new char[len + 1]` 配那一筆的空間，`+1` 是給 `'\0'`。釋放順序跟本週 Q4 的二維陣列一樣：先每一列、再外層。這題的重點就是把「陣列的陣列」換成「指標的指標」寫一次。
+
+</details>
+
+**Q10. 關鍵字計數（`strtok`）**
+第一行是一段英文（不超過 10000 字元），之後每行一個關鍵字（最多 10 個），讀到輸入結束。印出每個關鍵字在文章中出現幾次：必須整個單字相同（`key` 不算 `keyword`）、不分大小寫；`, . " ! ? : -` 和空白都算分隔符號（所以 `game-theoretic` 是兩個字），但單引號不是（`I'm` 是一個字）。請用 C 風格字串與 `<cstring>` 處理。
+
+`<cstring>` 有一個切單字的工具 `strtok(字串, 分隔字元集合)`：第一次呼叫傳入字串，它會把第一個單字的結尾改成 `'\0'` 並回傳單字開頭；之後每次傳 `nullptr` 就接著切下一個，切完回傳 `nullptr`。它會**直接改壞原字串**，所以要切的字串不能是 `const`。
+
+```text
+輸入：
+NSYSU is by the sea. I'm at nsysu, and the game-theoretic class is at NSYSU too!
+nsysu
+the
+game
+I'm
+key
+輸出：
+nsysu: 3
+the: 2
+game: 1
+i'm: 1
+key: 0
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <cctype>
+using namespace std;
+
+void toLower(char* s) {
+    for (int i = 0; s[i] != '\0'; i++) s[i] = tolower(s[i]);
+}
+
+int main() {
+    const int MAX_TEXT = 10001, MAX_KEY = 10, MAX_LEN = 51;
+    char text[MAX_TEXT];
+    cin.getline(text, MAX_TEXT);           // 第一行整段文字
+    toLower(text);
+
+    char keys[MAX_KEY][MAX_LEN];
+    int k = 0;
+    while (k < MAX_KEY && cin >> keys[k]) { toLower(keys[k]); k++; }
+
+    int count[MAX_KEY] = {};
+    // strtok 會把 text 沿著這些分隔字元切開，每呼叫一次交出下一個單字
+    char* word = strtok(text, " ,.\"!?:-");
+    while (word != nullptr) {
+        for (int i = 0; i < k; i++)
+            if (strcmp(word, keys[i]) == 0) count[i]++;
+        word = strtok(nullptr, " ,.\"!?:-");   // 傳 nullptr 表示「接著上次的位置切」
+    }
+    for (int i = 0; i < k; i++) cout << keys[i] << ": " << count[i] << '\n';
+    return 0;
+}
+```
+
+先把文章和關鍵字**全部轉小寫**，比較就只剩 `strcmp`。`cin.getline(text, MAX_TEXT)` 是 C 風格字串版的 `getline`（讀進 `char` 陣列、要給上限）。分隔字元集合 `" ,.\"!?:-"` 裡的 `\"` 是跳脫的雙引號；單引號故意不放進去，`i'm` 才會是一個字。
+
+</details>
+
 ---
 
 [← 11/12｜運算子重載、friend 與 string（Ch 8、Ch 9）](/2026/09/09/nsysu-c-programming/1112-operator-string/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/26｜分離編譯與命名空間（Ch 11） →](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)

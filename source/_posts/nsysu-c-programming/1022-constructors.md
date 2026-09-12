@@ -534,6 +534,232 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習的題型改寫。這週實驗課的三個關鍵字是 **`const` 參考參數、`static` 成員、把上一題的類別當成員再包一層**——三題其實是一路接著寫的。
+
+**Q5. 兩個日期是否相同（`const` 參考參數）**
+寫 `class Date`，建構子收年月日，`isValid()` 檢查日期存在（含閏年二月），`sameAs(const Date& other) const` 比較是否同一天。讀入兩個日期，任一不合法印 `invalid date`，否則印出比較結果。
+
+```text
+輸入：
+2026 9 10
+2026 9 10
+輸出： 2026/9/10 == 2026/9/10
+```
+
+```text
+輸入：
+2026 2 29
+2026 3 1
+輸出： invalid date
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Date {
+public:
+    Date(int y, int m, int d) : year(y), month(m), day(d) {}
+    bool isValid() const {
+        if (month < 1 || month > 12 || day < 1) return false;
+        int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        bool leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+        if (leap && month == 2) return day <= 29;
+        return day <= days[month - 1];
+    }
+    bool sameAs(const Date& other) const {           // 只讀對方，所以是 const 參考
+        return year == other.year && month == other.month && day == other.day;
+    }
+    void print() const { cout << year << '/' << month << '/' << day; }
+private:
+    int year, month, day;
+};
+
+int main() {
+    int y1, m1, d1, y2, m2, d2;
+    cin >> y1 >> m1 >> d1 >> y2 >> m2 >> d2;
+    Date a(y1, m1, d1), b(y2, m2, d2);
+    if (!a.isValid() || !b.isValid()) {
+        cout << "invalid date\n";
+        return 0;
+    }
+    a.print(); cout << (a.sameAs(b) ? " == " : " != "); b.print(); cout << '\n';
+    return 0;
+}
+```
+
+`sameAs` 的參數是 `const Date&`：不複製、也保證不改對方；函式本身也是 `const`，因為不改自己。這兩個 `const` 缺一個助教都會問。同一個類別的成員函式可以直接讀另一個物件的 private 成員（`other.year`），因為 private 是「類別外不能碰」，不是「物件外不能碰」。
+
+</details>
+
+**Q6. 名冊與人數統計（`static` 成員）**
+寫 `class Member`，private 存姓名與生日（年月日），用一個 **`static`** 資料成員統計總共建立了幾個人。反覆讀入「姓名 年 月 日」，讀到 `exit` 停止；最後印出所有人與總人數。總人數要透過 `static` 成員函式 `Member::count()` 取得。
+
+```text
+輸入：
+Amy 2006 3 14
+Ben 2005 11 2
+Cleo 2006 7 30
+exit
+輸出：
+Amy (2006/3/14)
+Ben (2005/11/2)
+Cleo (2006/7/30)
+total: 3
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Member {
+public:
+    Member() : name("?"), year(0), month(0), day(0) {}     // 陣列需要預設建構子
+    Member(const string& n, int y, int m, int d)
+        : name(n), year(y), month(m), day(d) { total++; }   // 每建一個就數一個
+    void print() const {
+        cout << name << " (" << year << '/' << month << '/' << day << ")\n";
+    }
+    static int count() { return total; }
+private:
+    string name;
+    int year, month, day;
+    static int total;
+};
+int Member::total = 0;                    // static 資料成員要在類別外定義一次
+
+int main() {
+    const int MAX = 100;
+    Member list[MAX];
+    int n = 0;
+    string name;
+    while (true) {
+        cin >> name;
+        if (name == "exit") break;
+        int y, m, d;
+        cin >> y >> m >> d;
+        list[n] = Member(name, y, m, d);  // 建一個暫時物件再指派進陣列
+        n++;
+    }
+    for (int i = 0; i < n; i++) list[i].print();
+    cout << "total: " << Member::count() << '\n';
+    return 0;
+}
+```
+
+`static int total` 屬於整個類別，不屬於任何一個物件，所以「每建構一次就 `total++`」自然就是總人數。兩個細節：`int Member::total = 0;` 這行定義**一定要寫在類別外**（少了會 linker error）；`Member list[MAX];` 開陣列會對每一格呼叫**預設**建構子，所以要提供一個不計數的預設建構子，否則 100 格空位也會被算進去。
+
+</details>
+
+**Q7. 記帳程式**
+寫 `class Entry`，private 存一個 `Date`（沿用 Q5 的類別，加一個 `before()` 比先後）與金額（正數收入、負數支出），用 `static` 成員累計收支總額。讀入 `n` 筆紀錄後：依日期由早到晚印出（同一天依金額由小到大）、印出總額；再讀入一個日期，印出那天的所有紀錄。
+
+```text
+輸入：
+4
+2026 9 12 -120
+2026 9 10 3000
+2026 9 12 -800
+2026 8 30 -450
+2026 9 12
+輸出：
+2026/8/30  -450
+2026/9/10  +3000
+2026/9/12  -800
+2026/9/12  -120
+balance: 1630
+records on 2026/9/12:
+2026/9/12  -800
+2026/9/12  -120
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Date {
+public:
+    Date(int y = 1, int m = 1, int d = 1) : year(y), month(m), day(d) {}
+    bool before(const Date& o) const {            // 「我比 o 早」
+        if (year != o.year)   return year < o.year;
+        if (month != o.month) return month < o.month;
+        return day < o.day;
+    }
+    bool sameAs(const Date& o) const {
+        return year == o.year && month == o.month && day == o.day;
+    }
+    void print() const { cout << year << '/' << month << '/' << day; }
+private:
+    int year, month, day;
+};
+
+class Entry {
+public:
+    Entry() : amount(0) {}
+    Entry(const Date& d, int a) : date(d), amount(a) { balance += a; }
+    // 排序規則：日期早的在前；同一天金額小的在前
+    bool before(const Entry& o) const {
+        if (!date.sameAs(o.date)) return date.before(o.date);
+        return amount < o.amount;
+    }
+    bool on(const Date& d) const { return date.sameAs(d); }
+    void print() const {
+        date.print();
+        cout << (amount >= 0 ? "  +" : "  ") << amount << '\n';
+    }
+    static int total() { return balance; }
+private:
+    Date date;
+    int amount;                                   // 正數收入、負數支出
+    static int balance;
+};
+int Entry::balance = 0;
+
+int main() {
+    const int MAX = 100;
+    Entry book[MAX];
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int y, m, d, a;
+        cin >> y >> m >> d >> a;
+        book[i] = Entry(Date(y, m, d), a);
+    }
+    // 選擇排序，比較規則交給 Entry::before
+    for (int i = 0; i < n - 1; i++) {
+        int best = i;
+        for (int j = i + 1; j < n; j++)
+            if (book[j].before(book[best])) best = j;
+        Entry t = book[i]; book[i] = book[best]; book[best] = t;
+    }
+    for (int i = 0; i < n; i++) book[i].print();
+    cout << "balance: " << Entry::total() << '\n';
+
+    int y, m, d;
+    cin >> y >> m >> d;
+    Date target(y, m, d);
+    cout << "records on "; target.print(); cout << ":\n";
+    for (int i = 0; i < n; i++)
+        if (book[i].on(target)) book[i].print();
+    return 0;
+}
+```
+
+這題是前兩題的組合：`Entry` **裡面放一個 `Date`**（10/15 說的 has-a），排序規則交給 `Entry::before`，而 `Entry::before` 又把日期的部分交給 `Date::before`——每個類別只管自己那層的比較。`Date` 的建構子給了預設值 `(1, 1, 1)`，是為了 `Entry()` 這個預設建構子能編過（陣列需要它）。排序骨架還是 10/08 的選擇排序，換掉的只有比較條件和交換的型別。
+
+</details>
+
 ---
 
 [← 10/15｜結構與類別（Ch 5–6）](/2026/09/09/nsysu-c-programming/1015-struct-class/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/29｜vector 與運算子重載入門（Ch 7） →](/2026/09/09/nsysu-c-programming/1029-vector-operator/)

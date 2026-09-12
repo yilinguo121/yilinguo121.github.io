@@ -478,6 +478,318 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習的題型改寫。這週實驗課的固定組合是「`vector` 裝 `struct` 做一個選單程式」與「幫 `Date` 類別重載比較運算子和 `+`」。
+
+**Q5. 日記本（`vector` + 選單）**
+定義 `struct Diary { int year, month, day; string note; }`，用 `vector<Diary>` 存日記。反覆讀入指令：`1` 寫日記（讀日期與一整行內容）、`2` 讀日期並顯示那天的內容、`3` 讀日期並刪除、`4` 列出所有日記的日期與筆數，`0` 結束。日期不合法要重新輸入。
+
+日記內容含空白，要用 `getline(cin, note)` 讀**一整行**；但 `cin >> d` 讀完日期後，那行結尾的換行還留在輸入裡，直接 `getline` 會讀到空字串，所以中間要先 `cin.ignore();` 把那個換行丟掉。（這個坑 11/12 會完整解釋，這裡先照抄。）
+
+```text
+輸入：
+1
+2026 9 10 first C++ class
+1
+2026 2 30
+2026 9 17 learned cin and cout
+4
+2
+2026 9 17
+3
+2026 9 10
+4
+0
+輸出：
+saved
+invalid date, again
+saved
+2026/9/10
+2026/9/17
+(2 entries)
+learned cin and cout
+deleted
+2026/9/17
+(1 entries)
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct Diary { int year, month, day; string note; };
+
+bool validDate(int y, int m, int d) {
+    if (y < 1 || m < 1 || m > 12 || d < 1) return false;
+    int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0) days[1] = 29;
+    return d <= days[m - 1];
+}
+
+// 一直讀到合法日期為止
+void readDate(int& y, int& m, int& d) {
+    while (true) {
+        cin >> y >> m >> d;
+        if (validDate(y, m, d)) return;
+        cout << "invalid date, again\n";
+    }
+}
+
+int find(const vector<Diary>& v, int y, int m, int d) {   // 找不到回傳 -1
+    for (size_t i = 0; i < v.size(); i++)
+        if (v[i].year == y && v[i].month == m && v[i].day == d) return i;
+    return -1;
+}
+
+int main() {
+    vector<Diary> diary;
+    int cmd;
+    while (cin >> cmd && cmd != 0) {
+        int y, m, d;
+        if (cmd == 1) {
+            readDate(y, m, d);
+            Diary e = { y, m, d, "" };
+            cin.ignore();                 // 丟掉日期後面那個換行，getline 才不會讀到空行
+            getline(cin, e.note);         // 讀一整行（可含空白）當日記內容
+            diary.push_back(e);
+            cout << "saved\n";
+        } else if (cmd == 2) {
+            readDate(y, m, d);
+            int i = find(diary, y, m, d);
+            if (i == -1) cout << "no entry\n";
+            else         cout << diary[i].note << '\n';
+        } else if (cmd == 3) {
+            readDate(y, m, d);
+            int i = find(diary, y, m, d);
+            if (i == -1) cout << "no entry\n";
+            else { diary.erase(diary.begin() + i); cout << "deleted\n"; }
+        } else if (cmd == 4) {
+            for (const Diary& e : diary)
+                cout << e.year << '/' << e.month << '/' << e.day << '\n';
+            cout << "(" << diary.size() << " entries)\n";
+        }
+    }
+    return 0;
+}
+```
+
+三個可以重複用的零件：`validDate` 判斷合法、`readDate` 用參考參數「一直讀到合法為止」、`find` 回傳索引（找不到 `-1`）。指令 2 和 3 都先 `find` 再決定，刪除用 `erase(begin() + i)`。選單程式的骨架就是 `while (cin >> cmd && cmd != 0)` 包一串 `if / else if`，期末上機考的大題也是這個形狀。
+
+</details>
+
+**Q6. `vector` 排序與刪除**
+讀入數量與數字存進 `vector<int>`，用選擇排序排好，每次**交換**後印一次；接著反覆讀入要刪除的數字（只刪第一個相同的，找不到印 `not found`），讀到 `-1` 停；最後印剩下的數字與 `size()`。
+
+```text
+輸入：
+5
+7 -2 7 4 1
+7
+99
+-2
+-1
+輸出：
+round 1: -2 7 7 4 1
+round 2: -2 1 7 4 7
+round 3: -2 1 4 7 7
+99 not found
+remaining: 1 4 7
+size: 3
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void print(const vector<int>& v) {
+    for (size_t i = 0; i < v.size(); i++) cout << v[i] << (i + 1 < v.size() ? " " : "\n");
+}
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    for (int i = 0; i < n; i++) cin >> v[i];
+
+    for (int i = 0; i + 1 < n; i++) {               // 選擇排序
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++)
+            if (v[j] < v[minIdx]) minIdx = j;
+        if (minIdx != i) {
+            int t = v[i]; v[i] = v[minIdx]; v[minIdx] = t;
+            cout << "round " << i + 1 << ": ";
+            print(v);
+        }
+    }
+
+    int x;
+    while (cin >> x && x != -1) {                    // 要刪的數字，-1 停
+        bool found = false;
+        for (size_t i = 0; i < v.size(); i++) {
+            if (v[i] == x) {
+                v.erase(v.begin() + i);               // 只刪第一個相同的
+                found = true;
+                break;
+            }
+        }
+        if (!found) cout << x << " not found\n";
+    }
+    cout << "remaining: ";
+    print(v);
+    cout << "size: " << v.size() << '\n';
+    return 0;
+}
+```
+
+跟 10/08 的 Q9 幾乎一樣，差別只在容器換成 `vector`、索引型別用 `size_t`、刪除用 `erase`。`erase` 之後後面的元素會往前補，所以 `break` 掉不要繼續掃——不然 `i` 會跳過補上來的那一個。
+
+</details>
+
+**Q7. 日期的 `<`、`>`、`==`**
+`class Date` 的年月日是 private。用**非成員函式**重載 `<`、`>`、`==`（參數都是 `const Date&`），需要的話宣告成 `friend`。讀入三個日期，印出前兩組的比較結果，並找出最早的一天。
+
+```text
+輸入：
+2026 9 10
+2026 9 10
+2025 12 25
+輸出：
+2026/9/10 == 2026/9/10
+2026/9/10 > 2025/12/25
+earliest: 2025/12/25
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Date {
+public:
+    Date(int y, int m, int d) : year(y), month(m), day(d) {}
+    void print() const { cout << year << '/' << month << '/' << day; }
+    friend bool operator<(const Date& a, const Date& b);
+    friend bool operator==(const Date& a, const Date& b);
+private:
+    int year, month, day;
+};
+
+bool operator<(const Date& a, const Date& b) {
+    if (a.year != b.year)   return a.year < b.year;
+    if (a.month != b.month) return a.month < b.month;
+    return a.day < b.day;
+}
+bool operator==(const Date& a, const Date& b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+bool operator>(const Date& a, const Date& b) { return b < a; }   // 反過來問就好，不用 friend
+
+int main() {
+    int y, m, d;
+    cin >> y >> m >> d; Date a(y, m, d);
+    cin >> y >> m >> d; Date b(y, m, d);
+    cin >> y >> m >> d; Date c(y, m, d);
+    a.print(); cout << (a < b ? " < " : a == b ? " == " : " > "); b.print(); cout << '\n';
+    b.print(); cout << (b < c ? " < " : b == c ? " == " : " > "); c.print(); cout << '\n';
+
+    Date earliest = a;                       // 找最早的一天
+    if (b < earliest) earliest = b;
+    if (c < earliest) earliest = c;
+    cout << "earliest: "; earliest.print(); cout << '\n';
+    return 0;
+}
+```
+
+只有 `<` 和 `==` 真的需要碰 private 成員，所以只有它們是 `friend`；`>` 直接寫成 `b < a`，一行搞定又不用開後門。比較日期是「先比年、年相同比月、月相同比日」，這個「逐欄比較」的寫法字串、版本號都適用。
+
+</details>
+
+**Q8. 日期加天數（重載 `+`）**
+承 Q7，用**成員函式**重載 `+`：`today + n` 回傳 `n` 天後的日期，原物件不變，要正確處理月底、年底與閏年。讀入的日期不合法要重新輸入。
+
+```text
+輸入：
+2024 2 30
+2024 2 27
+5
+輸出：
+invalid date, again
+2024/2/27 + 5 days = 2024/3/3
+```
+
+```text
+輸入：
+2026 12 25
+10
+輸出： 2026/12/25 + 10 days = 2027/1/4
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Date {
+public:
+    Date(int y, int m, int d) : year(y), month(m), day(d) {}
+    bool isValid() const {
+        return month >= 1 && month <= 12 && day >= 1 && day <= daysInMonth(year, month);
+    }
+    Date operator+(int days) const {          // 回傳新日期，自己不變
+        Date r(year, month, day);          // 從自己複製一份出來改
+        for (int i = 0; i < days; i++) {      // 一天一天往後推
+            r.day++;
+            if (r.day > daysInMonth(r.year, r.month)) {
+                r.day = 1;
+                r.month++;
+                if (r.month > 12) { r.month = 1; r.year++; }
+            }
+        }
+        return r;
+    }
+    void print() const { cout << year << '/' << month << '/' << day; }
+private:
+    int year, month, day;
+    static int daysInMonth(int y, int m) {
+        int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        bool leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+        return (m == 2 && leap) ? 29 : days[m - 1];
+    }
+};
+
+int main() {
+    int y, m, d;
+    while (true) {
+        cin >> y >> m >> d;
+        if (Date(y, m, d).isValid()) break;
+        cout << "invalid date, again\n";
+    }
+    Date today(y, m, d);
+    int n;
+    cin >> n;
+    Date later = today + n;
+    today.print(); cout << " + " << n << " days = "; later.print(); cout << '\n';
+    return 0;
+}
+```
+
+`operator+` 是 `const` 成員：從自己複製一份 `r`，改的是 `r`，最後回傳它——這就是「`a + b` 不該改 `a`」的意思。一天一天往後推雖然慢，但月底、年底、閏年三種進位都由同一段程式處理，不容易寫錯；`daysInMonth` 做成 private 的 `static` 函式，因為它不需要任何物件的資料。
+
+</details>
+
 ---
 
 [← 10/22｜類別與建構子（Ch 6–7）](/2026/09/09/nsysu-c-programming/1022-constructors/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/05｜期中上機考（範圍 Ch 1–6） →](/2026/09/09/nsysu-c-programming/1105-midterm/)

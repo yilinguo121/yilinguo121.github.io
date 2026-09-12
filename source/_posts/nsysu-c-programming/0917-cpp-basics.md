@@ -519,6 +519,77 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+下面兩題是照實驗課歷年課堂練習與上機考的題型改寫的（題目每年會換、題型很固定）。實驗課第一週的練習其實還會考「判斷奇偶」「現在是不是上課時間」，那些需要下週的 `if`，所以放在 [09/24 的練習](/2026/09/09/nsysu-c-programming/0924-flow-control/#本週練習題) 裡。
+
+**Q6. 距離放學還有多久**
+讀入現在的時、分（24 小時制），假設今天 16:00 放學，輸出還剩幾小時幾分。技巧跟 Q2 相反：先把時、分**合成**「從 0:00 起算的總分鐘數」，用整數相減，再用 `/` 和 `%` 拆回時、分。
+
+```text
+輸入： 13 25
+輸出： left: 2 h 35 m
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int hour, minute;
+    cin >> hour >> minute;
+    int now  = hour * 60 + minute;      // 換算成「從 0:00 起算的分鐘數」
+    int end  = 16 * 60;                 // 16:00
+    int left = end - now;
+    cout << "left: " << left / 60 << " h " << left % 60 << " m\n";
+    return 0;
+}
+```
+
+先合併再拆開，就不用處理「分不夠減要跟小時借」的問題。輸入超過 16:00 會得到負數，這週還沒有 `if` 可以擋，先不管。
+
+</details>
+
+**Q7. 圓與球**
+讀入一個**直徑** `d`（`double`），把它當成圓的直徑與球的直徑，用 $\pi = 3.141592$ 印出圓周長、圓面積、球體積、球表面積，各保留三位小數。公式：周長 $2\pi r$、圓面積 $\pi r^2$、球體積 $\frac{4}{3}\pi r^3$、球表面積 $4\pi r^2$。
+
+```text
+輸入： 10
+輸出：
+circumference: 31.416
+area: 78.540
+volume: 523.599
+surface: 314.159
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    const double PI = 3.141592;
+    double d;
+    cin >> d;
+    double r = d / 2;                       // 題目給的是直徑
+    cout << fixed << setprecision(3);
+    cout << "circumference: " << 2 * PI * r << '\n';
+    cout << "area: " << PI * r * r << '\n';
+    cout << "volume: " << 4.0 / 3 * PI * r * r * r << '\n';
+    cout << "surface: " << 4 * PI * r * r << '\n';
+    return 0;
+}
+```
+
+**這題唯一的陷阱**在 `4.0 / 3`：寫成 `4 / 3` 就是整數除法，得到 1，球體積會少掉四分之一。`const double PI` 放在 `main` 開頭是題目給定值的標準寫法，之後要改成更精確的值只改一個地方。
+
+</details>
+
 ---
 
 [← 09/10｜課程介紹與環境暖身](/2026/09/09/nsysu-c-programming/0910-intro/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [09/24｜流程控制與函式基礎（Ch 2、Ch 3） →](/2026/09/09/nsysu-c-programming/0924-flow-control/)

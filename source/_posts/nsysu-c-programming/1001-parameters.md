@@ -553,6 +553,226 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習的題型改寫。這週實驗課的固定戲碼是：用同一個 swap 示範傳值與傳參考的差別、用預設引數、然後一題「反轉相加到迴文」的經典題。
+
+**Q6. 傳值與傳參考：眼見為憑**
+寫兩個交換函式 `swapByValue(int a, int b)` 與 `swapByRef(int& a, int& b)`，函式**內**交換後各印一次，`main` 在呼叫**前後**也各印一次，觀察差別。
+
+```text
+輸入： 3 8
+輸出：
+before: x = 3, y = 8
+  inside swapByValue: a = 8, b = 3
+after swapByValue: x = 3, y = 8
+  inside swapByRef:   a = 8, b = 3
+after swapByRef:   x = 8, y = 3
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+void swapByValue(int a, int b) {
+    int tmp = a; a = b; b = tmp;
+    cout << "  inside swapByValue: a = " << a << ", b = " << b << '\n';
+}
+
+void swapByRef(int& a, int& b) {
+    int tmp = a; a = b; b = tmp;
+    cout << "  inside swapByRef:   a = " << a << ", b = " << b << '\n';
+}
+
+int main() {
+    int x, y;
+    cin >> x >> y;
+    cout << "before: x = " << x << ", y = " << y << '\n';
+    swapByValue(x, y);
+    cout << "after swapByValue: x = " << x << ", y = " << y << '\n';
+    swapByRef(x, y);
+    cout << "after swapByRef:   x = " << x << ", y = " << y << '\n';
+    return 0;
+}
+```
+
+函式裡兩個版本印出來一模一樣，差別只在**回到 `main` 之後**：傳值版改的是複本，`x`、`y` 沒動；傳參考版的 `a`、`b` 就是 `x`、`y` 的別名，所以真的換了。這題實驗課助教常常追問「為什麼裡面印的一樣、外面不一樣」，要能用「複本 vs 別名」講出來。
+
+</details>
+
+**Q7. 反轉相加到迴文**
+把一個數跟它的反轉相加，結果若不是迴文就再做一次，直到出現迴文。例如 195 → 195 + 591 = 786 → 786 + 687 = 1473 → 1473 + 3741 = 5214 → 5214 + 4125 = 9339（迴文）。讀入起始數字，印出每一步、總共加了幾次、最後的迴文；超過 10 次還沒出現就放棄。要求兩個函式：`void reverseDigits(long long n, long long& result)` 用**傳參考**帶回反轉結果，`bool isPalindrome(long long n)` 判斷迴文。
+
+```text
+輸入： 195
+輸出：
+195 + 591 = 786
+786 + 687 = 1473
+1473 + 3741 = 5214
+5214 + 4125 = 9339
+steps: 4, palindrome: 9339
+```
+
+```text
+輸入： 89
+輸出：
+89 + 98 = 187
+187 + 781 = 968
+968 + 869 = 1837
+1837 + 7381 = 9218
+9218 + 8129 = 17347
+17347 + 74371 = 91718
+91718 + 81719 = 173437
+173437 + 734371 = 907808
+907808 + 808709 = 1716517
+1716517 + 7156171 = 8872688
+gave up after 10 steps
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 把 n 反轉後放進 result（用參考帶回去）
+void reverseDigits(long long n, long long& result) {
+    result = 0;
+    while (n > 0) {
+        result = result * 10 + n % 10;
+        n /= 10;
+    }
+}
+
+bool isPalindrome(long long n) {
+    long long r;
+    reverseDigits(n, r);
+    return r == n;
+}
+
+int main() {
+    long long n;
+    cin >> n;
+    int steps = 0;
+    while (!isPalindrome(n) && steps < 10) {
+        long long r;
+        reverseDigits(n, r);
+        cout << n << " + " << r << " = " << n + r << '\n';
+        n += r;
+        steps++;
+    }
+    if (isPalindrome(n))
+        cout << "steps: " << steps << ", palindrome: " << n << '\n';
+    else
+        cout << "gave up after 10 steps\n";
+    return 0;
+}
+```
+
+反轉的邏輯跟 09/24 的 Q3 一樣，只是結果改用參考參數帶回、回傳型別變成 `void`——這是題目指定的練習重點。用 `long long` 是因為數字每加一次就長一位，`int` 撐不到 10 步（89 那組第 10 步已經是七位數再反轉相加）。
+
+</details>
+
+**Q8. 字尾符號（預設引數）**
+讀入一個不含空白的字串，用**同一個函式** `void decorate(const string& s, int len = 0)` 印兩次：第一次不給長度，一律在尾端加 `!`；第二次把字串長度傳進去，長度 ≥ 5 加 `~`、2–4 加 `*`、1 加 `!`。字串長度用 `s.size()` 取得（`string` 內建的功能，回傳字元數；10/29 會系統性介紹）。
+
+```text
+輸入： nsysu
+輸出：
+nsysu!
+nsysu~
+```
+
+```text
+輸入： hey
+輸出：
+hey!
+hey*
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// len 省略（或給 0）時：一律加 "!"；有給長度時：依長度決定符號
+void decorate(const string& s, int len = 0) {
+    if (len == 0)     cout << s << "!\n";
+    else if (len >= 5) cout << s << "~\n";
+    else if (len > 1)  cout << s << "*\n";
+    else               cout << s << "!\n";
+}
+
+int main() {
+    string s;
+    cin >> s;
+    decorate(s);                 // 不看長度
+    decorate(s, s.size());       // 看長度
+    return 0;
+}
+```
+
+預設引數 `= 0` 讓「沒給長度」變成一個可以判斷的狀態。`decorate(s, s.size())` 把 `size_t`（無號）傳給 `int` 參數會發生隱含轉換，g++ 在 `-Wall -Wextra` 下不會警告，而且字串長度不可能大到出問題；想寫得更明確可以用 `static_cast<int>(s.size())`。
+
+</details>
+
+**Q9. 最大公因數與最小公倍數**
+反覆讀入兩個正整數，輸出它們的最大公因數與最小公倍數，讀到 `0 0` 結束；有非正數就印 `invalid`。最大公因數請用**遞迴**寫輾轉相除法：$\gcd(a, b) = \gcd(b, a \bmod b)$，$b = 0$ 時答案是 $a$。
+
+```text
+輸入：
+12 18
+7 5
+100000000000 250000000000
+0 0
+輸出：
+gcd = 6, lcm = 36
+gcd = 1, lcm = 35
+gcd = 50000000000, lcm = 500000000000
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 輾轉相除法：gcd(a, b) = gcd(b, a % b)，餘數為 0 時答案就是 b
+long long gcd(long long a, long long b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+long long lcm(long long a, long long b) {
+    return a / gcd(a, b) * b;      // 先除再乘，比較不容易溢位
+}
+
+int main() {
+    long long a, b;
+    while (true) {
+        cin >> a >> b;
+        if (a == 0 && b == 0) break;
+        if (a <= 0 || b <= 0) {
+            cout << "invalid\n";
+            continue;
+        }
+        cout << "gcd = " << gcd(a, b) << ", lcm = " << lcm(a, b) << '\n';
+    }
+    return 0;
+}
+```
+
+輾轉相除法的遞迴版只有兩行，比迴圈版更貼近數學定義，期末筆試常拿來當「看程式答輸出」。最小公倍數寫成 `a / gcd * b` 而不是 `a * b / gcd`：先乘的話 `a * b` 可能先溢位，就算最後除回來也已經錯了。「讀到 `0 0` 結束」是實驗課上機考的標準格式，寫成 `while (true)` 加 `break` 最直白。
+
+</details>
+
 ---
 
 [← 09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/08｜陣列（Ch 5） →](/2026/09/09/nsysu-c-programming/1008-arrays/)

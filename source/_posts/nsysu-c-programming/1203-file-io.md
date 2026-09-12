@@ -561,6 +561,213 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習與上機考的題型改寫。檔案題在上機考幾乎一定有：讀一個題目附的 `.txt`（每行固定幾欄，或用分號分隔），算完寫到另一個檔。三種基本形狀各練一題。
+
+**Q6. 讀檔算最大公因數**
+`gcd.txt` 每行兩個正整數，例如：
+
+```text
+12 18
+100 75
+17 5
+1071 462
+```
+
+讀到檔尾為止，用**遞迴**的輾轉相除法算每一行的最大公因數並印出；檔案打不開要印錯誤訊息。
+
+```text
+輸出：
+gcd(12, 18) = 6
+gcd(100, 75) = 25
+gcd(17, 5) = 1
+gcd(1071, 462) = 21
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+int main() {
+    ifstream fin("gcd.txt");
+    if (!fin) {
+        cout << "cannot open gcd.txt\n";
+        return 1;
+    }
+    int a, b;
+    while (fin >> a >> b)                       // 一次讀兩個數，讀不到就停
+        cout << "gcd(" << a << ", " << b << ") = " << gcd(a, b) << '\n';
+    return 0;
+}
+```
+
+`while (fin >> a >> b)` 就是本篇「讀到檔尾的正確寫法」那節的形狀：一次讀兩個、讀不滿就停，不用 `eof()`。函式本身是 10/01 Q9 那份，換的只有資料來源——**把「讀鍵盤」換成「讀檔案」，程式其他部分一行都不用動**，這是串流設計的用意。
+
+</details>
+
+**Q7. 分號分隔的課程檔**
+`courses.txt` 每行是「代號;課名;學分」，課名**含空白**：
+
+```text
+CSE123;C Programming;3
+CSE124;C Programming Lab;1
+MATH101;Calculus I;4
+GE201;Introduction to Art;2
+```
+
+讀入後對齊印成表格，最後印總學分。提示：`getline(fin, s, ';')` 的第三個參數是「讀到哪個字元為止」，讀完會把那個分號吃掉。
+
+```text
+輸出：
+CSE123   C Programming         3
+CSE124   C Programming Lab     1
+MATH101  Calculus I            4
+GE201    Introduction to Art   2
+total credits: 10
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    ifstream fin("courses.txt");
+    if (!fin) {
+        cout << "cannot open courses.txt\n";
+        return 1;
+    }
+    string id, name, creditText;
+    int total = 0;
+    // getline 的第三個參數是「讀到哪個字元為止」：前兩欄讀到分號，最後一欄讀到行尾
+    while (getline(fin, id, ';') && getline(fin, name, ';') && getline(fin, creditText)) {
+        int credit = stoi(creditText);
+        cout << left << setw(9) << id << setw(22) << name << credit << '\n';
+        total += credit;
+    }
+    cout << "total credits: " << total << '\n';
+    return 0;
+}
+```
+
+一行三欄就 `getline` 三次：前兩次以 `';'` 為界、最後一次讀到行尾（預設以換行為界）。三個 `getline` 用 `&&` 串成 `while` 的條件，任何一欄讀不到就代表檔案結束。學分讀進來是字串，`stoi` 轉成整數才能加總。這是 12/10 課程系統題的讀檔部分，先在這裡練熟。
+
+</details>
+
+**Q8. 成績報表與直方圖（多檔輸出）**
+`grades.txt` 每行是「學號 作業次數 各次作業分數… 期中一 期中二」，作業次數每人不同：
+
+```text
+B113040001 3 80 70 60 100 50
+B113040002 6 100 0 0 0 0 30 95 80
+B113040003 1 100 0 100
+B113040004 2 95 80 65 70
+```
+
+計算每人的作業平均、期中平均、**當前總分**（作業平均 30% ＋ 期中一 20% ＋ 期中二 20%，滿分 70）以及「期末（佔 30%）至少要考幾分才及格」（已及格印 0）。把表格寫進 `report.txt`，並依當前總分每 10 分一級畫直方圖（一人一顆星）寫進 `histogram.txt`；螢幕只印一行摘要。
+
+```text
+螢幕輸出： wrote report.txt and histogram.txt (4 students)
+
+report.txt：
+id                hw     mid  current    need
+B113040001     70.00   75.00    51.00   30.00
+B113040002     21.67   87.50    41.50   61.67
+B113040003    100.00   50.00    50.00   33.33
+B113040004     87.50   67.50    53.25   22.50
+
+histogram.txt：
+90~99 
+80~89 
+70~79 
+60~69 
+50~59 ***
+40~49 *
+30~39 
+20~29 
+10~19 
+ 0~ 9 
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+struct Record {
+    string id;
+    double hwAvg, midAvg, current, needed;
+};
+
+int main() {
+    ifstream fin("grades.txt");
+    ofstream report("report.txt"), hist("histogram.txt");
+    if (!fin || !report || !hist) {
+        cout << "file error\n";
+        return 1;
+    }
+    const int MAX = 100;
+    Record r[MAX];
+    int n = 0, bucket[10] = {};                 // bucket[k]：當前總分落在 10k ~ 10k+9 的人數
+
+    string id;
+    int count;
+    while (fin >> id >> count) {
+        double sum = 0;
+        for (int i = 0; i < count; i++) { double s; fin >> s; sum += s; }
+        double mid1, mid2;
+        fin >> mid1 >> mid2;
+
+        r[n].id = id;
+        r[n].hwAvg = sum / count;
+        r[n].midAvg = (mid1 + mid2) / 2;
+        r[n].current = r[n].hwAvg * 0.3 + mid1 * 0.2 + mid2 * 0.2;     // 期末考前最多 70 分
+        r[n].needed = r[n].current >= 60 ? 0 : (60 - r[n].current) / 0.3;
+        bucket[static_cast<int>(r[n].current) / 10]++;
+        n++;
+    }
+
+    report << fixed << setprecision(2);
+    report << left << setw(12) << "id" << right << setw(8) << "hw" << setw(8) << "mid"
+           << setw(9) << "current" << setw(8) << "need" << '\n';
+    for (int i = 0; i < n; i++)
+        report << left << setw(12) << r[i].id << right << setw(8) << r[i].hwAvg
+               << setw(8) << r[i].midAvg << setw(9) << r[i].current
+               << setw(8) << r[i].needed << '\n';
+
+    for (int k = 9; k >= 0; k--) {
+        hist << setw(2) << k * 10 << "~" << setw(2) << k * 10 + 9 << " ";
+        for (int j = 0; j < bucket[k]; j++) hist << '*';
+        hist << '\n';
+    }
+    cout << "wrote report.txt and histogram.txt (" << n << " students)\n";
+    return 0;
+}
+```
+
+「作業次數每人不同」是這題的核心：先讀 `count`，再用 `for` 讀那麼多個，最後才讀兩個期中——**格式由檔案的欄位決定，不能假設每行一樣長**。輸出檔跟 `cout` 用法完全一樣，`setw`、`fixed` 都能用；直方圖那格用 `static_cast<int>(current) / 10` 決定落在哪一級。這是實驗課期末考多年的固定大題（原版還會再加上搜尋與排序），能寫到這裡就有一半分數了。
+
+</details>
+
 ---
 
 [← 11/26｜分離編譯與命名空間（Ch 11）](/2026/09/09/nsysu-c-programming/1126-separate-compilation/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/10｜繼承（Ch 14） →](/2026/09/09/nsysu-c-programming/1210-inheritance/)

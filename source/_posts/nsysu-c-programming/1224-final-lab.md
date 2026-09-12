@@ -536,6 +536,406 @@ clean:
 
 </details>
 
+## 第二份模擬上機考：實驗課考古題型
+
+第一份照主課的多檔案題型；這一份照**實驗課期末上機考**與主課期末的經典題型出：括號配對、翻牌順序、讀檔排序、字典統計、通訊錄管理。五題建議 120 分鐘，同樣要求 Makefile 與零警告；Q3、Q5 會讀寫檔案，測試檔請自己照範例建立。
+
+**Q1. 括號配對**
+反覆讀入只含 `()[]{}` 的字串直到輸入結束，判斷括號是否合法配對（同型別、順序正確）。**必須自己用鏈結串列實作堆疊**（11/19 Q7 那個），不能用 `vector` 代替。
+
+```text
+輸入：
+()
+()[]{}
+(]
+([)]
+{[]}
+((
+輸出：
+() -> valid
+()[]{} -> valid
+(] -> invalid
+([)] -> invalid
+{[]} -> valid
+(( -> invalid
+```
+
+**Q2. 翻牌順序**
+一疊牌上寫著互不相同的整數。翻牌規則：翻開最上面一張並拿走；若還有牌，把下一張移到牌堆**最底**；重複直到翻完。請輸出一種牌的初始排列，使翻出來的順序是**由小到大**。
+
+```text
+輸入：
+7
+17 13 11 2 3 5 7
+輸出： 2 13 3 11 5 17 7
+```
+
+**Q3. 學生檔多鍵排序**
+`students.txt` 每行「學號 姓名 國文 英文 數學」（姓名不含空白）：
+
+```text
+B113040007 Ivy 88 92 75
+B113040002 Leo 70 65 98
+B113040011 Ann 95 80 84
+B113040005 Max 60 77 90
+```
+
+讀入 `struct` 陣列後，反覆讀入模式：1 依學號遞增、2 依姓名 A→Z、3／4／5 依國／英／數**遞減**，`0` 結束；每次用**氣泡排序**排好後印出全部。交換要透過接收 `Student*` 的函式完成。
+
+```text
+輸入： 1 2 5 0
+輸出（節錄模式 5）：
+sorted by mode 5:
+B113040002 Leo    70  65  98
+B113040005 Max    60  77  90
+B113040011 Ann    95  80  84
+B113040007 Ivy    88  92  75
+```
+
+**Q4. 單字字典**
+讀入一段只含英文字母與空白的文字（讀到輸入結束），大小寫視為同一個字，統計每個不同單字出現幾次，依字母順序印出（全部小寫），最後印不同單字的數量。不能用 `map`。
+
+```text
+輸入： apple juice Banana Juice Good GOOD Good
+輸出：
+apple: 1
+banana: 1
+good: 3
+juice: 2
+unique words: 4
+```
+
+**Q5. 通訊錄管理**
+`contacts.txt` 每行「編號 姓名 年齡 電話」。反覆讀入指令：`1 編號 姓名 年齡 電話` 新增（編號重複印 `id exists`）、`2 編號` 刪除、`3 姓名` 搜尋並印出符合者、`4 編號 姓名 年齡 電話` 修改、`5` 列出全部、`0` 結束；找不到就印 `Not found`。**每個動作都要先從檔案讀、改完寫回檔案**，程式重跑後資料還在。
+
+```text
+contacts.txt（初始）：
+1 Amy 20 0912345678
+2 Ben 22 0987654321
+
+輸入：
+5
+1 3 Cleo 19 0955000111
+3 Ben
+4 2 Ben 23 0987654321
+2 1
+2 9
+5
+0
+輸出：
+1 Amy 20 0912345678
+2 Ben 22 0987654321
+added
+2 Ben 22 0987654321
+updated
+deleted
+Not found
+2 Ben 23 0987654321
+3 Cleo 19 0955000111
+```
+
+<details>
+<summary><b>Q1 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node { char value; Node* next; };
+
+class Stack {
+public:
+    Stack() : top(nullptr) {}
+    ~Stack() { while (!empty()) pop(); }
+    void push(char c) {
+        Node* n = new Node;
+        n->value = c;
+        n->next = top;
+        top = n;
+    }
+    char pop() {                          // 呼叫前要先確認不是空的
+        Node* old = top;
+        char c = old->value;
+        top = old->next;
+        delete old;
+        return c;
+    }
+    bool empty() const { return top == nullptr; }
+private:
+    Node* top;
+};
+
+bool balanced(const string& s) {
+    Stack st;
+    for (char c : s) {
+        if (c == '(' || c == '[' || c == '{') {
+            st.push(c);
+        } else {
+            if (st.empty()) return false;              // 沒有東西可以配
+            char open = st.pop();
+            if ((c == ')' && open != '(') ||
+                (c == ']' && open != '[') ||
+                (c == '}' && open != '{')) return false;
+        }
+    }
+    return st.empty();                                 // 有剩下沒關的也不行
+}
+
+int main() {
+    string s;
+    while (cin >> s)
+        cout << s << " -> " << (balanced(s) ? "valid" : "invalid") << '\n';
+    return 0;
+}
+```
+
+**考點與常見扣分**：三種不合法要分開想——右括號來了但堆疊是空的、型別對不上、字串掃完堆疊還有東西。`pop` 之前一定先 `empty()`，否則對 `nullptr` 解參考直接 Segmentation fault。堆疊類別跟 11/19 Q7 幾乎相同，只是 `pop` 改成回傳彈出的字元。
+
+</details>
+
+<details>
+<summary><b>Q2 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> deck(n);
+    for (int i = 0; i < n; i++) cin >> deck[i];
+
+    // 由小到大排序（選擇排序）：翻出來的順序就是這個
+    for (int i = 0; i + 1 < n; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++)
+            if (deck[j] < deck[minIdx]) minIdx = j;
+        int t = deck[i]; deck[i] = deck[minIdx]; deck[minIdx] = t;
+    }
+
+    // 用「位置」來模擬翻牌：pos 是還沒被填的位置，照題目規則輪流「拿走一個、把下一個移到最後」
+    vector<int> pos;
+    for (int i = 0; i < n; i++) pos.push_back(i);
+    vector<int> result(n);
+    for (int card : deck) {
+        result[pos[0]] = card;                 // 這張牌要放在「下一個被翻到」的位置
+        pos.erase(pos.begin());
+        if (!pos.empty()) {                    // 下一個位置移到最後（對應「把下一張放到牌堆底」）
+            pos.push_back(pos[0]);
+            pos.erase(pos.begin());
+        }
+    }
+    for (int i = 0; i < n; i++) cout << result[i] << (i + 1 < n ? " " : "\n");
+    return 0;
+}
+```
+
+**考點與常見扣分**：這題直接想「初始排列」很難，換個角度：翻牌的規則其實是在決定「第幾張會在什麼**位置**被翻到」，跟牌面無關。所以用一個位置的清單 `pos` 模擬翻牌（拿走第一個、把下一個移到最後），依序把最小的牌填進被翻到的位置就好。`erase(begin())` 加 `push_back` 就是「把第一個移到最後」。
+
+</details>
+
+<details>
+<summary><b>Q3 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <iomanip>
+using namespace std;
+
+struct Student { string id, name; int chinese, english, math; };
+
+void swapStudent(Student* a, Student* b) {      // 題目要求：用指標交換
+    Student t = *a; *a = *b; *b = t;
+}
+
+// mode 1 學號遞增、2 姓名 A→Z、3/4/5 國英數遞減
+bool outOfOrder(const Student& x, const Student& y, int mode) {
+    switch (mode) {
+        case 1: return x.id > y.id;
+        case 2: return x.name > y.name;
+        case 3: return x.chinese < y.chinese;
+        case 4: return x.english < y.english;
+        default: return x.math < y.math;
+    }
+}
+
+void bubbleSort(vector<Student>& v, int mode) {
+    for (size_t pass = 0; pass + 1 < v.size(); pass++)
+        for (size_t i = 0; i + 1 < v.size() - pass; i++)
+            if (outOfOrder(v[i], v[i + 1], mode)) swapStudent(&v[i], &v[i + 1]);
+}
+
+void printAll(const vector<Student>& v) {
+    for (const Student& s : v)
+        cout << s.id << ' ' << left << setw(5) << s.name << right
+             << setw(4) << s.chinese << setw(4) << s.english << setw(4) << s.math << '\n';
+}
+
+int main() {
+    ifstream fin("students.txt");
+    if (!fin) { cout << "cannot open students.txt\n"; return 1; }
+    vector<Student> v;
+    Student s;
+    while (fin >> s.id >> s.name >> s.chinese >> s.english >> s.math) v.push_back(s);
+
+    int mode;
+    while (cin >> mode && mode != 0) {
+        if (mode < 1 || mode > 5) { cout << "unknown mode\n"; continue; }
+        bubbleSort(v, mode);
+        cout << "sorted by mode " << mode << ":\n";
+        printAll(v);
+    }
+    return 0;
+}
+```
+
+完整輸出：
+
+```text
+sorted by mode 1:
+B113040002 Leo    70  65  98
+B113040005 Max    60  77  90
+B113040007 Ivy    88  92  75
+B113040011 Ann    95  80  84
+sorted by mode 2:
+B113040011 Ann    95  80  84
+B113040007 Ivy    88  92  75
+B113040002 Leo    70  65  98
+B113040005 Max    60  77  90
+sorted by mode 5:
+B113040002 Leo    70  65  98
+B113040005 Max    60  77  90
+B113040011 Ann    95  80  84
+B113040007 Ivy    88  92  75
+```
+
+**考點與常見扣分**：五種排序共用同一個氣泡排序，只把「這兩個順序有沒有錯」抽成 `outOfOrder(x, y, mode)`，不要複製五份排序程式。`swapStudent(&v[i], &v[i+1])` 取的是 `vector` 元素的位址，函式裡用 `*a`、`*b` 整包交換。字串的 `>` 直接就是字典序比較。
+
+</details>
+
+<details>
+<summary><b>Q4 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cctype>
+using namespace std;
+
+struct Entry { string word; int count; };
+
+int main() {
+    vector<Entry> dict;
+    string w;
+    while (cin >> w) {
+        for (char& c : w) c = tolower(c);            // 不分大小寫：全部轉小寫
+        bool found = false;
+        for (Entry& e : dict)
+            if (e.word == w) { e.count++; found = true; break; }
+        if (!found) {
+            Entry e = { w, 1 };
+            dict.push_back(e);
+        }
+    }
+    // 依字母順序排（string 的 < 就是字典序）
+    for (size_t i = 0; i + 1 < dict.size(); i++)
+        for (size_t j = i + 1; j < dict.size(); j++)
+            if (dict[j].word < dict[i].word) { Entry t = dict[i]; dict[i] = dict[j]; dict[j] = t; }
+    for (const Entry& e : dict) cout << e.word << ": " << e.count << '\n';
+    cout << "unique words: " << dict.size() << '\n';
+    return 0;
+}
+```
+
+**考點與常見扣分**：「不同單字」的表用 `vector<Entry>` 自己維護：每讀一個字先線性搜尋有沒有出現過，有就 `count++`、沒有就 `push_back`。`for (char& c : w)` 的 `&` 讓迴圈能改到原字串裡的字元，少了 `&` 轉小寫會轉在複本上。排序的比較條件是 `dict[j].word < dict[i].word`，`string` 的 `<` 就是字母順序。
+
+</details>
+
+<details>
+<summary><b>Q5 參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct Contact { int id; string name; int age; string phone; };
+const string FILE_NAME = "contacts.txt";
+
+vector<Contact> load() {
+    vector<Contact> v;
+    ifstream fin(FILE_NAME);                     // 檔案不存在就當成空名單
+    Contact c;
+    while (fin >> c.id >> c.name >> c.age >> c.phone) v.push_back(c);
+    return v;
+}
+
+void save(const vector<Contact>& v) {
+    ofstream fout(FILE_NAME);                    // 整個檔案重寫一遍
+    for (const Contact& c : v) fout << c.id << ' ' << c.name << ' ' << c.age << ' ' << c.phone << '\n';
+}
+
+int indexOf(const vector<Contact>& v, int id) {  // 找不到回傳 -1
+    for (size_t i = 0; i < v.size(); i++) if (v[i].id == id) return i;
+    return -1;
+}
+
+void print(const Contact& c) {
+    cout << c.id << ' ' << c.name << ' ' << c.age << ' ' << c.phone << '\n';
+}
+
+int main() {
+    int cmd;
+    while (cin >> cmd && cmd != 0) {
+        vector<Contact> v = load();              // 每個動作都「讀檔 → 改 → 寫回」
+        if (cmd == 1) {                          // 新增
+            Contact c;
+            cin >> c.id >> c.name >> c.age >> c.phone;
+            if (indexOf(v, c.id) != -1) { cout << "id exists\n"; continue; }
+            v.push_back(c);
+            save(v);
+            cout << "added\n";
+        } else if (cmd == 2) {                   // 刪除
+            int id; cin >> id;
+            int i = indexOf(v, id);
+            if (i == -1) { cout << "Not found\n"; continue; }
+            v.erase(v.begin() + i);
+            save(v);
+            cout << "deleted\n";
+        } else if (cmd == 3) {                   // 依姓名搜尋
+            string name; cin >> name;
+            bool any = false;
+            for (const Contact& c : v)
+                if (c.name == name) { print(c); any = true; }
+            if (!any) cout << "Not found\n";
+        } else if (cmd == 4) {                   // 修改
+            int id; cin >> id;
+            int i = indexOf(v, id);
+            if (i == -1) { cout << "Not found\n"; continue; }
+            cin >> v[i].name >> v[i].age >> v[i].phone;
+            save(v);
+            cout << "updated\n";
+        } else if (cmd == 5) {                   // 列出全部
+            for (const Contact& c : v) print(c);
+        }
+    }
+    return 0;
+}
+```
+
+**考點與常見扣分**：把「讀檔」「寫檔」「找編號」各抽成函式後，五個指令每個只剩三四行。寫回檔案時用 `ofstream` 預設模式**整個重寫**（不是 `ios::app`），才不會愈寫愈長。`load()` 對不存在的檔案不會報錯、只是讀不到東西，所以第一次執行也能用。這是 110 學年主課期末考的原題型，也是這門課「struct + vector + 檔案 + 選單」四樣東西的總結。
+
+</details>
+
 ## 對完答案之後
 
 六題全對、`make` 零警告、`make clean && make` 乾淨重編，這場就穩了。哪一題寫不出來，回去補對應的那一篇：

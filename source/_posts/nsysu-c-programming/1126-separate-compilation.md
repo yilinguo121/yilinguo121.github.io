@@ -491,6 +491,137 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+下面這題照實驗課歷年課堂練習的題型改寫：三個同名函式各放在自己的 `namespace` 與自己的 `.cpp`，**必須用 Makefile 編譯、執行檔名指定**。這是實驗課檢查分離編譯的標準題，做完就等於期末上機考多檔案題的暖身。
+
+**Q4. 三種輸出格式（`namespace` + 分離編譯）**
+讀入一個整數，用三種格式輸出：左右反轉（123 → 321）、二進位（123 → 1111011）、科學記號（123 → 1.230000e+02）。三個功能分別放在 `namespace Reverse`、`Binary`、`Scientific` 裡，**函式都叫 `output`**。檔案拆成：`converter.h`（只放三個宣告）、`reverse.cpp`、`binary.cpp`、`scientific.cpp`（各自實作）、`main.cpp`；Makefile 要能編出名為 `Q4` 的執行檔，`make clean` 要能清乾淨。
+
+```text
+輸入： 123
+輸出：
+reverse:    321
+binary:     1111011
+scientific: 1.230000e+02
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+**converter.h**
+
+```cpp
+#ifndef CONVERTER_H
+#define CONVERTER_H
+
+// 三個命名空間裡各有一個同名的 output：拆檔後每個放在自己的 .cpp
+namespace Reverse    { void output(int number); }
+namespace Binary     { void output(int number); }
+namespace Scientific { void output(int number); }
+
+#endif
+```
+
+**reverse.cpp**
+
+```cpp
+#include <iostream>
+#include "converter.h"
+using namespace std;
+
+void Reverse::output(int number) {
+    int r = 0;
+    while (number > 0) {
+        r = r * 10 + number % 10;
+        number /= 10;
+    }
+    cout << "reverse:    " << r << '\n';
+}
+```
+
+**binary.cpp**
+
+```cpp
+#include <iostream>
+#include <string>
+#include "converter.h"
+using namespace std;
+
+void Binary::output(int number) {
+    string bits;
+    if (number == 0) bits = "0";
+    while (number > 0) {
+        bits = char('0' + number % 2) + bits;   // 餘數接在前面
+        number /= 2;
+    }
+    cout << "binary:     " << bits << '\n';
+}
+```
+
+**scientific.cpp**
+
+```cpp
+#include <iostream>
+#include "converter.h"
+using namespace std;
+
+void Scientific::output(int number) {
+    cout << "scientific: " << scientific << number * 1.0 << '\n';
+    cout.unsetf(ios::scientific);               // 用完把格式關掉，不影響後面的輸出
+}
+```
+
+**main.cpp**
+
+```cpp
+#include <iostream>
+#include "converter.h"
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    Reverse::output(n);
+    Binary::output(n);
+    Scientific::output(n);
+    return 0;
+}
+```
+
+**Makefile**
+
+```makefile
+CXX = g++
+CXXFLAGS = -Wall -Wextra -std=c++17
+OBJS = main.o reverse.o binary.o scientific.o
+
+Q4: $(OBJS)
+	$(CXX) -o $@ $^
+
+%.o: %.cpp converter.h
+	$(CXX) $(CXXFLAGS) -c $<
+
+clean:
+	rm -f Q4 $(OBJS)
+```
+
+```bash
+$ make
+g++ -Wall -Wextra -std=c++17 -c main.cpp
+g++ -Wall -Wextra -std=c++17 -c reverse.cpp
+g++ -Wall -Wextra -std=c++17 -c binary.cpp
+g++ -Wall -Wextra -std=c++17 -c scientific.cpp
+g++ -o Q4 main.o reverse.o binary.o scientific.o
+$ echo 123 | ./Q4
+reverse:    321
+binary:     1111011
+scientific: 1.230000e+02
+```
+
+三個 `output` 同名卻不衝突，就是因為各在自己的命名空間，呼叫時寫 `Reverse::output(n)`。實作檔裡函式定義寫成 `void Reverse::output(int number)`，跟成員函式的寫法一樣「用 `::` 說明它屬於誰」。`.h` 只放宣告、不放實作，否則三個 `.cpp` 都 include 它就會重複定義。二進位那段用「餘數接在字串**前面**」（`char('0' + number % 2) + bits`），比先存進陣列再反著印少一個步驟；科學記號用 `cout << scientific`——它跟 09/17 的 `fixed` 是同一類的格式設定，之後印出的小數都會變成 `1.230000e+02` 這種形式（`e+02` 是「乘以 10 的 2 次方」）；整數要先乘 `1.0` 變成 `double` 才會套用。印完用 `cout.unsetf(ios::scientific)` 把這個設定關掉，否則同一支程式後面所有 `double` 都會變成科學記號。
+
+</details>
+
 ---
 
 [← 11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10）](/2026/09/09/nsysu-c-programming/1119-pointers/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/03｜檔案輸入輸出（Ch 12） →](/2026/09/09/nsysu-c-programming/1203-file-io/)

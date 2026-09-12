@@ -727,6 +727,287 @@ int main() {
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習與上機考的題型改寫。運算子重載這週實驗課的招牌題是「分數類別」：四則運算全部重載成成員函式、`<<` `>>` 用 `friend`，然後在 `main` 直接寫數學算式。字串題則來自實驗課上機考。
+
+**Q6. 分數類別（完整版）**
+寫 `class Fraction`，private 存分子與分母。用**成員函式**重載 `+`、`-`、`*`、`/` 與一元負號 `-`，用 **`friend`** 重載 `>>`（讀「分子 分母」）與 `<<`（印成 `a/b`）。`main` 用 `cin >> a >> b` 讀兩個分數後，算出並印出這三個式子：`A + B / A`、`A - (-B) / A`、`(A + B) * (-B)`。分母保持正數、結果請約分。
+
+```text
+輸入：
+1 2
+3 4
+輸出：
+A = 1/2, B = 3/4
+A + B / A = 2/1
+A - (-B) / A = 2/1
+(A + B) * (-B) = -15/16
+```
+
+```text
+輸入：
+2 -6
+5 3
+輸出：
+A = -1/3, B = 5/3
+A + B / A = -16/3
+A - (-B) / A = -16/3
+(A + B) * (-B) = -20/9
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
+
+class Fraction {
+public:
+    Fraction(int n = 0, int d = 1) : num(n), den(d) { normalize(); }
+    Fraction operator+(const Fraction& o) const { return Fraction(num * o.den + o.num * den, den * o.den); }
+    Fraction operator-(const Fraction& o) const { return Fraction(num * o.den - o.num * den, den * o.den); }
+    Fraction operator*(const Fraction& o) const { return Fraction(num * o.num, den * o.den); }
+    Fraction operator/(const Fraction& o) const { return Fraction(num * o.den, den * o.num); }
+    Fraction operator-() const { return Fraction(-num, den); }     // 一元負號：沒有參數
+    friend istream& operator>>(istream& in, Fraction& f);
+    friend ostream& operator<<(ostream& out, const Fraction& f);
+private:
+    int num, den;
+    void normalize() {                       // 分母保持正數，並約分
+        if (den < 0) { num = -num; den = -den; }
+        int g = gcd(num < 0 ? -num : num, den);
+        if (g > 1) { num /= g; den /= g; }
+    }
+};
+
+istream& operator>>(istream& in, Fraction& f) {
+    in >> f.num >> f.den;
+    f.normalize();
+    return in;
+}
+ostream& operator<<(ostream& out, const Fraction& f) {
+    return out << f.num << '/' << f.den;
+}
+
+int main() {
+    Fraction a, b;
+    cin >> a >> b;
+    cout << "A = " << a << ", B = " << b << '\n';
+    cout << "A + B / A = " << a + b / a << '\n';
+    cout << "A - (-B) / A = " << a - (-b) / a << '\n';
+    cout << "(A + B) * (-B) = " << (a + b) * (-b) << '\n';
+    return 0;
+}
+```
+
+看 `main` 那三行：**重載好之後，分數就能像 `int` 一樣寫進算式**，而且 `*`、`/` 比 `+`、`-` 先算的規則自動成立——優先順序是跟著運算子符號走的，重載改不了。一元負號 `operator-()` 沒有參數，跟二元的 `operator-(const Fraction&)` 靠參數個數區分。所有運算子都透過建構子產生新物件，`normalize()` 在建構子裡統一處理正負號與約分，就不用在每個運算子裡各寫一次。
+
+</details>
+
+**Q7. 字母出現次數**
+讀入一整行文字，統計每個英文字母出現幾次，大小寫視為相同，只印出現過的字母（依 a–z 順序）。
+
+```text
+輸入： Hello NSYSU, hello C++!
+輸出：
+c: 1
+e: 2
+h: 2
+l: 4
+n: 1
+o: 2
+s: 2
+u: 1
+y: 1
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+int main() {
+    string line;
+    getline(cin, line);
+    int count[26] = {};                         // 26 個字母各一格，全部歸零
+    for (char c : line) {
+        if (isalpha(c)) count[tolower(c) - 'a']++;   // 'a' 進第 0 格、'b' 第 1 格…
+    }
+    for (int i = 0; i < 26; i++)
+        if (count[i] > 0)
+            cout << static_cast<char>('a' + i) << ": " << count[i] << '\n';
+    return 0;
+}
+```
+
+「26 個字母各一格」的計數陣列是這類題目的標準解：`tolower(c) - 'a'` 把字母對應到 0–25。印的時候 `'a' + i` 算出來是 `int`，要 `static_cast<char>` 轉回字元才會印出字母而不是數字（本週正文提過 `toupper` / `tolower` 同樣的坑）。
+
+</details>
+
+**Q8. 整理多餘空白**
+反覆讀入整行文字直到輸入結束（終端機按 <kbd>Ctrl</kbd>+<kbd>D</kbd>），去掉開頭與結尾的空白、把單字之間連續的空白壓成一個，用中括號框起來印出（方便看出頭尾沒有空白）。
+
+```text
+輸入：
+   I want to   learn C++  
+Only     miss the sun     when it starts to      snow
+輸出：
+[I want to learn C++]
+[Only miss the sun when it starts to snow]
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+string tidy(const string& s) {
+    string out;
+    bool pendingSpace = false;                  // 「前面有空白還沒放進去」
+    for (char c : s) {
+        if (c == ' ') {
+            pendingSpace = true;                // 先記著，等看到下一個字再決定
+        } else {
+            if (pendingSpace && !out.empty()) out += ' ';   // 開頭的空白不要
+            out += c;
+            pendingSpace = false;
+        }
+    }
+    return out;                                 // 結尾的空白自然被丟掉
+}
+
+int main() {
+    string line;
+    while (getline(cin, line))
+        cout << '[' << tidy(line) << "]\n";
+    return 0;
+}
+```
+
+一個旗標 `pendingSpace` 解決三種情況：開頭的空白（`out` 還是空的，不放）、中間連續空白（只在遇到下一個字時放一個）、結尾空白（迴圈結束就丟掉了）。逐字元掃一遍、用 `+=` 接到新字串，比在原字串上 `erase` 來 `erase` 去簡單得多。
+
+</details>
+
+**Q9. 九宮格鍵盤**
+早期手機的九宮格按鍵：2 = `abc`、3 = `def`、4 = `ghi`、5 = `jkl`、6 = `mno`、7 = `pqrs`、8 = `tuv`、9 = `wxyz`。要打出一個字母得按同一鍵好幾下（`h` 是 4 鍵按兩下）。反覆讀入小寫單字，把每個字母改寫成「字母 + 按幾下」印出。
+
+```text
+輸入：
+hoz
+wanna
+sleep
+輸出：
+h2o3z4
+w1a1n2n2a1
+s4l3e2e2p1
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    const string keys[8] = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    string word;
+    while (cin >> word) {
+        string code;
+        for (char c : word) {
+            for (int k = 0; k < 8; k++) {
+                size_t pos = keys[k].find(c);               // 在第 k 個按鍵上是第幾個字母？
+                if (pos != string::npos) {                  // npos 代表「找不到」
+                    code += c;
+                    code += to_string(pos + 1);             // 按幾下：位置 + 1
+                    break;
+                }
+            }
+        }
+        cout << code << '\n';
+    }
+    return 0;
+}
+```
+
+把八個鍵的字母存成 `string` 陣列，對每個字母用 `find` 找它在哪個鍵的第幾個位置：位置是 0 起算，按的次數就是位置 + 1。`find` 找不到回傳 `string::npos`，本週正文講過要拿它來比、不能拿 `-1` 比。`to_string` 把整數變成字串才能用 `+=` 接上去。
+
+</details>
+
+**Q10. 羅馬數字**
+反覆讀入 1–3999 的整數，轉成羅馬數字（I=1、V=5、X=10、L=50、C=100、D=500、M=1000；4 寫成 IV、9 寫成 IX、40 是 XL、90 是 XC、400 是 CD、900 是 CM），讀到 `0` 結束，範圍外印 `out of range`。請用 `switch` 做判斷。
+
+```text
+輸入：
+4
+27
+1994
+3999
+0
+輸出：
+4 = IV
+27 = XXVII
+1994 = MCMXCIV
+3999 = MMMCMXCIX
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// 把 0~9 的一位數轉成羅馬數字；one/five/ten 是這一位對應的三個符號
+string digitToRoman(int d, char one, char five, char ten) {
+    string s;
+    switch (d) {
+        case 1: s = string(1, one); break;              // I
+        case 2: s = string(2, one); break;              // II
+        case 3: s = string(3, one); break;              // III
+        case 4: s = string(1, one) + five; break;       // IV
+        case 5: s = string(1, five); break;             // V
+        case 6: s = string(1, five) + one; break;       // VI
+        case 7: s = string(1, five) + string(2, one); break;
+        case 8: s = string(1, five) + string(3, one); break;
+        case 9: s = string(1, one) + ten; break;        // IX
+        default: break;                                 // 0：空字串
+    }
+    return s;
+}
+
+int main() {
+    int n;
+    while (true) {
+        cin >> n;
+        if (n == 0) break;
+        if (n < 1 || n > 3999) { cout << "out of range\n"; continue; }
+        string r = digitToRoman(n / 1000, 'M', '?', '?')      // 千位最多 3，只會用到 M
+                 + digitToRoman(n / 100 % 10, 'C', 'D', 'M')
+                 + digitToRoman(n / 10 % 10, 'X', 'L', 'C')
+                 + digitToRoman(n % 10, 'I', 'V', 'X');
+        cout << n << " = " << r << '\n';
+    }
+    return 0;
+}
+```
+
+關鍵觀察：個位、十位、百位的規則**一模一樣**，只是符號不同（I V X → X L C → C D M）。所以只寫一個「一位數 → 羅馬」的函式，把三個符號當參數傳進去，呼叫四次接起來。`string(3, one)` 是「由 3 個 `one` 組成的字串」，本週正文 `string` 那節的建構子之一。
+
+</details>
+
 ---
 
 [← 11/05｜期中上機考（範圍 Ch 1–6）](/2026/09/09/nsysu-c-programming/1105-midterm/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10） →](/2026/09/09/nsysu-c-programming/1119-pointers/)

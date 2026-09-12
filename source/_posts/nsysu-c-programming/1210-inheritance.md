@@ -723,6 +723,272 @@ Stack dtor
 
 </details>
 
+**實驗課題型加練**
+以下照實驗課歷年課堂練習的題型改寫。繼承這週實驗課會把 12/03 的讀檔和這週的類別階層接起來（課程系統），再出一題「遊戲角色等級」要你**算出來、不能寫死**。
+
+**Q5. 課程系統**
+寫 `class Course`，資料成員 `courseID`、`courseName`、`credits` 都是 **`protected`**，有建構子與 `printInfo()`。再寫兩個衍生類別：`RequiredCourse` 多一個 private 的 `bool isGeneral`（是否通識），`ElectiveCourse` 多一個 private 的 `int maxStudents`（人數上限），各自重新定義 `printInfo()`。從 `courses.txt` 讀入資料並全部印出，格式是「類型;代號;課名;學分;額外欄位」，類型 `R` 是必修（額外欄位 1 = 通識）、`E` 是選修（額外欄位是人數上限）：
+
+```text
+R;CSE123;C Programming;3;0
+E;GE201;Introduction to Art;2;60
+R;MATH101;Calculus I;4;0
+E;CSE330;Game Design;3;40
+```
+
+```text
+輸出：
+[Required] CSE123 C Programming (3 credits)
+[Elective] GE201 Introduction to Art (2 credits), max 60 students
+[Required] MATH101 Calculus I (4 credits)
+[Elective] CSE330 Game Design (3 credits), max 40 students
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class Course {
+public:
+    Course(const string& i, const string& n, int c) : courseID(i), courseName(n), credits(c) {}
+    void printInfo() const {
+        cout << courseID << ' ' << courseName << " (" << credits << " credits)";
+    }
+protected:                        // 子類別要用，所以不是 private
+    string courseID, courseName;
+    int credits;
+};
+
+class RequiredCourse : public Course {
+public:
+    RequiredCourse(const string& i, const string& n, int c, bool g)
+        : Course(i, n, c), isGeneral(g) {}
+    void printInfo() const {
+        cout << "[Required] ";
+        Course::printInfo();                       // 先印共同的部分
+        cout << (isGeneral ? ", general education" : "") << '\n';
+    }
+private:
+    bool isGeneral;
+};
+
+class ElectiveCourse : public Course {
+public:
+    ElectiveCourse(const string& i, const string& n, int c, int m)
+        : Course(i, n, c), maxStudents(m) {}
+    void printInfo() const {
+        cout << "[Elective] ";
+        Course::printInfo();
+        cout << ", max " << maxStudents << " students\n";
+    }
+private:
+    int maxStudents;
+};
+
+int main() {
+    ifstream fin("courses.txt");
+    if (!fin) { cout << "cannot open courses.txt\n"; return 1; }
+    string type, id, name, creditText, extraText;
+    while (getline(fin, type, ';') && getline(fin, id, ';') && getline(fin, name, ';')
+           && getline(fin, creditText, ';') && getline(fin, extraText)) {
+        int credits = stoi(creditText), extra = stoi(extraText);
+        if (type == "R") {
+            RequiredCourse c(id, name, credits, extra == 1);
+            c.printInfo();
+        } else {
+            ElectiveCourse c(id, name, credits, extra);
+            c.printInfo();
+        }
+    }
+    return 0;
+}
+```
+
+衍生類別的 `printInfo` 先呼叫 `Course::printInfo()` 印共同的部分，再補自己的欄位——不要把基底類別的輸出重抄一遍。資料成員用 `protected` 是題目指定的，實務上更常見的是保持 `private`、透過 getter 拿；兩種都要會。讀檔的部分就是 12/03 Q7，多一欄而已。
+
+</details>
+
+**Q6. 三層繼承：實驗課**
+承 Q5，新增 `class LabCourse` 繼承自 `RequiredCourse`，多兩個 private 成員：`labRoom`（教室）與 `labHours`（每週時數，等於學分數）。重新定義 `printInfo()` 印課名、教室、時數。從 `courses.txt` 找出所有必修課，逐一讀入教室名稱後建成 `LabCourse`，最後印出全部。
+
+```text
+輸入：
+EC3021
+EC2009
+輸出：
+room for C Programming? EC3021
+room for Calculus I? EC2009
+[Lab] C Programming, room EC3021, 3 hours/week
+[Lab] Calculus I, room EC2009, 4 hours/week
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+using namespace std;
+
+class Course {
+public:
+    Course(const string& i, const string& n, int c) : courseID(i), courseName(n), credits(c) {}
+    void printInfo() const { cout << courseID << ' ' << courseName << " (" << credits << " credits)"; }
+    string getName() const { return courseName; }
+    int getCredits() const { return credits; }
+protected:
+    string courseID, courseName;
+    int credits;
+};
+
+class RequiredCourse : public Course {
+public:
+    RequiredCourse(const string& i, const string& n, int c, bool g) : Course(i, n, c), isGeneral(g) {}
+    void printInfo() const {
+        cout << "[Required] "; Course::printInfo();
+        cout << (isGeneral ? ", general education" : "") << '\n';
+    }
+private:
+    bool isGeneral;
+};
+
+class LabCourse : public RequiredCourse {              // 三層：LabCourse → RequiredCourse → Course
+public:
+    LabCourse(const RequiredCourse& base, const string& room)
+        : RequiredCourse(base), labRoom(room), labHours(credits) {}   // credits 是 protected，可以直接用
+    void printInfo() const {
+        cout << "[Lab] " << courseName << ", room " << labRoom << ", " << labHours << " hours/week\n";
+    }
+private:
+    string labRoom;
+    int labHours;
+};
+
+int main() {
+    ifstream fin("courses.txt");
+    if (!fin) { cout << "cannot open courses.txt\n"; return 1; }
+    vector<RequiredCourse> required;
+    string type, id, name, creditText, extraText;
+    while (getline(fin, type, ';') && getline(fin, id, ';') && getline(fin, name, ';')
+           && getline(fin, creditText, ';') && getline(fin, extraText)) {
+        if (type == "R")
+            required.push_back(RequiredCourse(id, name, stoi(creditText), extraText == "1"));
+    }
+
+    vector<LabCourse> labs;
+    for (const RequiredCourse& rc : required) {
+        cout << "room for " << rc.getName() << "? ";
+        string room;
+        cin >> room;
+        cout << room << '\n';
+        labs.push_back(LabCourse(rc, room));
+    }
+    for (const LabCourse& lab : labs) lab.printInfo();
+    return 0;
+}
+```
+
+`LabCourse` 的建構子收一個現成的 `RequiredCourse`，用 `RequiredCourse(base)` 把它整個複製進基底部分——這是「拿既有物件升級成衍生類別」的標準寫法。`labHours(credits)` 能直接用 `credits`，正是因為它在 `Course` 裡是 `protected`；孫類別一樣看得到。
+
+</details>
+
+**Q7. 遊戲角色經驗值**
+寫 `class Character`：成員有名字、等級、經驗值，以及一個 `static const int EXP_LV = 100`。等級與總經驗的換算是 $\text{exp} = (\text{level} - 1)^2 \times 100$（Level 10 是 8100、Level 11 是 10000）。提供：建構子（給名字與初始等級，經驗值**由等級算出**）、`print()` 印 `名字: Level N (目前 exp/下一級門檻)`、`getName()`、`beatMonster(int exp)` 加經驗值並在**跨過門檻時自動升級**（可能一次升好幾級）、`levelUp()`。再寫 `Knight` 與 `Warrior` 繼承它，各自重新定義 `print()` 加上職業名；並重新定義 `bossComing()`：遇到 Boss 時 Knight 掉 3000、Warrior 掉 8000 經驗值（掉到門檻以下要降級）。用 Knight Leo（Lv 5）、Knight Tsukasa（Lv 7）、Warrior Rose（Lv 12）跑下面的劇情，數字都要算出來、不能寫死。
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Character {
+public:
+    Character(const string& n, int lv) : name(n), level(lv), exp(expForLevel(lv)) {}
+    void print() const {
+        cout << name << ": Level " << level << " (" << exp << "/" << expForLevel(level + 1) << ")\n";
+    }
+    string getName() const { return name; }
+    void beatMonster(int gained) {
+        exp += gained;
+        while (exp >= expForLevel(level + 1)) levelUp();   // 一次可能升好幾級
+    }
+    void bossComing() { loseExp(3000); }                   // 預設掉 3000，子類別可以改
+protected:
+    static const int EXP_LV = 100;
+    static int expForLevel(int lv) { return (lv - 1) * (lv - 1) * EXP_LV; }
+    void levelUp() { level++; }
+    void loseExp(int amount) {
+        exp -= amount;
+        if (exp < 0) exp = 0;
+        while (level > 1 && exp < expForLevel(level)) level--;   // 掉到門檻以下就降級
+    }
+    string name;
+    int level, exp;
+};
+
+class Knight : public Character {
+public:
+    Knight(const string& n, int lv) : Character(n, lv) {}
+    void print() const { cout << "Knight "; Character::print(); }
+    void bossComing() { loseExp(3000); }
+};
+
+class Warrior : public Character {
+public:
+    Warrior(const string& n, int lv) : Character(n, lv) {}
+    void print() const { cout << "Warrior "; Character::print(); }
+    void bossComing() { loseExp(8000); }
+};
+
+int main() {
+    Knight leo("Leo", 5), tsukasa("Tsukasa", 7);
+    Warrior rose("Rose", 12);
+    leo.print(); tsukasa.print(); rose.print();
+
+    cout << "-- a monster worth 10000 exp appears; Rose beats it\n";
+    rose.beatMonster(10000);
+    rose.print();
+
+    cout << "-- the monster weakens to 4000 exp; Leo and Tsukasa beat it\n";
+    leo.beatMonster(4000); tsukasa.beatMonster(4000);
+    leo.print(); tsukasa.print();
+
+    cout << "-- boss comes\n";
+    leo.bossComing(); rose.bossComing();
+    leo.print(); rose.print();
+    return 0;
+}
+```
+
+輸出：
+
+```text
+Knight Leo: Level 5 (1600/2500)
+Knight Tsukasa: Level 7 (3600/4900)
+Warrior Rose: Level 12 (12100/14400)
+-- a monster worth 10000 exp appears; Rose beats it
+Warrior Rose: Level 15 (22100/22500)
+-- the monster weakens to 4000 exp; Leo and Tsukasa beat it
+Knight Leo: Level 8 (5600/6400)
+Knight Tsukasa: Level 9 (7600/8100)
+-- boss comes
+Knight Leo: Level 6 (2600/3600)
+Warrior Rose: Level 12 (14100/14400)
+```
+
+驗算一下 Rose：Lv 12 起始 12100，加 10000 變 22100；Lv 15 的門檻是 $14^2 \times 100 = 19600$、Lv 16 是 22500，所以停在 Lv 15。`beatMonster` 裡用 `while` 而不是 `if`，一次跨過兩個門檻才會連升兩級。`static const int EXP_LV = 100;` 是 `static` 成員的特例：**整數型別的 `static const` 可以直接在類別裡給值**，不必像 10/22 那樣在類別外再定義一次。`expForLevel` 做成 `static` 函式，因為它只是公式、不需要物件；`levelUp`／`loseExp` 放 `protected`，讓子類別的 `bossComing` 可以呼叫但外面不能亂改等級。
+
+</details>
+
 ---
 
 [← 12/03｜檔案輸入輸出（Ch 12）](/2026/09/09/nsysu-c-programming/1203-file-io/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [12/17｜期末筆試（範圍 Ch 1–12、Ch 14） →](/2026/09/09/nsysu-c-programming/1217-final-written/)
