@@ -1,7 +1,7 @@
 ---
 title: 11/05｜期中上機考（範圍 Ch 1–6）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1105-midterm/
 cover: /images/code-cover.jpg
 categories: [程式設計]

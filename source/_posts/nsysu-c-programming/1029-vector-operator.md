@@ -1,7 +1,7 @@
 ---
 title: 10/29｜vector 與運算子重載入門（Ch 7）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1029-vector-operator/
 cover: /images/code-cover.jpg
 categories: [程式設計]

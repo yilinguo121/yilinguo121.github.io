@@ -1,7 +1,7 @@
 ---
 title: 11/12｜運算子重載、friend 與 string（Ch 8、Ch 9）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1112-operator-string/
 cover: /images/code-cover.jpg
 categories: [程式設計]
@@ -327,7 +327,7 @@ int main() {
 
 ## 建構子也會被拿來做「自動型別轉換」
 
-把該節的範例程式整段換成下面這份（已實測零警告，輸出多一行 `$150`），讓 `m + 100` 真的跑出來：
+只要**呼叫時可以只給一個引數**的建構子（單參數，或第二個之後的參數都有預設值），編譯器就會自動拿它做隱式轉換：
 
 ```cpp
 #include <iostream>
@@ -361,37 +361,7 @@ $100
 $150
 ```
 
-只要**呼叫時可以只給一個引數**的建構子（單參數，或第二個之後的參數都有預設值），編譯器就會自動拿它做隱式轉換：
-
-```cpp
-#include <iostream>
-using namespace std;
-
-class Money {
-private:
-    int dollars;
-public:
-    Money(int d) : dollars(d) { }          // 單參數建構子
-    void print() const { cout << "$" << dollars << '\n'; }
-};
-
-void pay(const Money& m) { m.print(); }
-
-int main() {
-    pay(Money(100));
-    pay(100);            // 100 被自動轉成 Money(100)！
-    return 0;
-}
-```
-
-輸出：
-
-```text
-$100
-$100
-```
-
-方便，但也容易出事（打錯字傳了個數字進去卻默默通過編譯）。不想要這個行為，在建構子前面加 `explicit`：
+`pay(100)` 和 `m + 100` 裡的 `100` 都被悄悄轉成了 `Money(100)`。方便，但也容易出事（打錯字傳了個數字進去卻默默通過編譯）。不想要這個行為，在建構子前面加 `explicit`：
 
 ```cpp
 explicit Money(int d) : dollars(d) { }   // 加了之後 pay(100); 就會編譯錯誤

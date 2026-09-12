@@ -1,7 +1,7 @@
 ---
 title: 11/19｜指標、動態記憶體與 C 風格字串（Ch 9、Ch 10）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1119-pointers/
 cover: /images/code-cover.jpg
 categories: [程式設計]

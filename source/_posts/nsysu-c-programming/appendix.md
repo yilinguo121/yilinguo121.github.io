@@ -1,7 +1,7 @@
 ---
 title: 附錄：編譯選項、Makefile、錯誤訊息與名詞速查
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/appendix/
 cover: /images/code-cover.jpg
 categories: [程式設計]
@@ -50,29 +50,6 @@ all: $(TARGETS) $(EXTRA)
 clean:
 	rm -f $(TARGETS) $(EXTRA) *.o
 ```
-
-把 /home/yilin/website/yilin/source/_posts/nsysu-c-programming/1224-final-lab.md 裡 Q6 參考解答的 Makefile 區塊整段換成：
-
-CXX      := g++
-CXXFLAGS := -Wall -Wextra -std=c++17
-
-.PHONY: all clean
-
-all: Q6
-
-Q6: main.o Student.o
-	$(CXX) -o $@ $^
-
-main.o: main.cpp Student.h
-	$(CXX) $(CXXFLAGS) -c $<
-
-Student.o: Student.cpp Student.h
-	$(CXX) $(CXXFLAGS) -c $<
-
-clean:
-	rm -f *.o Q6
-
-（附錄這一行不必動。）
 
 某一題要拆成多個檔案時（例如 `.h` / `.cpp`），`TARGETS` 只掃得到 `Q*.cpp`，不會掃到沒有 `Q6.cpp` 的 Q6：先把上面改成 `EXTRA := Q6`（不改的話只有手打 `make Q6` 編得出來，`make` 和 `make clean` 都會漏掉它），再到檔案最後補規則：
 

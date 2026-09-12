@@ -1,7 +1,7 @@
 ---
 title: 中山大學 C 程式設計 & 實驗課完整自學指南（1151 學期）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/
 cover: /images/code-cover.jpg
 categories: [程式設計]
@@ -15,7 +15,7 @@ mermaid: false
 > **關於這份筆記**
 > 本文依據國立中山大學資工系 CSE123「C 程式設計」（授課老師：柯正雯 副教授）與其對應實驗課 1151 學期的**公開進度表**寫成。內容皆為筆者針對每一週語法重點所整理的**原創說明、自寫範例與自出練習題**，並不轉載教科書 *Absolute C++* (Walter Savitch, 6/e) 內文、圖片、習題題目或授課教授自製投影片。若讀者希望取得完整原文與課本習題，仍請透過正版管道取得該書。
 >
-> 文中所有程式碼都在 `g++ -Wall -Wextra -std=c++17` 下實際編譯執行過。
+> 文中所有程式碼都在 `g++ -Wall -Wextra -std=c++17` 下實際編譯執行過，零警告。
 
 ---
 
@@ -28,8 +28,6 @@ mermaid: false
 - **每週一篇**：觀念講解 ＋ 可以直接複製編譯的範例 ＋ 常見雷區 ＋ 我自己出的練習題與參考解答
 - **環境與 Makefile**：從 VirtualBox 裝到模組化 Makefile，寫成可以照抄的流程
 - **三份模擬考**：期中模擬上機考、期末筆試模擬題、期末模擬上機考，都附解答
-
-所有程式碼都在 `g++ -Wall -Wextra -std=c++17` 下實際編譯執行過，零警告。
 
 **怎麼讀**
 
@@ -49,7 +47,7 @@ mermaid: false
 | 章節 | 這篇在講什麼 | 課本指定習題 |
 | --- | --- | --- |
 | **[環境設置：把工具鏈準備好](/2026/09/09/nsysu-c-programming/setup/)** | VirtualBox、Ubuntu 20.04、g++、終端機指令、Makefile 從零到模組化 | — |
-| **[09/10｜課程介紹與環境暖身](/2026/09/09/nsysu-c-programming/0910-intro/)** | 開學第一件事：把環境弄好，並自我檢測 | — |
+| **[09/10｜課程介紹與環境暖身](/2026/09/09/nsysu-c-programming/0910-intro/)** | C 與 C++ 的差別、整學期地圖、第一週驗收流程、第一次編譯失敗怎麼讀訊息 | — |
 | **[09/17｜C++ 基礎（Ch 1）](/2026/09/09/nsysu-c-programming/0917-cpp-basics/)** | 型別、變數、輸入輸出、算術與整數除法陷阱 | Ch1: 6, 8, 13；Ch2: 2, 4, 7, 8 |
 | **[09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/)** | if / switch / 迴圈、自訂函式、遞迴、作用域 | Ch3: 1, 5, 10, 11, 13 |
 | **[10/01｜參數傳遞與函式重載（Ch 4）](/2026/09/09/nsysu-c-programming/1001-parameters/)** | 傳值 vs 傳參考、const 參考、重載、預設引數 | Ch4: 3, 7, 8, 9, 14, 17 |
@@ -63,7 +61,7 @@ mermaid: false
 | **[11/26｜分離編譯與命名空間（Ch 11）](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)** | header / 實作檔、include guard、多檔案 Makefile、namespace | Ch11: 1, 3 |
 | **[12/03｜檔案輸入輸出（Ch 12）](/2026/09/09/nsysu-c-programming/1203-file-io/)** | ifstream / ofstream、讀到檔尾、格式化、stringstream | Ch12: 2, 3, 5 |
 | **[12/10｜繼承（Ch 14）](/2026/09/09/nsysu-c-programming/1210-inheritance/)** | 衍生類別、protected、覆寫、建構解構順序、is-a vs has-a | Ch14: 4, 6, 8 |
-| **[12/17｜期末筆試（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1217-final-written/)** | 全學期複習表＋12 題「看程式答輸出」模擬題 | — |
+| **[12/17｜期末筆試（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1217-final-written/)** | 全學期複習表＋13 題模擬題（看程式答輸出、找錯）＋觀念快問快答 | — |
 | **[12/24｜期末上機考（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1224-final-lab/)** | 應考流程＋一份 120 分鐘模擬上機考（附解答） | — |
 | **[附錄：編譯選項、Makefile、錯誤訊息與名詞速查](/2026/09/09/nsysu-c-programming/appendix/)** | g++ 選項、通用 Makefile、常見錯誤訊息對照表、名詞速查表 | — |
 

@@ -1,7 +1,7 @@
 ---
 title: 09/24｜流程控制與函式基礎（Ch 2、Ch 3）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/0924-flow-control/
 cover: /images/code-cover.jpg
 categories: [程式設計]

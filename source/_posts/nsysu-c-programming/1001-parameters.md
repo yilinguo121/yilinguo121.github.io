@@ -1,7 +1,7 @@
 ---
 title: 10/01｜參數傳遞與函式重載（Ch 4）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1001-parameters/
 cover: /images/code-cover.jpg
 categories: [程式設計]

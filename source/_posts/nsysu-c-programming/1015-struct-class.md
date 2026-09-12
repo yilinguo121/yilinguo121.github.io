@@ -1,7 +1,7 @@
 ---
 title: 10/15｜結構與類別（Ch 5–6）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1015-struct-class/
 cover: /images/code-cover.jpg
 categories: [程式設計]
@@ -236,7 +236,7 @@ int main() {
 
 `c.setRadius(3)` 讀作「叫 `c` 去執行它的 `setRadius`，把 3 交給它」——`.` 也用來**呼叫成員函式**，`c.area()` 沒有引數但括號不能省。`area()` 裡的 `r` 既沒宣告也不是參數，它就是 `c` 自己的那一份；再宣告一個 `Circle d;`，`d.area()` 算的就是 `d` 的 `r`——同一段程式碼，每個物件各有一份資料。
 
-注意 `Circle c;` 之後 `r` 還是垃圾值（編譯器不一定抓得到——編譯器有時抓得到、有時抓不到，不能指望它，不能指望它），一定要先 `setRadius` 才能用。想讓物件「一出生就合法」，需要的是**建構子**——下週的主題。
+注意 `Circle c;` 之後 `r` 還是垃圾值（編譯器有時抓得到、有時抓不到，不能指望它），一定要先 `setRadius` 才能用。想讓物件「一出生就合法」，需要的是**建構子**——下週的主題。
 
 > **雷區 ②：`class` 忘了寫 `public:`**
 > ```cpp

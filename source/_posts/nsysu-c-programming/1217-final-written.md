@@ -1,7 +1,7 @@
 ---
 title: 12/17｜期末筆試（範圍 Ch 1–12、Ch 14）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1217-final-written/
 cover: /images/code-cover.jpg
 categories: [程式設計]
@@ -19,7 +19,7 @@ hidden: true
 2. **手寫程式片段**：寫一個函式、一個類別的骨架。
 3. **觀念選擇 / 填空**：`const` 放哪裡、`static` 的意義、繼承的存取表格。
 
-一週後的 12/24 上機考才考從零把程式寫出來，兩場的準備方式完全不同，這篇只處理前者。，兩場的準備方式完全不同，這篇只處理前者。**考試時間與佔分比重依課堂公告為準，考前務必確認。**
+一週後的 12/24 上機考才考從零把程式寫出來，兩場的準備方式完全不同，這篇只處理前者。**考試時間與佔分比重依課堂公告為準，考前務必確認。**
 
 ## 全學期複習清單
 
@@ -44,7 +44,7 @@ hidden: true
 
 ## 筆試模擬題
 
-> 先自己在紙上把答案寫完，**整份寫完再一起編譯驗證**——考場上沒有電腦，所以練習時也要先把答案定死，不能邊改邊試。以下片段都假設已經 `#include <iostream>`、`#include <string>` 並 `using namespace std;`；沒有寫出 `int main()` 的那幾題（第 1、2、3、7、10 題）是裸的敘述，要自己包進 `int main() { ... }` 才編得起來。
+> 先自己在紙上把答案寫完，**整份寫完再一起編譯驗證**——考場上沒有電腦，所以練習時也要先把答案定死，不能邊改邊試。以下片段都假設已經 `#include <iostream>`、`#include <string>` 並 `using namespace std;`；沒有寫出 `int main()` 的那幾題（第 1、2、3、7、10、12 題）是裸的敘述，要自己包進 `int main() { ... }` 才編得起來。
 
 ### 看程式答輸出（第 1–11 題）
 
@@ -362,7 +362,7 @@ not found
 
 - `substr(3, 4)` 從索引 3 開始取 4 個字元；索引從 0 起算：`p(0) r(1) o(2) g(3)`。
 - `find` 回傳的是子字串的**起始索引**（不是「有沒有找到」），所以 `find("gram")` 是 3。
-- 找不到時回傳 `string::npos`——它是一個**極大的無號數，不是 −1**，所以判斷一定要寫 `== string::npos`，- 找不到時回傳 `string::npos`——它是一個**極大的無號數**（這台機器上是 18446744073709551615）。所以**絕對不能寫 `< 0`**：無號數永遠不會小於 0，這個條件恆為 false，`-Wextra` 會直接警告 `comparison of unsigned expression in '< 0' is always false`。至於 `== -1`，因為 `npos` 的定義就是「把 −1 塞進無號型別」，`-1` 比較時會被轉成同一個極大值，**其實會成立**——但 `-Wall` 會丟 `comparison of integer expressions of different signedness` 的警告。結論：**一律寫 `== string::npos` / `!= string::npos`**，別的寫法不是錯就是有警告。。
+- 找不到時回傳 `string::npos`——它是一個**極大的無號數**（這台機器上是 18446744073709551615）。所以**絕對不能寫 `< 0`**：無號數永遠不會小於 0，這個條件恆為 false，`-Wextra` 會直接警告 `comparison of unsigned expression in '< 0' is always false`。至於 `== -1`，因為 `npos` 的定義就是「把 −1 塞進無號型別」，`-1` 比較時會被轉成同一個極大值，**其實會成立**——但 `-Wall` 會丟 `comparison of integer expressions of different signedness` 的警告。結論：**一律寫 `== string::npos` / `!= string::npos`**，別的寫法不是錯就是有警告。
 
 </details>
 

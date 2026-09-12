@@ -1,7 +1,7 @@
 ---
 title: 10/22｜類別與建構子（Ch 6–7）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1022-constructors/
 cover: /images/code-cover.jpg
 categories: [程式設計]
@@ -215,7 +215,7 @@ Yilin 的餘額是 1200.00
 
 1000 存 500 再領 300，所以是 1200。注意 `withdraw` 的設計：**用回傳值告訴呼叫者成功與否**，而不是直接印錯誤訊息。這樣同一個類別在不同程式裡都能用——要印中文、印英文還是寫 log，交給呼叫者決定。回傳值也**可以不接**：`acc.withdraw(300);` 這一行就是知道一定成功，直接把回傳的 `bool` 丟掉，語法上完全合法，`-Wall` 也不會唸（它只管沒用到的**變數**，不管沒用到的回傳值）。
 
-另外注意：`print()` 裡的 `fixed << setprecision(2)` 會**一直留在 `cout` 上（0917 講過）**，所以最後一行的 `getBalance()` 也印成 `1200.00`；不想影響後面就補一句 `cout << defaultfloat << setprecision(6);`——`defaultfloat` 是 `fixed` 的反向開關（跟 `left`／`right` 一樣是 `cout` 的設定，寫進 `cout <<` 就生效、不必加括號），`6` 則是 `cout` 原本的預設有效位數。**只寫 `defaultfloat` 不夠**：`setprecision(2)` 會留著，2 從「小數兩位」變成「有效位數兩位」，`1200` 會被印成 `1.2e+03`。
+另外注意：`print()` 裡的 `fixed << setprecision(2)` 會**一直留在 `cout` 上（09/17 講過）**，所以最後一行的 `getBalance()` 也印成 `1200.00`；不想影響後面就補一句 `cout << defaultfloat << setprecision(6);`——`defaultfloat` 是 `fixed` 的反向開關（跟 `left`／`right` 一樣是 `cout` 的設定，寫進 `cout <<` 就生效、不必加括號），`6` 則是 `cout` 原本的預設有效位數。**只寫 `defaultfloat` 不夠**：`setprecision(2)` 會留著，2 從「小數兩位」變成「有效位數兩位」，`1200` 會被印成 `1.2e+03`。
 
 > **補充：`inline`**。上面 `deposit`、`withdraw` 這些都寫在 `class` 裡面，順帶講一個名詞：寫在 `class` 定義**裡面**的成員函式自動就是 `inline`，編譯器可能把函式內容直接展開在呼叫處，省掉跳來跳去的成本。類別外面的短函式可以自己加 `inline` 建議編譯器，但那只是建議，不要為了效能到處亂加。
 

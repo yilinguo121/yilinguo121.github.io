@@ -1,7 +1,7 @@
 ---
 title: 09/17｜C++ 基礎（Ch 1）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/0917-cpp-basics/
 cover: /images/code-cover.jpg
 categories: [程式設計]

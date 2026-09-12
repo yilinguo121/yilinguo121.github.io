@@ -1,7 +1,7 @@
 ---
 title: 10/08｜陣列（Ch 5）
 date: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-12
 permalink: 2026/09/09/nsysu-c-programming/1008-arrays/
 cover: /images/code-cover.jpg
 categories: [程式設計]
