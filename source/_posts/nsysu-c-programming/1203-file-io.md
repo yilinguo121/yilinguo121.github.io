@@ -142,7 +142,7 @@ while (!fin.eof()) {
 
 原因：文字檔最後幾乎一定有一個換行。讀完 `20` 之後 `eof()` 還是 false，於是迴圈又跑一圈——這次 `fin >> x` 只吃到換行就碰到檔尾、讀取失敗，`x` 沒被改到，最後一筆就被印了兩次。**請一律用 `while (fin >> x)` 或 `while (getline(fin, line))`。**
 
-> **混用 `>>` 和 `getline` 一樣會中招**：`fin >> id;` 之後直接 `getline(fin, line)` 會讀到空字串，因為 `>>` 把數字後面的換行留在管子裡。解法跟 11/12 的 `cin` 版一模一樣——中間插一行 `fin.ignore();`。
+> **混用 `>>` 和 `getline` 一樣會中招**：`fin >> id;` 之後直接 `getline(fin, line)` 會讀到空字串，因為 `>>` 把數字後面的換行留在管子裡。解法跟 11/12 的 `cin` 版一模一樣——中間插一行 `fin.ignore(numeric_limits<streamsize>::max(), '\n');`（需 `#include <limits>`），把那一行剩下的東西全丟掉。
 
 ## 逐字元讀寫
 
@@ -170,7 +170,7 @@ int main() {
 `input.txt` 是 `Hello, World!` 時，`output.txt` 就是 `HELLO, WORLD!`。
 
 - `fin >> c` 會**跳過空白**；`fin.get(c)` **不會**。要原封不動處理檔案內容就用 `get` / `put`。
-- `fin.ignore(n, ch)`：丟掉 n 個字元或丟到遇見 `ch` 為止——就是 11/12 的 `cin.ignore()`，前面說的換行殘留就靠它清掉。
+- `fin.ignore(n, ch)`：最多丟掉 n 個字元、遇見 `ch` 就停——就是 11/12 的 `cin.ignore(...)`，前面說的換行殘留就靠它清掉。
 - `fin.peek()`：偷看下一個字元但不取走（這學期用不到，知道有就好）。
 
 ## 格式化輸出（`<iomanip>`）
@@ -303,7 +303,7 @@ string s = oss.str();        // "score_95"
 ## 本週重點回顧
 
 - 開檔後一定要 `if (!fin)`；開不起來通常不是程式錯，是檔案沒跟 `a.out` 放在同一個資料夾。
-- 讀到檔尾用 `while (fin >> x)` 或 `while (getline(fin, line))`，**永遠不要用 `eof()`**；`>>` 之後要接 `getline` 記得先 `fin.ignore()`。
+- 讀到檔尾用 `while (fin >> x)` 或 `while (getline(fin, line))`，**永遠不要用 `eof()`**；`>>` 之後要接 `getline` 記得先 `fin.ignore(numeric_limits<streamsize>::max(), '\n')`。
 - 要保留空白與換行就用 `get` / `put`，`>>` 會把空白吃掉。
 - 每列欄位數不固定 → `getline` 抓整列 ＋ `istringstream` 拆欄位；逗號分隔就用三參數 `getline`。
 
@@ -670,7 +670,7 @@ int main() {
 </details>
 
 **Q8. 成績報表與直方圖（多檔輸出）**
-`grades.txt` 每行是「學號 作業次數 各次作業分數… 期中一 期中二」，作業次數每人不同：
+`grades.txt` 每行是「學號 作業次數 各次作業分數… 期中一 期中二」，作業次數每人不同（至少一次），最多 100 人：
 
 ```text
 B113040001 3 80 70 60 100 50

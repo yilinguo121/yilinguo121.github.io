@@ -61,7 +61,7 @@ int main() {          // ③ 程式進入點
 | `bool` | 1 byte | 只有 `true` / `false` 兩種值，這種值叫**布林值**，09/24 的 `if` 會大量用到 | `bool ok = true;` |
 | `string` | 不定 | 字串，長度自動調整，需 `#include <string>` | `string s = "Yilin";` |
 
-另外還有 `long long`（裝得下更大的整數）、`unsigned int`（不能是負數）、`short`（更省空間）、`float`（精度比 `double` 差），這學期幾乎用不到，知道有這些東西就好。
+另外還有 `long long`（裝得下更大的整數，約 $\pm 9.2 \times 10^{18}$；之後幾題數字會大到 `int` 裝不下，就換它）、`unsigned int`（不能是負數）、`short`（更省空間）、`float`（精度比 `double` 差），後三個這學期幾乎用不到，知道有這些東西就好。
 
 寫「典型大小」是因為實際大小由編譯器與平台決定，想自己量就在程式裡寫 `cout << sizeof(int) << ' ' << sizeof(double);`——`sizeof(型別)` 算出該型別在這台機器上佔幾個 byte，也可以寫 `sizeof(變數名)`；我這台印出 `4 8`。
 

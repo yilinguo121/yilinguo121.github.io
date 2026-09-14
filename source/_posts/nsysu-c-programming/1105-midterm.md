@@ -35,7 +35,7 @@ hidden: true
 - ☐ `class`：private 資料 + public setter + `const` 成員函式（→ Q5）、getter（自己補）
 - ☐ 默寫〈環境設置〉那份模組化 Makefile（`wildcard` + pattern rule 那一版），`make clean && make` 通過且**零警告**（不用自己發明，背熟就好）
 
-`+=`、`i++`、單獨一行的 `cout << fixed << setprecision(2);`——這三個寫法忘了就回 [09/17](/2026/09/09/nsysu-c-programming/0917-cpp-basics/) 翻。另外期中題目一定會先給你數量 `n`，用 `for` 讀就好，不必用 `while (cin >> x)` 那種「讀到沒東西可讀就停」的寫法。
+`+=`、`i++`、單獨一行的 `cout << fixed << setprecision(2);`——這三個寫法忘了就回 [09/17](/2026/09/09/nsysu-c-programming/0917-cpp-basics/) 翻。另外主課的期中題目通常會先給你數量 `n`，用 `for` 讀就好；「讀到結束值才停」的寫法是實驗課考題的習慣，見下面第二份模擬考。
 
 ## 上機考當天的流程
 
@@ -181,42 +181,33 @@ int main() {
 #include <iostream>
 using namespace std;
 
-bool isPrime(int n) {
-    if (n < 2) return false;
-    for (int i = 2; i <= n / i; i++)
-        if (n % i == 0) return false;
-    return true;
+bool isPerfect(int n) {
+    if (n < 2) return false;           // 1 不是完全數
+    int sum = 0;
+    for (int i = 1; i < n; i++)        // 掃過所有比 n 小的數
+        if (n % i == 0) sum += i;      // 整除就是因數，累加起來
+    return sum == n;
 }
 
 int main() {
-    const int MAX = 1024;
-    int a[MAX], n;
-    while (true) {
-        n = 0;
-        int x;
-        while (true) {                              // 一串數字以 0 結尾
-            cin >> x;
-            if (x == 0) break;
-            a[n++] = x;
+    int n;
+    cin >> n;
+    bool first = true;
+    for (int i = 2; i <= n; i++) {
+        if (isPerfect(i)) {
+            if (!first) cout << ' ';   // 第一個數字前不印空白，避免行尾多一格
+            cout << i;
+            first = false;
         }
-        if (n == 0) break;                          // 空的一串：結束
-
-        // 只對「是質數的位置」做選擇排序（由大到小），其他位置不動
-        for (int i = 0; i < n; i++) {
-            if (!isPrime(a[i])) continue;
-            int best = i;
-            for (int j = i + 1; j < n; j++)
-                if (isPrime(a[j]) && a[j] > a[best]) best = j;
-            int t = a[i]; a[i] = a[best]; a[best] = t;
-        }
-        for (int i = 0; i < n; i++) cout << a[i] << (i + 1 < n ? " " : "\n");
     }
-    cout << "Finish!\n";
+    cout << '\n';
     return 0;
 }
 ```
 
-**考點與常見扣分**：排序骨架還是選擇排序，只是「參與排序的位置」加了條件——`i` 不是質數就跳過，找最大值時也只看質數。這樣非質數自然留在原地。第三組資料只有一個質數 2，所以跟原本一樣。每一串讀完要把 `n` 歸零，這是連續輸入題最常忘的一行。
+**考點與常見扣分**：題目明講「寫成獨立函式」，寫在 `main` 裡就不合規格。邊界是 `1`（不是完全數，所以 `n < 2` 直接回 `false`）。`first` 旗標只是為了讓數字之間有空白、行尾沒有多餘空白。
+
+> **進階**：因數成雙成對出現（找到 2 就同時知道 6 / 2 = 3），所以有一種只掃到 `i * i <= n` 的寫法快很多，但要另外處理 `i = 1`（配出來的 `n / 1` 是 `n` 自己）與平方數（那一對是同一個因數）兩個特例。`n ≤ 500` 用不到——上機考先求對，別急著優化。
 
 </details>
 
@@ -520,27 +511,42 @@ int main() {
 #include <iostream>
 using namespace std;
 
-long long gcd(long long a, long long b) {
-    while (b != 0) {
-        long long r = a % b;
-        a = b;
-        b = r;
-    }
-    return a;
+bool isPrime(int n) {
+    if (n < 2) return false;
+    for (int i = 2; i <= n / i; i++)
+        if (n % i == 0) return false;
+    return true;
 }
 
 int main() {
-    long long a, b;
+    const int MAX = 1024;
+    int a[MAX], n;
     while (true) {
-        cin >> a >> b;
-        if (a == 0 && b == 0) break;
-        cout << a / gcd(a, b) * b << '\n';
+        n = 0;
+        int x;
+        while (true) {                              // 一串數字以 0 結尾
+            cin >> x;
+            if (x == 0) break;
+            a[n++] = x;
+        }
+        if (n == 0) break;                          // 空的一串：結束
+
+        // 只對「是質數的位置」做選擇排序（由大到小），其他位置不動
+        for (int i = 0; i < n; i++) {
+            if (!isPrime(a[i])) continue;
+            int best = i;
+            for (int j = i + 1; j < n; j++)
+                if (isPrime(a[j]) && a[j] > a[best]) best = j;
+            int t = a[i]; a[i] = a[best]; a[best] = t;
+        }
+        for (int i = 0; i < n; i++) cout << a[i] << (i + 1 < n ? " " : "\n");
     }
+    cout << "Finish!\n";
     return 0;
 }
 ```
 
-**考點與常見扣分**：`a * b / gcd` 會先溢位，一定寫成 `a / gcd(a, b) * b`；兩個 $10^9$ 等級的質數乘起來約 $10^{18}$，`int` 裝不下，全程用 `long long`。這裡示範迴圈版的輾轉相除，跟 [10/01 Q9](/2026/09/09/nsysu-c-programming/1001-parameters/#本週練習題) 的遞迴版是同一件事。
+**考點與常見扣分**：排序骨架還是選擇排序，只是「參與排序的位置」加了條件——`i` 不是質數就跳過，找最大值時也只看質數。這樣非質數自然留在原地。第三組資料只有一個質數 2，所以跟原本一樣。每一串讀完要把 `n` 歸零，這是連續輸入題最常忘的一行。
 
 </details>
 

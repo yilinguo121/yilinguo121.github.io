@@ -468,7 +468,7 @@ int main() {
 </details>
 
 **Q4. 分數類別（Fraction）**
-寫一個 `class Fraction`，存分子與分母（private），提供 `set(分子, 分母)`、`print()`（自動約分並處理負號）、`toDouble()`。分母為 0 時視為 `1`。
+寫一個 `class Fraction`，存分子與分母（private），提供 `set(分子, 分母)`、`print()`（自動約分並處理負號）、`toDouble()`。分母為 0 不是合法分數：`set` 回傳 `false`，主程式印 `invalid` 結束。
 
 ```text
 輸入： 6 -8
@@ -496,14 +496,15 @@ private:
     int num, den;
 
 public:
-    void set(int n, int d) {
-        if (d == 0) d = 1;
+    bool set(int n, int d) {
+        if (d == 0) return false;           // 除以零不能靠改分母混過去，回報失敗
         if (d < 0) { n = -n; d = -d; }      // 負號統一放在分子
         int g = gcd(n, d);                  // d 已保證 >= 1，所以 g 一定 >= 1
         n /= g;
         d /= g;
         num = n;
         den = d;
+        return true;
     }
     void print() const { cout << num << '/' << den << '\n'; }
     double toDouble() const { return static_cast<double>(num) / den; }
@@ -513,14 +514,17 @@ int main() {
     int n, d;
     cin >> n >> d;
     Fraction f;
-    f.set(n, d);
+    if (!f.set(n, d)) {
+        cout << "invalid\n";
+        return 0;
+    }
     f.print();
     cout << fixed << setprecision(3) << f.toDouble() << '\n';
     return 0;
 }
 ```
 
-`-n` 是**一元負號（只有一個運算元）**，意思是「n 的相反數」，跟 `7 - 2` 的減法不同用法。這題把「約分」與「負號正規化」放在 `set()` 裡，外面不管傳什麼進來，物件內部永遠是最簡分數——**這就是封裝的價值**。
+`-n` 是**一元負號（只有一個運算元）**，意思是「n 的相反數」，跟 `7 - 2` 的減法不同用法。這題把「約分」與「負號正規化」放在 `set()` 裡，外面不管傳什麼進來，物件內部永遠是最簡分數——**這就是封裝的價值**。分母 0 用回傳值回報、由呼叫端決定怎麼辦（10/22 的 `withdraw` 也是這個設計），不要偷偷改成別的值假裝合法。
 
 </details>
 

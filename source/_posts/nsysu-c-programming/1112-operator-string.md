@@ -430,7 +430,7 @@ getline(cin, line);      // 讀「一整行」，含空白，讀到換行為止
 > string line;
 > getline(cin, line);       // 馬上遇到那個 '\n'，讀到空字串就結束
 > ```
-> **解法**：中間加一行 `cin.ignore();`（丟掉一個字元），或更保險的
+> **解法**：最簡單是中間加一行 `cin.ignore();`（只丟掉一個字元——數字後面直接接換行時剛好夠，多打了空白就失效），保險的寫法是
 > ```cpp
 > cin.ignore(numeric_limits<streamsize>::max(), '\n');   // 需要 #include <limits>
 > ```
@@ -733,7 +733,7 @@ int main() {
 以下照實驗課歷年課堂練習與上機考的題型改寫。運算子重載這週實驗課的招牌題是「分數類別」：四則運算全部重載成成員函式、`<<` `>>` 用 `friend`，然後在 `main` 直接寫數學算式。字串題則來自實驗課上機考。
 
 **Q6. 分數類別（完整版）**
-寫 `class Fraction`，private 存分子與分母。用**成員函式**重載 `+`、`-`、`*`、`/` 與一元負號 `-`，用 **`friend`** 重載 `>>`（讀「分子 分母」）與 `<<`（印成 `a/b`）。`main` 用 `cin >> a >> b` 讀兩個分數後，算出並印出這三個式子：`A + B / A`、`A - (-B) / A`、`(A + B) * (-B)`。分母保持正數、結果請約分。
+寫 `class Fraction`，private 存分子與分母。用**成員函式**重載 `+`、`-`、`*`、`/` 與一元負號 `-`，用 **`friend`** 重載 `>>`（讀「分子 分母」）與 `<<`（印成 `a/b`）。`main` 用 `cin >> a >> b` 讀兩個分數後，算出並印出這三個式子：`A + B / A`、`A - (-B) / A`、`(A + B) * (-B)`。分母保持正數、結果請約分；分母為 0（含除以分子為 0 的分數）印 `zero denominator` 並結束。輸入的分子分母都在 ±10000 以內。
 
 ```text
 輸入：
@@ -762,6 +762,7 @@ A - (-B) / A = -16/3
 
 ```cpp
 #include <iostream>
+#include <cstdlib>          // exit
 using namespace std;
 
 int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
@@ -779,6 +780,7 @@ public:
 private:
     int num, den;
     void normalize() {                       // 分母保持正數，並約分
+        if (den == 0) { cerr << "zero denominator\n"; exit(1); }   // 不合法就直接結束，不要改成別的值
         if (den < 0) { num = -num; den = -den; }
         int g = gcd(num < 0 ? -num : num, den);
         if (g > 1) { num /= g; den /= g; }
@@ -840,7 +842,8 @@ int main() {
     getline(cin, line);
     int count[26] = {};                         // 26 個字母各一格，全部歸零
     for (char c : line) {
-        if (isalpha(c)) count[tolower(c) - 'a']++;   // 'a' 進第 0 格、'b' 第 1 格…
+        unsigned char u = static_cast<unsigned char>(c);   // 正文講過：cctype 的函式要餵 unsigned char
+        if (isalpha(u)) count[tolower(u) - 'a']++;         // 'a' 進第 0 格、'b' 第 1 格…
     }
     for (int i = 0; i < 26; i++)
         if (count[i] > 0)

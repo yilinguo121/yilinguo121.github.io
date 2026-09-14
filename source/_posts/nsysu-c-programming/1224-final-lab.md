@@ -489,6 +489,7 @@ void Student::print() const {
 
 ```cpp
 #include <iostream>
+#include <string>
 #include <vector>
 #include "Student.h"
 using namespace std;
@@ -839,7 +840,8 @@ int main() {
     vector<Entry> dict;
     string w;
     while (cin >> w) {
-        for (char& c : w) c = tolower(c);            // 不分大小寫：全部轉小寫
+        for (char& c : w)                            // 不分大小寫：全部轉小寫
+            c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
         bool found = false;
         for (Entry& e : dict)
             if (e.word == w) { e.count++; found = true; break; }

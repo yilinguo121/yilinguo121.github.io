@@ -18,7 +18,7 @@ hidden: true
 ## 常用 g++ 編譯選項
 
 ```bash
-g++ -Wall -Wextra -std=c++17 -o app main.cpp   # 開全部警告 + 指定 C++17（平常就用這個）
+g++ -Wall -Wextra -std=c++17 -o app main.cpp   # 開常用的兩組警告 + 指定 C++17（平常就用這個）
 g++ -c foo.cpp                                  # 只編譯成 .o，不連結
 g++ -E foo.cpp -o foo.i                         # 只做前置處理（看 #include 展開的結果）
 g++ -g -o app main.cpp                          # 編進行號與變數名，給 gdb 和下一行的 sanitizer 用（編譯錯誤本來就有行號，不必加這個）

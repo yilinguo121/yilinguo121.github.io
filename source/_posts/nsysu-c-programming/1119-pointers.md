@@ -846,6 +846,7 @@ top ->
 
 ```cpp
 #include <iostream>
+#include <string>
 using namespace std;
 
 struct Node {
@@ -927,6 +928,7 @@ head -> <- tail
 
 ```cpp
 #include <iostream>
+#include <string>
 using namespace std;
 
 struct Node {
@@ -1065,7 +1067,8 @@ key: 0
 using namespace std;
 
 void toLower(char* s) {
-    for (int i = 0; s[i] != '\0'; i++) s[i] = tolower(s[i]);
+    for (int i = 0; s[i] != '\0'; i++)
+        s[i] = static_cast<char>(tolower(static_cast<unsigned char>(s[i])));   // 11/12 講過的寫法
 }
 
 int main() {

@@ -54,7 +54,7 @@ ls                  # 「列出這個資料夾裡有什麼」
 ## 安裝 VirtualBox 與 Ubuntu 20.04
 
 1. 到 [virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) 下載對應主機作業系統的 VirtualBox（Windows / macOS / Linux 都有），安裝過程一路「下一步」即可；中途跳出要安裝網路介面卡驅動的詢問，選「是」。
-   > **Mac 使用者先看這裡**：點左上角 → 「關於這台 Mac」。寫著「晶片 Apple M1／M2／M3／M4」的是 Apple Silicon，**VirtualBox 在這種機器上不能執行下面要裝的 x86（AMD64）版 Ubuntu**（VirtualBox 官方已明列這個限制），照做會在開機那一步失敗。替代方案：改裝免費的 [UTM](https://mac.getutm.app/)，並改下載 Ubuntu 20.04 的 **ARM64** 版映像檔（[cdimage.ubuntu.com/releases/20.04](https://cdimage.ubuntu.com/releases/20.04/release/) 的 `ubuntu-20.04.x-live-server-arm64.iso`，裝完在終端機執行 `sudo apt install ubuntu-desktop` 補上桌面）。之後 g++、make、Terminal 的用法完全相同——助教檢查的是 Makefile 與編譯結果，不是虛擬機軟體；不放心就開學第一週拿去問助教。「處理器 Intel…」的 Mac 照下面走即可。
+   > **Mac 使用者先看這裡**：點螢幕左上角的蘋果選單 → 「關於這台 Mac」。寫著「晶片 Apple M1／M2／M3／M4」的是 Apple Silicon，**VirtualBox 在這種機器上不能執行下面要裝的 x86（AMD64）版 Ubuntu**（VirtualBox 官方已明列這個限制），照做會在開機那一步失敗。替代方案：改裝免費的 [UTM](https://mac.getutm.app/)，並改下載 Ubuntu 20.04 的 **ARM64** 版映像檔（[cdimage.ubuntu.com/releases/20.04](https://cdimage.ubuntu.com/releases/20.04/release/) 的 `ubuntu-20.04.x-live-server-arm64.iso`，裝完在終端機執行 `sudo apt install ubuntu-desktop` 補上桌面）。之後 g++、make、Terminal 的用法完全相同——助教檢查的是 Makefile 與編譯結果，不是虛擬機軟體；不放心就開學第一週拿去問助教。「處理器 Intel…」的 Mac 照下面走即可。
 
 2. 到 [releases.ubuntu.com/20.04](https://releases.ubuntu.com/20.04/) 下載 **64-bit PC (AMD64) desktop image**，會得到一個約 3 GB 的 `.iso` 光碟映像檔。**務必是 20.04 LTS**，因為上機考規定要與助教環境一致。
 3. 打開 VirtualBox → **新增（New）**：

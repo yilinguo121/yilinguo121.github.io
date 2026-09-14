@@ -74,7 +74,7 @@ int main() {
 > Circle a();      // 這不是建立物件！編譯器認為你在「宣告一個回傳 Circle 的函式 a」
 > Circle a;        // 正確
 > ```
-> g++ 會先給警告 `warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]`，接著在用到 `a` 的地方報 `error: request for member 'area' in 'a', which is of non-class type 'Circle()'`。看到 `non-class type 'Circle()'` 這種**帶括號的型別名**，就是踩到這個坑了。課本上的名稱是 *most vexing parse*。
+> 較新的 g++（11 以上）會先給警告 `warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]`（虛擬機的 g++ 9 沒有這個警告），接著在用到 `a` 的地方報 `error: request for member 'area' in 'a', which is of non-class type 'Circle()'`。看到 `non-class type 'Circle()'` 這種**帶括號的型別名**，就是踩到這個坑了。課本上的名稱是 *most vexing parse*。
 
 ## 初始化列表（member initializer list）
 

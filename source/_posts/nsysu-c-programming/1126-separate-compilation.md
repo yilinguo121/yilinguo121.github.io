@@ -553,7 +553,7 @@ void Binary::output(int number) {
     string bits;
     if (number == 0) bits = "0";
     while (number > 0) {
-        bits = char('0' + number % 2) + bits;   // 餘數接在前面
+        bits = static_cast<char>('0' + number % 2) + bits;   // 餘數接在前面
         number /= 2;
     }
     cout << "binary:     " << bits << '\n';
@@ -620,7 +620,7 @@ binary:     1111011
 scientific: 1.230000e+02
 ```
 
-三個 `output` 同名卻不衝突，就是因為各在自己的命名空間，呼叫時寫 `Reverse::output(n)`。實作檔裡函式定義寫成 `void Reverse::output(int number)`，跟成員函式的寫法一樣「用 `::` 說明它屬於誰」。`.h` 只放宣告、不放實作，否則三個 `.cpp` 都 include 它就會重複定義。二進位那段用「餘數接在字串**前面**」（`char('0' + number % 2) + bits`），比先存進陣列再反著印少一個步驟；科學記號用 `cout << scientific`——它跟 09/17 的 `fixed` 是同一類的格式設定，之後印出的小數都會變成 `1.230000e+02` 這種形式（`e+02` 是「乘以 10 的 2 次方」）；整數要先乘 `1.0` 變成 `double` 才會套用。印完用 `cout.unsetf(ios::scientific)` 把這個設定關掉，否則同一支程式後面所有 `double` 都會變成科學記號。
+三個 `output` 同名卻不衝突，就是因為各在自己的命名空間，呼叫時寫 `Reverse::output(n)`。實作檔裡函式定義寫成 `void Reverse::output(int number)`，跟成員函式的寫法一樣「用 `::` 說明它屬於誰」。`.h` 只放宣告、不放實作，否則三個 `.cpp` 都 include 它就會重複定義。二進位那段用「餘數接在字串**前面**」（`static_cast<char>('0' + number % 2) + bits`），比先存進陣列再反著印少一個步驟；科學記號用 `cout << scientific`——它跟 09/17 的 `fixed` 是同一類的格式設定，之後印出的小數都會變成 `1.230000e+02` 這種形式（`e+02` 是「乘以 10 的 2 次方」）；整數要先乘 `1.0` 變成 `double` 才會套用。印完用 `cout.unsetf(ios::scientific)` 把這個設定關掉，否則同一支程式後面所有 `double` 都會變成科學記號。
 
 </details>
 
