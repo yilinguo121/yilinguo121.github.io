@@ -249,6 +249,23 @@ diff out.txt ans.txt      # ans.txt 是你自己照題目範例打的預期答�
 
 實驗課與上機考要求**每次交檔都要附一份可用的 Makefile**，能一次編譯當週所有題目（編不過就是 0 分，扣分規則見文末）。
 
+### Makefile 就是一個文字檔
+
+先講最基本的：Makefile **不是**什麼特殊格式，它就是一個普通的文字檔，跟 `.cpp` 一樣用 `nano` 打出來，只是檔名有規定——
+
+- 檔名一定是 **`Makefile`**（大寫 M、**沒有副檔名**）。`make` 這個指令執行時，只會在**目前所在的資料夾**找一個叫這個名字的檔案；取成 `makefile.txt`、`MakeFile` 都找不到，會得到 `make: *** No targets specified and no makefile found.  Stop.`。
+- 它要跟當週的 `Q1.cpp`、`Q2.cpp` **放在同一個資料夾**，因為裡面寫的檔名都是相對於這個資料夾的。
+
+所以每週的動作固定是：
+
+```bash
+cd ~/week01/B153040XXX     # 先進到放 .cpp 的資料夾
+nano Makefile              # 建檔（檔案不存在就是新建）並打進下面的內容
+make                       # 在同一個資料夾下執行
+```
+
+`nano` 裡打完按 `Ctrl + O` → Enter 存檔、`Ctrl + X` 離開，跟寫 `.cpp` 一樣。存好之後 `ls` 應該同時看到 `Makefile` 和你的 `.cpp`。
+
 ### Makefile 的三個組成
 
 ```makefile
