@@ -10,7 +10,7 @@ menu:
     url: /
     icon: /images/home.png
   - name: 關於我
-    url: /關於我/
+    url: /about/
     icon: /images/person.png
   - name: 文章
     url: /archives
