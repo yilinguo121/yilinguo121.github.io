@@ -10,7 +10,7 @@ comments: true
 ```yml
 - name: 郭10
   url: https://www.yilin0121.com/
-  desc: 觀念考不到5級的115特選生
+  desc: 正取一堆，最後去了備取的那間
   image: https://www.yilin0121.com/avatar/avatar.webp
 ```
 
