@@ -253,7 +253,7 @@ diff out.txt ans.txt      # ans.txt 是你自己照題目範例打的預期答�
 
 先講最基本的：Makefile **不是**什麼特殊格式，它就是一個普通的文字檔，跟 `.cpp` 一樣用 `nano` 打出來，只是檔名有規定——
 
-- 檔名一定是 **`Makefile`**（大寫 M、**沒有副檔名**）。`make` 這個指令執行時，只會在**目前所在的資料夾**找一個叫這個名字的檔案；取成 `makefile.txt`、`MakeFile` 都找不到，會得到 `make: *** No targets specified and no makefile found.  Stop.`。
+- 檔名是 **`Makefile`** 或全小寫的 **`makefile`**，**沒有副檔名**——`make` 兩個都認（慣例用大寫 M 的那個，`ls` 時會排在 `.cpp` 前面比較好找；兩個同時存在時 `make` 會先用小寫的）。`make` 這個指令執行時，只會在**目前所在的資料夾**找這兩個名字；取成 `makefile.txt`、`MakeFile` 就找不到，會得到 `make: *** No targets specified and no makefile found.  Stop.`。
 - 它要跟當週的 `Q1.cpp`、`Q2.cpp` **放在同一個資料夾**，因為裡面寫的檔名都是相對於這個資料夾的。
 
 所以每週的動作固定是：
