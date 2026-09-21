@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1022-constructors/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 6–7：建構子、初始化列表、預設建構子消失的原因、解構子與 static 成員，以 BankAccount 為完整範例，附練習題。
 toc: true
 comments: true
 hidden: true

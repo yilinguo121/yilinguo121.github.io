@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1126-separate-compilation/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 11：為什麼要拆檔、把類別拆成 .h 與 .cpp、include guard、多檔案編譯與 Makefile，以及命名空間，附本週練習題。
 toc: true
 comments: true
 hidden: true

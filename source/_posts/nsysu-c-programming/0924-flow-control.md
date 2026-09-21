@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/0924-flow-control/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 2–3：布林運算式、if／switch 分支、迴圈，以及自訂函式、作用域與遞迴，附本週練習題與參考解答。
 toc: true
 comments: true
 hidden: true

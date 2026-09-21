@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1015-struct-class/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 5–6：struct 的用法、從 struct 到 class、封裝、const 成員函式與在類別外定義成員函式，附本週練習題與參考解答。
 toc: true
 comments: true
 hidden: true

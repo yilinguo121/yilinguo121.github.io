@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1001-parameters/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 4：傳值與傳參考、const 參考、函式重載、預設引數、用 assert 檢查前置條件，以及 stub 與 driver 測試技巧，附練習題。
 toc: true
 comments: true
 hidden: true

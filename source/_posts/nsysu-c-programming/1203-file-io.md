@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1203-file-io/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 12：串流概念、讀檔寫檔、讀到檔尾的正確寫法、iomanip 格式化輸出、seekg／tellg 隨機存取與 stringstream，附練習題。
 toc: true
 comments: true
 hidden: true

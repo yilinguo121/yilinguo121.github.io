@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/setup/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南的環境設置：從 VirtualBox 安裝 Ubuntu 20.04、g++ 與 make，到第一支 Hello World、常用 Terminal 指令與 Makefile 從零寫到模組化。
 toc: true
 comments: true
 hidden: true

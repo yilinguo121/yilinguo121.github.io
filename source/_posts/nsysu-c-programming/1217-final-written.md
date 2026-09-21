@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1217-final-written/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南的期末筆試準備（範圍 Ch 1–12、Ch 14）：全學期複習清單、筆試模擬題、觀念快問快答與手寫題的準備方式。
 toc: true
 comments: true
 hidden: true

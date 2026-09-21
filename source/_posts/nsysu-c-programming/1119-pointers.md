@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1119-pointers/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 9–10：指標與位址、nullptr、new／delete 動態記憶體、指標與陣列、-> 與 this、淺拷貝與深拷貝、C 風格字串與 argc／argv。
 toc: true
 comments: true
 hidden: true

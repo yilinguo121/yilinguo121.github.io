@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1029-vector-operator/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 7：vector 的用法、vector 當參數與裝物件，以及運算子重載入門（讓自訂型別也能用 +），附本週練習題與參考解答。
 toc: true
 comments: true
 hidden: true

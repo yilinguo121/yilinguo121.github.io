@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/appendix/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南附錄：常用 g++ 編譯選項、整學期通用的 Makefile、語法速查、常見錯誤訊息對照表與名詞速查表。
 toc: true
 comments: true
 hidden: true

@@ -5,7 +5,7 @@ updated: 2026-03-18
 cover: /images/code-cover.jpg
 categories: [TOI]
 tags: [TOI, 解題, C++]
-description: 2026 年資訊奧林匹亞初選解題紀錄與程式碼。
+description: 2026 年資訊奧林匹亞（TOI）初選解題紀錄：快樂數、河內塔、大中括、新高價、幾乎獨立的分店，附題目 PDF、上傳紀錄與當時的程式碼。
 toc: true
 comments: true
 ---

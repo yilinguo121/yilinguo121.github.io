@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1008-arrays/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 5：陣列宣告與走訪、陣列傳進函式、部分填滿的陣列、搜尋與排序、二維陣列，附本週練習題與參考解答。
 toc: true
 comments: true
 hidden: true

@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/0910-intro/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南第一週：這門課在教什麼、整學期的進度地圖、第一週實際要做的事，以及第一次編譯失敗時該怎麼排查。
 toc: true
 comments: true
 hidden: true

@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1112-operator-string/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 8–9：成員與非成員運算子、friend、重載輸出入運算子、[] 與 ++、functor、建構子造成的自動型別轉換，以及 string 類別，附練習題。
 toc: true
 comments: true
 hidden: true

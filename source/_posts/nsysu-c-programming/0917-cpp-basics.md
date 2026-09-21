@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/0917-cpp-basics/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 1：程式骨架、變數與型別、型別轉換、cin／cout 輸入輸出、整數除法陷阱與程式風格，附本週練習題與參考解答。
 toc: true
 comments: true
 hidden: true

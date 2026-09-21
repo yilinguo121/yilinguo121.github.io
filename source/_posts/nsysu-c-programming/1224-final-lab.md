@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1224-final-lab/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南的期末上機考準備（範圍 Ch 1–12、Ch 14）：當天流程，以及兩份建議計時 120 分鐘的模擬上機考與解答。
 toc: true
 comments: true
 hidden: true

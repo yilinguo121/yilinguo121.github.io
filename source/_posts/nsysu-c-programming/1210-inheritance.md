@@ -6,6 +6,7 @@ permalink: 2026/09/09/nsysu-c-programming/1210-inheritance/
 cover: /images/code-cover.jpg
 categories: [程式設計]
 tags: [C++, 中山大學, 自學指南]
+description: 中山大學 C 程式設計自學指南 Ch 14：繼承、建構子怎麼串、protected、覆寫父類別函式、建構與解構順序、is-a 與 has-a、三種繼承方式與 virtual，附練習題。
 toc: true
 comments: true
 hidden: true
