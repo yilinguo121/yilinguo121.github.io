@@ -64,3 +64,18 @@ if (fs.existsSync(sidebarFile)) {
   fs.writeFileSync(sidebarFile, content, 'utf8');
   console.log('✓ Theme common-sidebar.ejs patched successfully');
 }
+
+// Patch after-footer.ejs so KaTeX renders HTML only (no hidden MathML copy).
+// 預設會同時輸出 MathML 和 HTML 兩份，Google 抓摘要時會把同一條式子的文字重複好幾次
+// （例如 $k$ 變成「k k k」），所以只留 HTML 那一份。
+const afterFooterFile = path.join(__dirname, '../node_modules/hexo-theme-reimu/layout/_partial/after-footer.ejs');
+
+if (fs.existsSync(afterFooterFile)) {
+  let content = fs.readFileSync(afterFooterFile, 'utf8');
+  content = content.replace(
+    "renderMathInElement(_$('article'), {delimiters:",
+    "renderMathInElement(_$('article'), {output: 'html', delimiters:"
+  );
+  fs.writeFileSync(afterFooterFile, content, 'utf8');
+  console.log('✓ Theme after-footer.ejs patched successfully');
+}

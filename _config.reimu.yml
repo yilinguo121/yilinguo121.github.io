@@ -309,7 +309,7 @@ injector:
   sidebar_begin: # Inject code snippet right after <aside>
   sidebar_end: |
     <script src="/js/site-stats.js"></script>
-    <div class="widget site-stats-widget">
+    <div class="widget site-stats-widget" data-nosnippet>
       <h3 class="widget-title">網站統計</h3>
       <div class="site-stats-content">
         <div class="stat-item">

@@ -144,5 +144,6 @@ sitemap:
   path:
     - sitemap.xml
   rel: false
-  tags: true
-  categories: true
+  # 標籤／分類頁已設 noindex（scripts/seo.js），不放進 sitemap
+  tags: false
+  categories: false
