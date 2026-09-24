@@ -103,42 +103,7 @@ Vec2 operator+(const Vec2& a, const Vec2& b) {
 
 順帶一提：課本會把 `operator+` 的回傳型別寫成 `const Vec2`（`const Vec2 operator+(const Vec2& a, const Vec2& b);`），理由是可以擋掉 `(a + b) = c;` 這種合法但毫無意義的寫法。現代 C++ 因為妨礙最佳化已不建議，但**課本與考試是這個寫法**，知道理由即可。
 
-**`friend` 也可以整個類別一起給**：
-
-```cpp
-#include <iostream>
-using namespace std;
-
-class Engine {
-private:
-    int horsepower;
-public:
-    Engine(int hp) : horsepower(hp) { }
-    friend class Car;            // Car 的所有成員函式都能看見 Engine 的 private
-};
-
-class Car {                      // Car 裡面有 Engine 物件，所以 Engine 要先定義完
-private:
-    Engine engine;
-public:
-    Car(int hp) : engine(hp) { }
-    void show() const { cout << engine.horsepower << '\n'; }   // 直接碰 Engine 的 private
-};
-
-int main() {
-    Car c(150);
-    c.show();
-    return 0;
-}
-```
-
-輸出：
-
-```text
-150
-```
-
-這個權限是**單向**的：Engine 看不到 Car 的 private。（這個例子只是示範**語法**——真實情況給 `Engine` 一個 `hp()` getter 更好。`friend class` 真正用得上的場合，是兩個類別本來就是同一個設計的兩半，例如容器和它的迭代器。）
+**`friend` 也可以整個類別一起給**：在 `Engine` 裡寫 `friend class Car;`，`Car` 的所有成員函式就都能碰 `Engine` 的 private（單向的，`Engine` 看不到 `Car` 的）。真實情況給 `Engine` 一個 getter 通常更好，這個寫法認得就好。
 
 ## 重載 `<<` 與 `>>`
 
@@ -415,6 +380,7 @@ apple comes first
 | `s.clear()` | 清空字串 |
 | `s.insert(pos, t)` / `s.erase(pos, len)` | 插入 / 刪除 |
 | `stoi(s)` / `to_string(n)` | 字串與數字互轉（C++11） |
+| `string(n, c)` | 由 `n` 個字元 `c` 組成的字串，例如 `string(3, '-')` 是 `"---"` |
 
 **輸入字串的兩種方式**：
 
@@ -731,9 +697,70 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照實驗課歷年課堂練習與上機考的題型改寫。運算子重載這週實驗課的招牌題是「分數類別」：四則運算全部重載成成員函式、`<<` `>>` 用 `friend`，然後在 `main` 直接寫數學算式。字串題則來自實驗課上機考。
+以下照實驗課歷年課堂練習與上機考的題型改寫。先用 `Date` 的比較運算子暖身（非成員函式＋`friend`，10/29 留下來的題），再做運算子重載這週實驗課的招牌題「分數類別」：四則運算全部重載成成員函式、`<<` `>>` 用 `friend`，然後在 `main` 直接寫數學算式。字串題則來自實驗課上機考。
 
-**Q6. 分數類別（完整版）**
+**Q6. 日期的 `<`、`>`、`==`**
+`class Date` 的年月日是 private。用**非成員函式**重載 `<`、`>`、`==`（參數都是 `const Date&`），需要的話宣告成 `friend`。讀入三個日期，印出前兩組的比較結果，並找出最早的一天。
+
+```text
+輸入：
+2026 9 10
+2026 9 10
+2025 12 25
+輸出：
+2026/9/10 == 2026/9/10
+2026/9/10 > 2025/12/25
+earliest: 2025/12/25
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Date {
+public:
+    Date(int y, int m, int d) : year(y), month(m), day(d) {}
+    void print() const { cout << year << '/' << month << '/' << day; }
+    friend bool operator<(const Date& a, const Date& b);
+    friend bool operator==(const Date& a, const Date& b);
+private:
+    int year, month, day;
+};
+
+bool operator<(const Date& a, const Date& b) {
+    if (a.year != b.year)   return a.year < b.year;
+    if (a.month != b.month) return a.month < b.month;
+    return a.day < b.day;
+}
+bool operator==(const Date& a, const Date& b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+bool operator>(const Date& a, const Date& b) { return b < a; }   // 反過來問就好，不用 friend
+
+int main() {
+    int y, m, d;
+    cin >> y >> m >> d; Date a(y, m, d);
+    cin >> y >> m >> d; Date b(y, m, d);
+    cin >> y >> m >> d; Date c(y, m, d);
+    a.print(); cout << (a < b ? " < " : a == b ? " == " : " > "); b.print(); cout << '\n';
+    b.print(); cout << (b < c ? " < " : b == c ? " == " : " > "); c.print(); cout << '\n';
+
+    Date earliest = a;                       // 找最早的一天
+    if (b < earliest) earliest = b;
+    if (c < earliest) earliest = c;
+    cout << "earliest: "; earliest.print(); cout << '\n';
+    return 0;
+}
+```
+
+只有 `<` 和 `==` 真的需要碰 private 成員，所以只有它們是 `friend`；`>` 直接寫成 `b < a`，一行搞定又不用開後門。比較日期是「先比年、年相同比月、月相同比日」，這個「逐欄比較」的寫法字串、版本號都適用。
+
+</details>
+
+**Q7. 分數類別（完整版）**
 寫 `class Fraction`，private 存分子與分母。用**成員函式**重載 `+`、`-`、`*`、`/` 與一元負號 `-`，用 **`friend`** 重載 `>>`（讀「分子 分母」）與 `<<`（印成 `a/b`）。`main` 用 `cin >> a >> b` 讀兩個分數後，算出並印出這三個式子：`A + B / A`、`A - (-B) / A`、`(A + B) * (-B)`。分母保持正數、結果請約分；分母為 0（含除以分子為 0 的分數）印 `zero denominator` 並結束。輸入的分子分母都在 ±10000 以內。
 
 ```text
@@ -808,11 +835,11 @@ int main() {
 }
 ```
 
-看 `main` 那三行：**重載好之後，分數就能像 `int` 一樣寫進算式**，而且 `*`、`/` 比 `+`、`-` 先算的規則自動成立——優先順序是跟著運算子符號走的，重載改不了。一元負號 `operator-()` 沒有參數，跟二元的 `operator-(const Fraction&)` 靠參數個數區分。所有運算子都透過建構子產生新物件，`normalize()` 在建構子裡統一處理正負號與約分，就不用在每個運算子裡各寫一次。
+看 `main` 那三行：**重載好之後，分數就能像 `int` 一樣寫進算式**，而且 `*`、`/` 比 `+`、`-` 先算的規則自動成立——優先順序是跟著運算子符號走的，重載改不了。一元負號 `operator-()` 沒有參數，跟二元的 `operator-(const Fraction&)` 靠參數個數區分。所有運算子都透過建構子產生新物件，`normalize()` 在建構子裡統一處理正負號與約分，就不用在每個運算子裡各寫一次。兩個新面孔：`cerr` 是 09/17 提過的**標準錯誤輸出**（印錯誤訊息用，用法跟 `cout` 一樣）；`exit(1)` 會**立刻結束整支程式**，括號裡的 1 是交給作業系統的離開碼、代表異常結束——它在 `<cstdlib>` 裡，跟 `main` 的 `return 1;` 效果類似，差別是在任何函式裡都能用。
 
 </details>
 
-**Q7. 字母出現次數**
+**Q8. 字母出現次數**
 讀入一整行文字，統計每個英文字母出現幾次，大小寫視為相同，只印出現過的字母（依 a–z 順序）。
 
 ```text
@@ -857,7 +884,7 @@ int main() {
 
 </details>
 
-**Q8. 整理多餘空白**
+**Q9. 整理多餘空白**
 反覆讀入整行文字直到輸入結束（終端機按 <kbd>Ctrl</kbd>+<kbd>D</kbd>），去掉開頭與結尾的空白、把單字之間連續的空白壓成一個，用中括號框起來印出（方便看出頭尾沒有空白）。
 
 ```text
@@ -894,7 +921,7 @@ string tidy(const string& s) {
 
 int main() {
     string line;
-    while (getline(cin, line))
+    while (getline(cin, line))                 // getline 也能當條件：讀到一行就繼續，輸入結束就停（同 10/29 Q4 的 cin >> cmd）
         cout << '[' << tidy(line) << "]\n";
     return 0;
 }
@@ -904,7 +931,7 @@ int main() {
 
 </details>
 
-**Q9. 九宮格鍵盤**
+**Q10. 九宮格鍵盤**
 早期手機的九宮格按鍵：2 = `abc`、3 = `def`、4 = `ghi`、5 = `jkl`、6 = `mno`、7 = `pqrs`、8 = `tuv`、9 = `wxyz`。要打出一個字母得按同一鍵好幾下（`h` 是 4 鍵按兩下）。反覆讀入小寫單字，把每個字母改寫成「字母 + 按幾下」印出。
 
 ```text
@@ -951,7 +978,7 @@ int main() {
 
 </details>
 
-**Q10. 羅馬數字**
+**Q11. 羅馬數字**
 反覆讀入 1–3999 的整數，轉成羅馬數字（I=1、V=5、X=10、L=50、C=100、D=500、M=1000；4 寫成 IV、9 寫成 IX、40 是 XL、90 是 XC、400 是 CD、900 是 CM），讀到 `0` 結束，範圍外印 `out of range`。請用 `switch` 做判斷。
 
 ```text

@@ -119,7 +119,7 @@ Hello, file!
 ofstream fout("log.txt", ios::app);     // append
 ```
 
-`ios` 是所有串流共同的祖先類別，`::` 就是 10/15 的「屬於」，所以 `ios::app` ＝「`ios` 裡那個叫 `app`（append）的旗標」。常用的只有三個：`ios::in`（讀）、`ios::out`（寫，預設清空）、`ios::app`（接在後面寫）；`ios::binary` 是給圖片影音用的，這學期用不到。要一次指定好幾種模式就用 `|` 串起來，例如 `ofstream fout("log.txt", ios::out | ios::app);`。這個 `|` 跟 09/24 的邏輯 `||`（兩根）不是同一個東西，這學期照抄就好。
+`ios` 是所有串流共同的祖先類別，`::` 就是 10/15 的「屬於」，所以 `ios::app` ＝「`ios` 裡那個叫 `app`（append）的旗標」。常用的只有三個：`ios::in`（讀）、`ios::out`（寫，預設清空）、`ios::app`（接在後面寫）；`ios::binary` 是給圖片影音用的，這學期用不到。要一次指定好幾種模式就用 `|` 串起來，例如 `ofstream fout("log.txt", ios::out | ios::app);`。這個 `|` 跟 09/17 的邏輯 `||`（兩根）不是同一個東西，這學期照抄就好。
 
 ## 讀到檔尾的正確寫法
 
@@ -233,15 +233,7 @@ int main() {
 
 ## 隨機存取：`seekg` / `tellg`
 
-串流內部有一個「現在讀到第幾個 byte」的位置指標：`fin.tellg()` 問位置，`fin.seekg(...)` 換位置。最常見的用途是量檔案大小：
-
-```cpp
-fin.seekg(0, ios::end);          // 跳到檔尾
-long long size = fin.tellg();    // 此時位置＝檔案長度
-fin.seekg(0, ios::beg);          // 記得跳回檔頭再開始讀
-```
-
-這學期看得懂就好，實驗課題目幾乎都是順序讀寫。
+串流內部記著「現在讀到第幾個 byte」，`tellg()` 問位置、`seekg()` 跳位置，可以用來量檔案大小或倒回檔頭重讀。實驗課題目幾乎都是順序讀寫，知道有這兩個函式就好。
 
 ## `stringstream`：把字串當串流用
 

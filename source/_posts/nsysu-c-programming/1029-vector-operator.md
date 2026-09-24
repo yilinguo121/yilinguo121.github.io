@@ -480,7 +480,7 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照實驗課歷年課堂練習的題型改寫。這週實驗課的固定組合是「`vector` 裝 `struct` 做一個選單程式」與「幫 `Date` 類別重載比較運算子和 `+`」。
+以下照實驗課歷年課堂練習的題型改寫。這週實驗課的固定組合是「`vector` 裝 `struct` 做一個選單程式」與「幫 `Date` 類別重載運算子」——`+` 用成員函式這週就能寫；`<`、`==` 那種要寫成非成員函式的，需要下週的 `friend`，放在 11/12 的練習。
 
 **Q5. 日記本（`vector` + 選單）**
 定義 `struct Diary { int year, month, day; string note; }`，用 `vector<Diary>` 存日記。反覆讀入指令：`1` 寫日記（讀日期與一整行內容）、`2` 讀日期並顯示那天的內容、`3` 讀日期並刪除、`4` 列出所有日記的日期與筆數，`0` 結束。日期不合法要重新輸入。
@@ -655,69 +655,8 @@ int main() {
 
 </details>
 
-**Q7. 日期的 `<`、`>`、`==`**
-`class Date` 的年月日是 private。用**非成員函式**重載 `<`、`>`、`==`（參數都是 `const Date&`），需要的話宣告成 `friend`。讀入三個日期，印出前兩組的比較結果，並找出最早的一天。
-
-```text
-輸入：
-2026 9 10
-2026 9 10
-2025 12 25
-輸出：
-2026/9/10 == 2026/9/10
-2026/9/10 > 2025/12/25
-earliest: 2025/12/25
-```
-
-<details>
-<summary><b>參考解答</b></summary>
-
-```cpp
-#include <iostream>
-using namespace std;
-
-class Date {
-public:
-    Date(int y, int m, int d) : year(y), month(m), day(d) {}
-    void print() const { cout << year << '/' << month << '/' << day; }
-    friend bool operator<(const Date& a, const Date& b);
-    friend bool operator==(const Date& a, const Date& b);
-private:
-    int year, month, day;
-};
-
-bool operator<(const Date& a, const Date& b) {
-    if (a.year != b.year)   return a.year < b.year;
-    if (a.month != b.month) return a.month < b.month;
-    return a.day < b.day;
-}
-bool operator==(const Date& a, const Date& b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
-}
-bool operator>(const Date& a, const Date& b) { return b < a; }   // 反過來問就好，不用 friend
-
-int main() {
-    int y, m, d;
-    cin >> y >> m >> d; Date a(y, m, d);
-    cin >> y >> m >> d; Date b(y, m, d);
-    cin >> y >> m >> d; Date c(y, m, d);
-    a.print(); cout << (a < b ? " < " : a == b ? " == " : " > "); b.print(); cout << '\n';
-    b.print(); cout << (b < c ? " < " : b == c ? " == " : " > "); c.print(); cout << '\n';
-
-    Date earliest = a;                       // 找最早的一天
-    if (b < earliest) earliest = b;
-    if (c < earliest) earliest = c;
-    cout << "earliest: "; earliest.print(); cout << '\n';
-    return 0;
-}
-```
-
-只有 `<` 和 `==` 真的需要碰 private 成員，所以只有它們是 `friend`；`>` 直接寫成 `b < a`，一行搞定又不用開後門。比較日期是「先比年、年相同比月、月相同比日」，這個「逐欄比較」的寫法字串、版本號都適用。
-
-</details>
-
-**Q8. 日期加天數（重載 `+`）**
-承 Q7，用**成員函式**重載 `+`：`today + n` 回傳 `n` 天後的日期，原物件不變，要正確處理月底、年底與閏年。讀入的日期不合法要重新輸入。
+**Q7. 日期加天數（重載 `+`）**
+寫 `class Date`（年月日 private），用**成員函式**重載 `+`：`today + n` 回傳 `n` 天後的日期，原物件不變，要正確處理月底、年底與閏年。讀入的日期不合法要重新輸入。
 
 ```text
 輸入：

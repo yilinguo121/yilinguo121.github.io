@@ -205,8 +205,6 @@ int main() {
 
 本週練習題 Q1–Q3 用的就是這個模式：宣告 `a[100]`、讀進 `n` 個，之後每個迴圈的上界都是 `n` 而不是 100。
 
-> **全域**變數不要取名叫 `size`：C++17 起標準函式庫有 `std::size`，`using namespace std;` 會把它拉進來跟全域的 `size` 撞名，得到 `error: reference to 'size' is ambiguous`（寫在函式裡的 `size` 會遮蔽掉它、不會出錯，但取名 `used`、`len` 還是清楚得多）。
-
 ## 搜尋與排序
 
 ### 線性搜尋

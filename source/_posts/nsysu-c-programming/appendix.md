@@ -19,7 +19,8 @@ hidden: true
 ## 常用 g++ 編譯選項
 
 ```bash
-g++ -Wall -Wextra -std=c++17 -o app main.cpp   # 開常用的兩組警告 + 指定 C++17（平常就用這個）
+g++ -std=c++11 -o app main.cpp                  # 學校投影片的標準寫法：指定 C++11、-o 指定執行檔名
+g++ -std=c++11 -Wall -Wextra -o app main.cpp    # 練習時加上兩組警告，把可疑寫法唸出來
 g++ -c foo.cpp                                  # 只編譯成 .o，不連結
 g++ -E foo.cpp -o foo.i                         # 只做前置處理（看 #include 展開的結果）
 g++ -g -o app main.cpp                          # 編進行號與變數名，給 gdb 和下一行的 sanitizer 用（編譯錯誤本來就有行號，不必加這個）
@@ -31,38 +32,45 @@ g++ -fsanitize=address -g -o app main.cpp       # 執行時偵測陣列越界與
 
 ## 整學期通用的 Makefile
 
-放在每週的作業資料夾根目錄，`make` 一鍵編譯、`make clean` 一鍵清乾淨。每一行語法的意思見[〈環境設置〉](/2026/09/09/nsysu-c-programming/setup/)，這裡只放可以直接貼的成品：
+放在每週的作業資料夾根目錄，`make` 一鍵編譯（先 `.o` 再連結，就是助教範本的「模組化」形式）、`make clean` 一鍵清乾淨。每一行的意思見[〈環境設置〉](/2026/09/09/nsysu-c-programming/setup/)，這裡只放可以直接貼的成品：
 
 ```makefile
-CXX      := g++
-CXXFLAGS := -Wall -Wextra -std=c++17
-SRCS     := $(wildcard Q*.cpp)
-TARGETS  := $(SRCS:.cpp=)
-# 需要多個檔案才編得出來的題目寫在這裡，例如 EXTRA := Q6
-EXTRA    :=
+# 指定編譯器
+CC = g++
+# 編譯選項（練習時可改成 -std=c++11 -Wall -Wextra）
+FLAG = -std=c++11
 
-.PHONY: all clean
+all: Q1 Q2 Q3
 
-all: $(TARGETS) $(EXTRA)
+Q1: Q1.cpp
+	$(CC) $(FLAG) -c Q1.cpp
+	$(CC) $(FLAG) -o Q1 Q1.o
 
-%: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $<
+Q2: Q2.cpp
+	$(CC) $(FLAG) -c Q2.cpp
+	$(CC) $(FLAG) -o Q2 Q2.o
+
+Q3: Q3.cpp
+	$(CC) $(FLAG) -c Q3.cpp
+	$(CC) $(FLAG) -o Q3 Q3.o
 
 clean:
-	rm -f $(TARGETS) $(EXTRA) *.o
+	rm -f Q1 Q2 Q3 *.o
 ```
 
-某一題要拆成多個檔案時（例如 `.h` / `.cpp`），`TARGETS` 只掃得到 `Q*.cpp`，不會掃到沒有 `Q6.cpp` 的 Q6：先把上面改成 `EXTRA := Q6`（不改的話只有手打 `make Q6` 編得出來，`make` 和 `make clean` 都會漏掉它），再到檔案最後補規則：
+當週有幾題就寫幾組（`all:` 後面和 `clean:` 那行記得一起補）；執行檔名稱另有規定時，改目標名稱和 `-o` 後面的名字就好。
+
+某一題要拆成多個檔案時（例如 `.h` / `.cpp`），照 11/26 的寫法每個 `.cpp` 一條 `.o` 規則、相依清單列進 `.h`，最後一起連結；把 `Q6` 加進 `all:` 與 `clean:`：
 
 ```makefile
 Q6: main.o Student.o
-	$(CXX) -o $@ $^
+	$(CC) $(FLAG) -o Q6 main.o Student.o
 
 main.o: main.cpp Student.h
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CC) $(FLAG) -c main.cpp
 
 Student.o: Student.cpp Student.h
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CC) $(FLAG) -c Student.cpp
 ```
 
 ## 語法速查（建議印出來）

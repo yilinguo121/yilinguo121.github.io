@@ -356,42 +356,7 @@ public:
 
 ## 多重繼承（知道就好）
 
-C++ 允許一個類別同時繼承**多個**父類別，這叫**多重繼承**：
-
-```cpp
-#include <iostream>
-using namespace std;
-
-class Swimmer {
-public:
-    void swim() const { cout << "游泳\n"; }
-};
-
-class Runner {
-public:
-    void run() const { cout << "跑步\n"; }
-};
-
-class Triathlete : public Swimmer, public Runner {   // 同時繼承兩個
-public:
-    void compete() const { swim(); run(); }
-};
-
-int main() {
-    Triathlete t;
-    t.compete();
-    return 0;
-}
-```
-
-輸出：
-
-```text
-游泳
-跑步
-```
-
-語法只是把父類別用逗號列出來。但多重繼承有個有名的麻煩：如果兩個父類別又各自繼承自同一個祖父類別，孫子就會拿到**兩份**祖父的資料（俗稱**菱形繼承問題**），要用 `virtual` 繼承才解得掉——超出這學期範圍，實務上也多半改用組合就沒事了。
+一個類別可以同時繼承多個父類別：`class Triathlete : public Swimmer, public Runner { ... };`，兩邊的成員都會進來。實務上少用：兩個父類別若又繼承自同一個祖父，孫子會拿到兩份祖父的資料（**菱形繼承問題**），超出這學期範圍；需要「同時具備兩種能力」時多半改用組合就好。
 
 ## 補充：為什麼還有 `virtual`
 

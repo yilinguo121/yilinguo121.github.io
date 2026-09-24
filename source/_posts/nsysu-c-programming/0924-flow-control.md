@@ -19,9 +19,8 @@ hidden: true
 **這週要會什麼**
 
 ```text
-布林運算式 → if / switch（含 enum、三元運算子）
-           → while / do-while / for → break / continue → 從檔案讀入
-── 以上 Ch2 ────────────────────────────
+條件運算子 → enum → while / do-while / for → break / continue → 從檔案讀入
+── 以上 Ch2（if / switch 上週講過）────────
 預定義函式 → 自訂函式 → 作用域 → 遞迴
 ```
 
@@ -31,68 +30,7 @@ hidden: true
 
 ## Ch2：流程控制
 
-### 布林運算式
-
-比較運算子：`==`、`!=`、`<`、`<=`、`>`、`>=`
-邏輯運算子：`&&`（且）、`||`（或）、`!`（非）
-
-```cpp
-int x = 50, day = 6;                      // 一行宣告兩個 int，等同 int x = 50; int day = 6;
-bool inRange    = (0 <= x && x <= 100);   // 兩個條件都成立才是 true
-bool isWeekend  = (day == 6 || day == 7); // 任一個成立就是 true
-bool notInRange = !inRange;               // ! 把 true / false 反過來
-```
-
-**優先順序**（由高到低）：`!` > 算術運算子 > 比較運算子 > `&&` > `||` > `=`
-不確定就**加括號**，沒有人會因為你多加括號扣分。
-
-> **雷區 ①：連續不等式**
-> ```cpp
-> if (0 < x < 10)   // 永遠為真！
-> ```
-> C++ 會先算 `0 < x`，得到 `true`(1) 或 `false`(0)，再拿 1 或 0 去跟 10 比——`1 < 10` 與 `0 < 10` 都成立。正確寫法：`if (0 < x && x < 10)`。
-> 這招 `-Wall` 抓得到：`warning: comparisons like ‘X<=Y<=Z’ do not have their mathematical meaning [-Wparentheses]`，看到就是中這招。
-
-> **雷區 ②：`=` 寫成 `==`**
-> ```cpp
-> if (x = 5) { ... }   // 這是「把 5 指派給 x」，結果 5 非 0 → 永遠為真
-> ```
-> `-Wall` 會提示 `warning: suggest parentheses around assignment used as truth value`。看到這個警告 99% 是打錯字。
-
-Ch1 提過「非 0 即 true」，所以讀別人的程式時 `while (n)` 就等於 `while (n != 0)`；自己寫建議寫完整。
-
-**短路求值（short-circuit evaluation）**：`&&` 左邊為 `false` 就不算右邊；`||` 左邊為 `true` 就不算右邊。
-
-```cpp
-int a = 0, b = 10;
-if (a != 0 && b / a > 3) { ... }   // a == 0 時右邊「不會被執行」，避免除以 0
-```
-
-所以**保護條件一定要寫在左邊**：寫成 `if (b / a > 3 && a != 0)` 就沒救了，`a` 是 0 時 `b / a` 先被算，**整數除以 0** 會讓程式當場 `Floating point exception (core dumped)` 掛掉，右邊的保護來不及生效。
-
-### 分支：`if` / `else if` / `else`
-
-最小形式是 `if (條件) 敘述A else 敘述B`——括號裡的條件（一個布林運算式）算出來是 `true` 就執行敘述A，是 `false` 就執行敘述B，`else` 那半可以整個省略。結果不只兩種時，把下一個 `if` 接在 `else` 後面寫成 `else if`，就變成一串由上往下的檢查：
-
-```cpp
-int score;
-cin >> score;
-if (score >= 90)      { cout << 'A'; }
-else if (score >= 80) { cout << 'B'; }
-else if (score >= 70) { cout << 'C'; }
-else if (score >= 60) { cout << 'D'; }
-else                  { cout << 'F'; }
-```
-
-多路 `if-else` 是**由上而下**逐一檢查，第一個成立就結束，所以條件要**由嚴格排到寬鬆**。如果把 `score >= 60` 寫在第一個，95 分也會拿 D。
-
-用 `{}` 包起來的一串敘述叫**複合敘述（compound statement）**，語法上算「一個」敘述——`if` 後面永遠只管一個敘述。只有一行時大括號可以不加，但**建議一律加**（上面的範例就是照這個規矩寫的）：
-
-```cpp
-if (x > 0)
-    cout << "positive";
-    cout << "!!!";        // 陷阱：這行「不在」if 裡面，永遠會執行
-```
+`if`／`else if`／`else` 與 `switch` 上週講完了（[09/17 的〈比較與邏輯運算〉與〈分支〉](/2026/09/09/nsysu-c-programming/0917-cpp-basics/)），這週補 Ch2 剩下的：條件運算子、`enum`、三種迴圈與 `break`／`continue`。
 
 ### 條件運算子（三元運算子）
 
@@ -105,45 +43,9 @@ cout << (n % 2 == 0 ? "even" : "odd");
 
 放進 `cout <<` 時**外面那層括號不能省**：`<<` 的優先順序比 `?:` 高，少了括號會變成先算 `cout << n % 2`、再拿整個 `cout` 去跟 `0` 比，編譯器會吐出一長串 `no match for 'operator=='`。
 
-### `switch`
+### 列舉型別（enum）
 
-```cpp
-char op;
-int a, b;
-cin >> a >> op >> b;
-switch (op) {
-    case '+': cout << a + b; break;
-    case '-': cout << a - b; break;
-    case '*': cout << a * b; break;
-    case '/':
-        if (b == 0) cout << "divide by zero";
-        else        cout << a / b;
-        break;
-    default:  cout << "unknown operator";
-}
-```
-
-```text
-輸入： 12 * 5
-輸出： 60
-```
-
-（`cin >> a >> op >> b` 會依序抓走三樣東西，中間的空白自動跳過。）
-
-先建立心智模型：`switch` **不是**「從幾個分支裡挑一個」，而是「拿括號裡的值跟每個 `case` 的常數比對，跳到相符的那一行，然後**一路往下執行**，直到遇見 `break` 或大括號結束」；都沒對上就跳到 `default:`（可省略，省略時什麼都不做）。`case 常數:`、`default:` 後面接的是冒號——它們是標記位置的**標籤**、不是敘述，所以不加分號。另外兩條限制：`switch` 的條件必須是**整數型別、字元或列舉**（**不能是 `double` 或 `string`**），而 `case` 後面必須是**常數**。
-
-> **雷區 ③：忘記 `break`**
-> ```cpp
-> switch (n) {
->     case 1: cout << "one";
->     case 2: cout << "two"; break;
-> }
-> // n == 1 時會印出 "onetwo"
-> ```
-> 這段用 `g++ -Wall -Wextra` 編就會被抓到：`warning: this statement may fall through [-Wimplicit-fallthrough=]`，底下還會補一行 `note: here` 指出穿到哪裡去。
-> 有時穿透是刻意的（多個 case 共用同一段程式），這時在兩個 `case` 之間加一行註解 `// fall through`，警告就會消失——**g++ 認得這句英文**，它不只是寫給人看的。至於 Q4 解答那種「`case 10:` 後面直接接 `case 9:`」的空標籤，中間沒有任何敘述，不算穿透，本來就不會警告。
-
-**列舉型別（enum）**：自己造一組有名字的整數常數，跟 `switch` 很搭：
+自己造一組有名字的整數常數，跟 `switch` 很搭：
 
 ```cpp
 enum Weekday { MON, TUE, WED, THU, FRI };   // MON=0, TUE=1, ...
@@ -219,16 +121,16 @@ for (int i = 1; i <= 9; i++) {
 2*1=2	2*2=4	2*3=6	...	2*9=18
 ```
 
-`for` 的括號裡想塞兩件事時有兩種機制，長得像但不一樣：**初始化**部分寫 `int i = 0, j = 10` 是「一次宣告兩個同型別變數」（跟 `int a, b;` 同一回事，兩個都是 `int`）；**更新**部分寫 `i++, j--` 才是**逗號運算子**——由左到右依序做，整串的值取最右邊那一個。
+`for` 的括號裡可以一次管兩個變數：初始化寫 `int i = 0, j = 10`（一次宣告兩個 `int`），更新寫 `i++, j--`（逗號隔開、由左到右依序做）：
 
 ```cpp
 for (int i = 0, j = 10; i < j; i++, j--)
     cout << i << ' ' << j << '\n';      // 0 10 / 1 9 / 2 8 / 3 7 / 4 6
 ```
 
-`for` 以外的地方用逗號運算子只會讓程式更難讀，不建議。
+`for` 以外的地方別用逗號串敘述，程式會變得難讀。
 
-> **雷區 ④：`for` 後面多一個分號**
+> **雷區 ①：`for` 後面多一個分號**
 > ```cpp
 > int i, sum = 0;
 > for (i = 1; i <= 10; i++);   // 注意這個分號：迴圈主體是「空的」
@@ -236,7 +138,7 @@ for (int i = 0, j = 10; i < j; i++, j--)
 > ```
 > 這種寫法編得過、跑得完、答案卻是錯的。`g++ -Wall` 會警告 `this 'for' clause does not guard... [-Wmisleading-indentation]`，看到就是中這招。
 
-> **雷區 ⑤：無窮迴圈**
+> **雷區 ②：無窮迴圈**
 > ```cpp
 > for (int i = 0; i != 10; i += 3)  { ... }   // i = 0,3,6,9,12,... 永遠跳過 10
 > ```
@@ -394,7 +296,7 @@ int cube(int x) {            // 定義寫在後面，這裡沒有分號，改成
 - **程序抽象（procedural abstraction）**：用函式的人只要知道「它做什麼」，不必知道「它怎麼做」——所以寫程式時先想「我需要哪幾個小工具」，再一個一個實作，大問題就拆小了。
 - **前置條件／後置條件（precondition / postcondition）**：課本強調的註解習慣，筆試可能考名詞——在函式上方寫 `// Precondition: n >= 0`（呼叫前必須成立的假設）與 `// Postcondition: 回傳 n!`（函式保證交出的結果）。
 
-> **雷區 ⑥：引數順序寫反**
+> **雷區 ③：引數順序寫反**
 > ```cpp
 > double percent(double part, double whole) { return part / whole * 100; }
 >
@@ -472,8 +374,8 @@ int gcd(int a, int b) {
 
 （也常見壓成一行的寫法 `return (b == 0) ? a : gcd(b, a % b);`，意思完全一樣。）
 
-> **雷區 ⑦：無窮遞迴**
-> 忘記 base case 或問題沒變小，會一直往下呼叫直到**堆疊溢位（stack overflow）**，執行時出現 `Segmentation fault`。
+> **雷區 ④：無窮遞迴**
+> 忘記 base case 或問題沒變小，函式會一直呼叫自己停不下來。每呼叫一次都要多佔一點記憶體，佔到系統給的額度用完程式就當掉——這叫**堆疊溢位（stack overflow）**，畫面上看到的是 `Segmentation fault`。
 
 ## 本週重點回顧
 
@@ -481,14 +383,14 @@ int gcd(int a, int b) {
 
 | 你看到的症狀 | 先去檢查 |
 | --- | --- |
-| 條件永遠成立 | 寫成 `0 < x < 10`？還是 `if (x = 5)`？ |
-| 輸出多印了東西 | `switch` 的 `case` 忘記 `break` |
+| 條件永遠成立 | 寫成 `0 < x < 10`？還是 `if (x = 5)`？（09/17） |
+| 輸出多印了東西 | `switch` 的 `case` 忘記 `break`（09/17） |
 | 迴圈停不下來 | 條件用了 `!=`，或計數器根本沒變 |
 | 迴圈主體好像沒跑 | `for (...)` 後面多一個分號 |
 | `Segmentation fault` | 遞迴沒有終止條件 |
 | `control reaches end of non-void function` | 有某條路徑沒寫 `return` |
 
-還有一件編譯器**真的**不會提醒你的事：`do-while` **至少會執行一次**——條件一開始就不成立，主體照樣先跑完一輪，這種錯只能自己讀程式讀出來。（結尾那個分號剛好相反，漏掉會直接編不過：`error: expected ‘;’ before ‘cout’`。）另一件編譯器幫不上忙的是雷區⑥ 的引數順序寫反。
+還有一件編譯器**真的**不會提醒你的事：`do-while` **至少會執行一次**——條件一開始就不成立，主體照樣先跑完一輪，這種錯只能自己讀程式讀出來。（結尾那個分號剛好相反，漏掉會直接編不過：`error: expected ‘;’ before ‘cout’`。）另一件編譯器幫不上忙的是雷區③ 的引數順序寫反。
 
 ## 本週練習題
 
@@ -720,115 +622,49 @@ int main() {
 
 </details>
 
+**Q7. 溫度轉換表**
+讀入起始攝氏溫度 `a`、結束溫度 `b`、間隔 `d`（皆為整數，保證 `a ≤ b` 且 `d ≥ 1`），用 `for` 迴圈輸出從 `a` 到 `b`（含）每隔 `d` 度的攝氏與華氏對照，華氏取小數點後一位。
+
+$$F = C \times \frac{9}{5} + 32$$
+
+```text
+輸入： 0 100 25
+輸出：
+0C = 32.0F
+25C = 77.0F
+50C = 122.0F
+75C = 167.0F
+100C = 212.0F
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    int a, b, d;
+    cin >> a >> b >> d;
+    cout << fixed << setprecision(1);
+    for (int c = a; c <= b; c += d) {    // c += d 等同 c = c + d;
+        double f = c * 9.0 / 5.0 + 32;   // 9.0 / 5.0，不是 9 / 5！
+        cout << c << "C = " << f << "F\n";
+    }
+    return 0;
+}
+```
+
+`c * 9 / 5 + 32` 看起來像「先乘後除所以安全」，其實不是：`c = 1` 時先算 `1 * 9 = 9`，再算 `9 / 5` 仍是整數除法得 1，印出 `33.0`（正解 `33.8`）。只有 `c` 剛好是 5 的倍數才會碰巧對，而這題的範例輸入 0、25、50、75、100 全是 5 的倍數，所以「測範例都對」反而最危險。
+
+</details>
+
 **實驗課題型加練**
-下面幾題是照實驗課歷年課堂練習與上機考的題型改寫的。實驗課的分數是每週當場檢查給的，題目每年會換，但題型很固定：前三週一定是「判斷 → 迴圈 → 拆成函式 → 亂數」這條線。其中九九乘法表、猜拳、河內塔幾乎年年出現。
+下面幾題照實驗課的題型出：三角形、高爾夫術語、3 的倍數是第 2 週（09/24）實驗課的三題練習題型，這三題只給題目、範例輸出與思路，不放完整程式——實驗課的分數是當場檢查給的，助教也明講不能用 AI 生答案，請自己寫完再拿範例對。奇偶位數和、猜拳是第 3 週（10/01）的固定題型（函式＋亂數），阿姆斯壯數、河內塔是上機考的經典題，這幾題附完整解答。
 
-**Q7. 奇偶與在校時間**
-分兩段。先讀入一個整數，印出它是奇數還是偶數；再讀入現在的時、分（24 小時制），假設週四 9:30 前要到校、16:00 放學：在校時間內印 `At School` 並算出距離放學還有多久，不在校時間印 `Off School`，時間不合法（小時不在 0–23、分不在 0–59）印 `Invalid time`。
-
-```text
-輸入：
-7
-14 45
-輸出：
-7 is odd
-At School
-left: 1 h 15 m
-```
-
-```text
-輸入：
-10
-17 5
-輸出：
-10 is even
-Off School
-```
-
-<details>
-<summary><b>參考解答</b></summary>
-
-```cpp
-#include <iostream>
-using namespace std;
-
-int main() {
-    int n;
-    cin >> n;
-    if (n % 2 == 0) cout << n << " is even\n";
-    else            cout << n << " is odd\n";
-
-    int h, m;
-    cin >> h >> m;
-    if (h < 0 || h > 23 || m < 0 || m > 59) {
-        cout << "Invalid time\n";
-        return 0;
-    }
-    int now = h * 60 + m;                 // 換成分鐘數，比較就只剩一個數字
-    int start = 9 * 60 + 30, end = 16 * 60;
-    if (now >= start && now <= end) {
-        int left = end - now;
-        cout << "At School\n";
-        cout << "left: " << left / 60 << " h " << left % 60 << " m\n";
-    } else {
-        cout << "Off School\n";
-    }
-    return 0;
-}
-```
-
-「合法性檢查放最前面、不合法就 `return 0`」是這類題目的固定寫法，後面的判斷就不必再考慮怪輸入。時間先換算成分鐘數，「在不在區間內」就只剩一個 `now >= start && now <= end`。
-
-</details>
-
-**Q8. 三個數的眾數與去重**
-讀入三個整數，先印出「出現最多次的數字出現了幾次」，再把三個數**去掉重複**後由大到小印出。這週還沒有陣列，請只用 `if` 和三個變數解決。
-
-```text
-輸入： 5 9 5
-輸出：
-most: 2
-9 5
-```
-
-<details>
-<summary><b>參考解答</b></summary>
-
-```cpp
-#include <iostream>
-using namespace std;
-
-int main() {
-    int a, b, c;
-    cin >> a >> b >> c;
-
-    // 出現最多次的數字出現幾次：三個都一樣 3，兩個一樣 2，否則 1
-    int most;
-    if (a == b && b == c)               most = 3;
-    else if (a == b || b == c || a == c) most = 2;
-    else                                most = 1;
-    cout << "most: " << most << '\n';
-
-    // 先排成 a >= b >= c（三次「比大小就交換」）
-    int tmp;
-    if (a < b) { tmp = a; a = b; b = tmp; }
-    if (a < c) { tmp = a; a = c; c = tmp; }
-    if (b < c) { tmp = b; b = c; c = tmp; }
-
-    // 由大到小印，跟前一個相同就跳過
-    cout << a;
-    if (b != a) cout << ' ' << b;
-    if (c != b) cout << ' ' << c;
-    cout << '\n';
-    return 0;
-}
-```
-
-三個數只有三種情況：全部相同、恰有兩個相同、全部不同，一個 `if / else if / else` 就分完了。去重的關鍵是**先排序再印**：排好之後重複的數字一定相鄰，只要跟前一個比就知道要不要跳過。那三行「比大小就交換」是 10/08 排序的雛形。
-
-</details>
-
-**Q9. 三角形分類**
+**Q8. 三角形分類**（實驗課 2-1 的題型）
 讀入三個正整數當三邊長，先判斷能不能構成三角形（任兩邊之和大於第三邊），可以的話再判斷是直角、銳角還是鈍角三角形：設最長邊為 $c$，$a^2 + b^2 = c^2$ 是直角、$>$ 是銳角、$<$ 是鈍角。
 
 ```text
@@ -842,96 +678,56 @@ int main() {
 ```
 
 ```text
-輸入： 1 2 3
+輸入： 3 8 5
 輸出： not a triangle
 ```
 
 <details>
-<summary><b>參考解答</b></summary>
+<summary><b>思路與驗算</b></summary>
 
-```cpp
-#include <iostream>
-using namespace std;
-
-int main() {
-    int a, b, c;
-    cin >> a >> b >> c;
-    if (a <= 0 || b <= 0 || c <= 0) {
-        cout << "invalid\n";
-        return 0;
-    }
-    // 把最大的邊換到 c，之後只要比 a*a + b*b 和 c*c
-    int tmp;
-    if (a > c) { tmp = a; a = c; c = tmp; }
-    if (b > c) { tmp = b; b = c; c = tmp; }
-
-    if (a + b <= c) {
-        cout << "not a triangle\n";
-        return 0;
-    }
-    int lhs = a * a + b * b, rhs = c * c;
-    if (lhs == rhs)     cout << "right triangle\n";
-    else if (lhs > rhs) cout << "acute triangle\n";
-    else                cout << "obtuse triangle\n";
-    return 0;
-}
-```
-
-先把最長邊換到 `c`，之後所有判斷都只寫一次；不這樣做的話要對三種「誰最長」各寫一遍。「兩邊之和大於第三邊」只要檢查最短的兩邊加起來是否大於最長邊就夠了。
+- 題目的三條公式都假設 $c$ 是**最長邊**，輸入卻不一定照大小給，所以第一步是**把最大的邊換到 `c`**：用兩次「比大小就交換」（`int tmp = a; a = c; c = tmp;`），之後所有判斷只寫一次。要印回原本輸入的順序時，排序請另外用變數，別把輸入蓋掉。
+- 排好之後「任兩邊之和大於第三邊」只要檢查 `a + b > c` 一條（最短的兩邊贏得過最長邊，另外兩組一定成立）；`3 8 5` 排成 3、5、8，$3 + 5 = 8$ **剛好等於**，不算三角形——所以要用嚴格的 `>`，不能寫 `>=`。
+- 再算 `a*a + b*b` 跟 `c*c`（都是整數，不會有精度問題），三選一。
+- 驗算：`5 3 4` → 3, 4, 5，$9 + 16 = 25$，直角；`2 3 4` → $4 + 9 = 13 < 16$，鈍角；`6 4 5` → 4, 5, 6，$16 + 25 = 41 > 36$，銳角。輸入有 0 或負數時印一行錯誤訊息直接結束（09/17 Q6 的「合法性檢查放最前面」）。
 
 </details>
 
-**Q10. 進位次數**
-反覆讀入兩個正整數，數一數直式相加時總共發生幾次進位（例如 509 + 104 = 613，只有個位 9 + 4 進了一次；999 + 1 三個位數都進位）。沒有進位印 `no carry`，讀到 `0 0` 結束。九九乘法表本週正文已經示範過，實驗課通常也會要你印一次，記得回去看〈巢狀迴圈〉那段。
+**Q9. 高爾夫術語**（實驗課 2-2 的題型）
+高爾夫每一洞有「標準桿數」，實際打了幾桿跟標準桿相比：少 2 桿叫 Eagle、少 1 桿叫 Birdie、剛好叫 Par、多 1 桿叫 Bogey、多 2 桿叫 Double Bogey。先讀入標準桿數，再讀入實際桿數，用 **`switch`** 印出術語；差超過 ±2 印 `No term`。
 
 ```text
-輸入：
-123 456
-555 555
-999 1
-509 104
-0 0
-輸出：
-no carry
-3 carry operations
-3 carry operations
-1 carry operations
+輸入： 5 3
+輸出： You got Eagle
+```
+
+```text
+輸入： 4 5
+輸出： You got Bogey
 ```
 
 <details>
-<summary><b>參考解答</b></summary>
+<summary><b>思路與驗算</b></summary>
 
-```cpp
-#include <iostream>
-using namespace std;
+- `switch` 的括號裡只能放一個整數（或字元），不能放 `score > par` 這種條件，所以先算 `int diff = score - par;` 再 `switch (diff)`。
+- `case` 後面可以是**負數**：`case -2:`、`case -1:`。每個 `case` 結尾記得 `break`，不然 Eagle 之後會把 Birdie、Par 全部印出來（09/17 的雷區 ⑥）；最後用 `default:` 接 `No term`。
+- 驗算：`6 5` → Birdie、`7 7` → Par、`5 7` → Double Bogey、`3 8` → No term。輸出的 `You got ` 後面沒有句點，`Double Bogey` 中間一個空白。
 
-// 兩個正整數相加時，總共發生幾次進位
-int carryCount(long long a, long long b) {
-    int count = 0, carry = 0;
-    while (a > 0 || b > 0) {
-        int sum = a % 10 + b % 10 + carry;    // 這一位的和，要把上一位的進位加進來
-        carry = (sum >= 10) ? 1 : 0;
-        if (carry == 1) count++;
-        a /= 10;
-        b /= 10;
-    }
-    return count;
-}
+</details>
 
-int main() {
-    long long a, b;
-    while (true) {
-        cin >> a >> b;
-        if (a == 0 && b == 0) break;
-        int c = carryCount(a, b);
-        if (c == 0) cout << "no carry\n";
-        else        cout << c << " carry operations\n";
-    }
-    return 0;
-}
+**Q10. 3 的倍數**（實驗課 2-3 的題型）
+算出 2 到 100 之間有幾個 3 的倍數，再把 2 到 1000 之間所有 3 的倍數加總，各印一行（注意兩小題的**範圍不一樣**）。
+
+```text
+輸出：
+count of multiples of 3 in 2..100 = 33
+sum of multiples of 3 in 2..1000 = 166833
 ```
 
-一位一位加，跟小學直式一樣：這一位的和要把**上一位的進位**算進去（999 + 1 的十位是 9 + 0 + 1 才會進位）。`while (a > 0 || b > 0)` 用 `||`，兩數位數不同時較短的那個補 0 繼續。
+<details>
+<summary><b>思路與驗算</b></summary>
+
+- 兩小題各寫一個 `for`：從 2 跑到上限，`i % 3 == 0` 就是 3 的倍數；或者直接從 3 開始、每圈 `i += 3`，連判斷都省了。
+- 驗算：100 以內最大的 3 的倍數是 $99 = 3 \times 33$，所以是 33 個；1000 以內最大的是 $999 = 3 \times 333$，總和 $3(1 + 2 + \cdots + 333) = 3 \times \frac{333 \times 334}{2} = 166833$。跑出來不是這兩個數，就是邊界或條件寫錯了。
 
 </details>
 

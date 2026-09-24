@@ -117,7 +117,7 @@ int main() {
 #endif               // 結束
 ```
 
-第二次引入時 `CIRCLE_H` 已經存在，整段就被跳過。**每個 header 都要寫**，巨集名稱通常用檔名大寫加底線。（另外有個一行版的 `#pragma once`，效果一樣，但課本與考試請寫 `#ifndef` 三行式。）
+第二次引入時 `CIRCLE_H` 已經存在，整段就被跳過。**每個 header 都要寫**，`#define` 後面那個名字通常用檔名大寫加底線。（另外有個一行版的 `#pragma once`，效果一樣，但課本與考試請寫 `#ifndef` 三行式。）
 
 **guard 擋得住什麼、擋不住什麼**：它只保證同一個 `.cpp` 裡展開一次，擋不住「兩個 `.cpp` 各含一次」。所以 **header 裡只能放「宣告，或寫在 class 大括號裡面的東西」**——類別定義（含直接寫在 class 大括號內的成員函式本體，它們自動算 `inline`，被兩個 `.cpp` 各引入一次也不會撞，所以 10/15 到 11/12 那種一體成型的類別整個搬進 header 是合法的）、函式原型、`const` 常數可以；把函式實作（`int twice(int x) { return x * 2; }`）寫進 header，兩個 `.cpp` 各引入一次再一起連結，就會爆 `multiple definition of 'twice(int)'`，而且 include guard 救不了，因為那是**連結**階段的錯，不是前置處理階段。（範例把 `const double PI` 放在 `Circle.cpp` 而不是 `Circle.h`，就是因為只有實作用得到。）
 
@@ -152,31 +152,29 @@ g++ -o app main.o Circle.o    # 連結成執行檔
 ## 多檔案的 Makefile
 
 ```makefile
-CXX      := g++
-CXXFLAGS := -Wall -Wextra -std=c++17
-
-.PHONY: all clean
+CC = g++
+FLAG = -std=c++11
 
 all: app
 
 app: main.o Circle.o
-	$(CXX) -o app main.o Circle.o
+	$(CC) $(FLAG) -o app main.o Circle.o
 
 main.o: main.cpp Circle.h
-	$(CXX) $(CXXFLAGS) -c main.cpp
+	$(CC) $(FLAG) -c main.cpp
 
 Circle.o: Circle.cpp Circle.h
-	$(CXX) $(CXXFLAGS) -c Circle.cpp
+	$(CC) $(FLAG) -c Circle.cpp
 
 clean:
 	rm -f *.o app
 ```
 
-變數名照〈環境設置〉那篇的慣例，C++ 專案用 `CXX`／`CXXFLAGS`。`rm -f *.o app` 的 `*` 是 shell 的**萬用字元**（「目前目錄下所有 `.o` 結尾的檔案」），`-f` 是「檔案不存在也別報錯」；`rm` 配 `*` 威力很大，下指令前先 `pwd` 確認站對資料夾。
+變數名照〈環境設置〉那篇（也就是助教投影片）的 `CC`／`FLAG`。`rm -f *.o app` 的 `*` 是「目前目錄下所有 `.o` 結尾的檔案」；`rm` 配 `*` 威力很大，下指令前先 `pwd` 確認站對資料夾。
 
 **為什麼 `main.o` 要把 `Circle.h` 列為相依？** 因為 `main.cpp` 引入了它——改了 `Circle.h` 卻沒重編 `main.o`，就會編出前後不一致的程式。把 header 列進相依清單，`make` 才知道要重編。
 
-`$@`、`$^`、`$<` 在〈環境設置〉講過，Q1 解答會直接用。但**別只寫 `%.o: %.cpp`**：那樣 header 就不在相依清單裡了，改完 `Circle.h` 再 `make` 只會回 `make: Nothing to be done for 'all'.`；真要用 pattern rule，得另外補一行 `main.o Circle.o: Circle.h`。
+跟〈環境設置〉「每題兩行」的寫法比，這裡多了一層：**每個 `.cpp` 各自一條 `.o` 規則**，相依清單要把它 `#include` 的 `.h` 列進去，改了 header 才會重編；最後一條規則把所有 `.o` 連結成執行檔。
 
 ## 命名空間（namespace）
 
@@ -269,7 +267,7 @@ namespace school {
         double square(double x) { return x * x; }
     }
 }
-// C++17 之後可以直接寫成 namespace school::math { ... }
+// C++17 才能縮寫成 namespace school::math { ... }，這門課用 C++11，不要這樣寫
 
 int main() {
     cout << school::math::square(3) << '\n';
@@ -380,21 +378,19 @@ int main() {
 **Makefile**
 
 ```makefile
-CXX      := g++
-CXXFLAGS := -Wall -Wextra -std=c++17
-
-.PHONY: all clean
+CC = g++
+FLAG = -std=c++11
 
 all: app
 
 app: main.o BankAccount.o
-	$(CXX) -o $@ $^
+	$(CC) $(FLAG) -o app main.o BankAccount.o
 
 main.o: main.cpp BankAccount.h
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CC) $(FLAG) -c main.cpp
 
 BankAccount.o: BankAccount.cpp BankAccount.h
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CC) $(FLAG) -c BankAccount.cpp
 
 clean:
 	rm -f *.o app
@@ -594,27 +590,37 @@ int main() {
 **Makefile**
 
 ```makefile
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17
-OBJS = main.o reverse.o binary.o scientific.o
+CC = g++
+FLAG = -std=c++11
 
-Q4: $(OBJS)
-	$(CXX) -o $@ $^
+all: Q4
 
-%.o: %.cpp converter.h
-	$(CXX) $(CXXFLAGS) -c $<
+Q4: main.o reverse.o binary.o scientific.o
+	$(CC) $(FLAG) -o Q4 main.o reverse.o binary.o scientific.o
+
+main.o: main.cpp converter.h
+	$(CC) $(FLAG) -c main.cpp
+
+reverse.o: reverse.cpp converter.h
+	$(CC) $(FLAG) -c reverse.cpp
+
+binary.o: binary.cpp converter.h
+	$(CC) $(FLAG) -c binary.cpp
+
+scientific.o: scientific.cpp converter.h
+	$(CC) $(FLAG) -c scientific.cpp
 
 clean:
-	rm -f Q4 $(OBJS)
+	rm -f Q4 *.o
 ```
 
 ```bash
 $ make
-g++ -Wall -Wextra -std=c++17 -c main.cpp
-g++ -Wall -Wextra -std=c++17 -c reverse.cpp
-g++ -Wall -Wextra -std=c++17 -c binary.cpp
-g++ -Wall -Wextra -std=c++17 -c scientific.cpp
-g++ -o Q4 main.o reverse.o binary.o scientific.o
+g++ -std=c++11 -c main.cpp
+g++ -std=c++11 -c reverse.cpp
+g++ -std=c++11 -c binary.cpp
+g++ -std=c++11 -c scientific.cpp
+g++ -std=c++11 -o Q4 main.o reverse.o binary.o scientific.o
 $ echo 123 | ./Q4
 reverse:    321
 binary:     1111011

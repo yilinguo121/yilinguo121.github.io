@@ -28,7 +28,7 @@ hidden: true
 
 1. **題數與時間依課堂公告為準**，這份模擬考照六題 120 分鐘設計。時間是**總量**參考、不是順序（順序照上面第 2 步，從最有把握的開始）：Q5 約 10 分鐘，Q2、Q4 各 15 分鐘，Q1、Q3 各 20 分鐘，Q6 最久 25 分鐘，留 15 分鐘機動與重編打包。題數一多，「先掃過所有題目再決定順序」就比期中更重要——把會的先寫完，比卡在一題硬想划算得多。
 2. **範圍涵蓋 Ch1–Ch12 與 Ch14**，題目很可能要你同時用到類別、指標與檔案 I/O。看到題目先想「這題要用哪幾樣」，再動手。
-3. **可能出現多檔案題**（把類別拆成 `.h` / `.cpp`）。那種題目的 Makefile 規則跟平常的模組化版本不同，[〈11/26 分離編譯與命名空間〉](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)的「多檔案的 Makefile」那一節有可以直接抄的寫法（注意 `.o` 規則一定要把 `.h` 列進相依），考前務必確認自己寫得出來。〈環境設置〉那份 `%: %.cpp` 的模組化版本在這種題目上沒用——它假設一個 `.cpp` 產生一個執行檔，Q6 沒有 `Q6.cpp` 可對應。
+3. **可能出現多檔案題**（把類別拆成 `.h` / `.cpp`）。那種題目的 Makefile 規則跟平常的模組化版本不同，[〈11/26 分離編譯與命名空間〉](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)的「多檔案的 Makefile」那一節有可以直接抄的寫法（注意 `.o` 規則一定要把 `.h` 列進相依），考前務必確認自己寫得出來。〈環境設置〉那份 Makefile 是「一題兩行」，Q6 有兩個 `.cpp` 要先各自編成 `.o` 再一起連結，照〈11/26〉的寫法多寫幾條規則（[附錄](/2026/09/09/nsysu-c-programming/appendix/#整學期通用的-makefile)有可以直接抄的版本）。
 
 ## 模擬上機考（建議計時 120 分鐘）
 
@@ -520,21 +520,19 @@ int main() {
 **Makefile**
 
 ```makefile
-CXX      := g++
-CXXFLAGS := -Wall -Wextra -std=c++17
-
-.PHONY: all clean
+CC = g++
+FLAG = -std=c++11
 
 all: Q6
 
 Q6: main.o Student.o
-	$(CXX) -o $@ $^
+	$(CC) $(FLAG) -o Q6 main.o Student.o
 
 main.o: main.cpp Student.h
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CC) $(FLAG) -c main.cpp
 
 Student.o: Student.cpp Student.h
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CC) $(FLAG) -c Student.cpp
 
 clean:
 	rm -f *.o Q6

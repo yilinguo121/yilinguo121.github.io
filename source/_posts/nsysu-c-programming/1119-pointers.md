@@ -468,32 +468,7 @@ cout << strlen(c) << ' ' << back.size() << '\n';   // 5 5
 
 ## 命令列參數：`argc` 與 `argv`
 
-到目前為止 `main` 都寫成 `int main()`，其實它可以接收你在終端機上打的參數：
-
-```cpp
-#include <iostream>
-using namespace std;
-
-int main(int argc, char* argv[]) {
-    cout << "argc = " << argc << '\n';
-    for (int i = 0; i < argc; i++)
-        cout << "argv[" << i << "] = " << argv[i] << '\n';
-    return 0;
-}
-```
-
-編譯成 `demo` 之後執行 `./demo hello 123`，輸出：
-
-```text
-argc = 3
-argv[0] = ./demo
-argv[1] = hello
-argv[2] = 123
-```
-
-- `argc`（argument count）：參數個數，**至少是 1**。
-- `argv`（argument vector）：`char* argv[]` 從名字往外讀——`argv` 是陣列（`[]`），每格的型別是 `char*`，也就是剛學的 C 風格字串。所以它就是「一排字串」，`strlen`、`strcmp` 都能直接用在 `argv[i]` 上；寫成等價的 `char** argv` 也可以。`argv[0]` 永遠是程式自己的名字。
-- 參數進來都是**字串**，要當數字用得自己轉：`atoi(argv[1])`（吃 C 風格字串，需 `#include <cstdlib>`，轉不出來回傳 0）或 `stoi(argv[1])`（吃 `string`，需 `#include <string>`，轉不出來會丟例外）。
+`main` 可以寫成 `int main(int argc, char* argv[])`，接收你在終端機上打的參數：執行 `./demo hello 123` 時，`argc` 是 3（參數個數，程式名自己算一個，所以至少是 1），`argv` 是一排 C 風格字串——`argv[0]` 是 `"./demo"`、`argv[1]` 是 `"hello"`、`argv[2]` 是 `"123"`。參數進來都是字串，要當數字用得自己轉（`atoi(argv[2])`，在 `<cstdlib>`）。這學期的題目都從 `cin` 讀輸入，認得這個寫法就好。
 
 ## 本週重點回顧
 
@@ -1033,7 +1008,7 @@ int main() {
 }
 ```
 
-`char** rows` 是「指向（指向字元的指標）的指標」：外層 `new char*[n]` 配 `n` 個指標，每收到一筆再 `new char[len + 1]` 配那一筆的空間，`+1` 是給 `'\0'`。釋放順序跟本週 Q4 的二維陣列一樣：先每一列、再外層。這題的重點就是把「陣列的陣列」換成「指標的指標」寫一次。
+`char** rows` 是「指向（指向字元的指標）的指標」：外層 `new char*[n]` 配 `n` 個指標，每收到一筆再 `new char[len + 1]` 配那一筆的空間，`+1` 是給 `'\0'`。`cin >> rows[count]` 會把一個單字（讀到空白為止）連同結尾的 `'\0'` 寫進 char 陣列——它不檢查空間夠不夠，所以一定要先配好 `len + 1` 格。釋放順序跟本週 Q4 的二維陣列一樣：先每一列、再外層。這題的重點就是把「陣列的陣列」換成「指標的指標」寫一次。
 
 </details>
 
