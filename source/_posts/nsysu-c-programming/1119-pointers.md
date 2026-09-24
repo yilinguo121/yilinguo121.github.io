@@ -890,7 +890,7 @@ int main() {
 }
 ```
 
-三個必考細節：`push` 裡**先** `n->next = top` **再** `top = n`，順序反了舊的串列就丟了；`pop` 先用 `old` 記住頂端、移動 `top`，最後才 `delete old`——`delete` 完再去讀 `top->next` 就是本篇雷區的懸空指標；解構子把 `pop` 呼叫到空為止，程式結束時才不會漏記憶體。走訪用 `for (Node* p = top; p != nullptr; p = p->next)`，這個形狀之後所有鏈結串列題都一樣。
+三個最容易寫錯的細節：`push` 裡**先** `n->next = top` **再** `top = n`，順序反了舊的串列就丟了；`pop` 先用 `old` 記住頂端、移動 `top`，最後才 `delete old`——`delete` 完再去讀 `top->next` 就是本篇雷區的懸空指標；解構子把 `pop` 呼叫到空為止，程式結束時才不會漏記憶體。走訪用 `for (Node* p = top; p != nullptr; p = p->next)`，這個形狀之後所有鏈結串列題都一樣。
 
 </details>
 
