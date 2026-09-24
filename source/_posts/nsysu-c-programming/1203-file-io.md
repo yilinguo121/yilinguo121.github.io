@@ -680,37 +680,39 @@ int main() {
 </details>
 
 **Q8. 成績報表與直方圖（多檔輸出）**
-`grades.txt` 每行是「學號 作業次數 各次作業分數… 期中一 期中二」，作業次數每人不同（至少一次），最多 100 人：
+`grades.txt` 每行是「學號 小考次數 各次小考分數… 期中上機分數」，小考次數每人不同（至少一次），最多 100 人：
 
 ```text
-B113040001 3 80 70 60 100 50
-B113040002 6 100 0 0 0 0 30 95 80
-B113040003 1 100 0 100
-B113040004 2 95 80 65 70
+B113040012 4 72 85 90 66 58
+B113040027 2 40 55 91
+B113040033 5 100 92 88 95 79 84
+B113040041 1 30 12
+B113040058 3 65 70 60 45
 ```
 
-計算每人的作業平均、期中平均、**當前總分**（作業平均 30% ＋ 期中一 20% ＋ 期中二 20%，滿分 70）以及「期末（佔 30%）至少要考幾分才及格」（已及格印 0）。把表格寫進 `report.txt`，並依當前總分每 10 分一級畫直方圖（一人一顆星）寫進 `histogram.txt`；螢幕只印一行摘要。
+假設配分是：小考平均佔 30%、期中上機佔 30%、期末上機佔 40%。算每人的**目前總分**（小考平均 × 0.3 ＋ 期中 × 0.3，所以期末考前最多 60 分），再算「期末上機至少要考幾分才能到 60 分及格」——已經及格印 0，考滿分也救不回來印 -1。把表格寫進 `report.txt`，並依目前總分每 10 分一級畫直方圖（一人一顆星）寫進 `histogram.txt`；螢幕只印一行摘要。
 
 ```text
-螢幕輸出： wrote report.txt and histogram.txt (4 students)
+螢幕輸出： wrote report.txt and histogram.txt (5 students)
 
 report.txt：
-id                hw     mid  current    need
-B113040001     70.00   75.00    51.00   30.00
-B113040002     21.67   87.50    41.50   61.67
-B113040003    100.00   50.00    50.00   33.33
-B113040004     87.50   67.50    53.25   22.50
+id              quiz     mid  current    need
+B113040012     78.25   58.00    40.88   47.81
+B113040027     47.50   91.00    41.55   46.13
+B113040033     90.80   84.00    52.44   18.90
+B113040041     30.00   12.00    12.60   -1.00
+B113040058     65.00   45.00    33.00   67.50
 
 histogram.txt：
 90~99 
 80~89 
 70~79 
 60~69 
-50~59 ***
-40~49 *
-30~39 
+50~59 *
+40~49 **
+30~39 *
 20~29 
-10~19 
+10~19 *
  0~ 9 
 ```
 
@@ -726,7 +728,7 @@ using namespace std;
 
 struct Record {
     string id;
-    double hwAvg, midAvg, current, needed;
+    double quizAvg, midterm, current, needed;
 };
 
 int main() {
@@ -738,31 +740,32 @@ int main() {
     }
     const int MAX = 100;
     Record r[MAX];
-    int n = 0, bucket[10] = {};                 // bucket[k]：當前總分落在 10k ~ 10k+9 的人數
+    int n = 0, bucket[10] = {};                 // bucket[k]：目前總分落在 10k ~ 10k+9 的人數
 
     string id;
     int count;
     while (fin >> id >> count) {
         double sum = 0;
-        for (int i = 0; i < count; i++) { double s; fin >> s; sum += s; }
-        double mid1, mid2;
-        fin >> mid1 >> mid2;
+        for (int i = 0; i < count; i++) { double s; fin >> s; sum += s; }   // 小考次數每人不同
+        double mid;
+        fin >> mid;
 
         r[n].id = id;
-        r[n].hwAvg = sum / count;
-        r[n].midAvg = (mid1 + mid2) / 2;
-        r[n].current = r[n].hwAvg * 0.3 + mid1 * 0.2 + mid2 * 0.2;     // 期末考前最多 70 分
-        r[n].needed = r[n].current >= 60 ? 0 : (60 - r[n].current) / 0.3;
+        r[n].quizAvg = sum / count;
+        r[n].midterm = mid;
+        r[n].current = r[n].quizAvg * 0.3 + mid * 0.3;                    // 期末考前最多 60 分
+        r[n].needed = r[n].current >= 60 ? 0 : (60 - r[n].current) / 0.4;  // 期末佔 40%
+        if (r[n].needed > 100) r[n].needed = -1;                          // 考滿分也救不回來
         bucket[static_cast<int>(r[n].current) / 10]++;
         n++;
     }
 
     report << fixed << setprecision(2);
-    report << left << setw(12) << "id" << right << setw(8) << "hw" << setw(8) << "mid"
+    report << left << setw(12) << "id" << right << setw(8) << "quiz" << setw(8) << "mid"
            << setw(9) << "current" << setw(8) << "need" << '\n';
     for (int i = 0; i < n; i++)
-        report << left << setw(12) << r[i].id << right << setw(8) << r[i].hwAvg
-               << setw(8) << r[i].midAvg << setw(9) << r[i].current
+        report << left << setw(12) << r[i].id << right << setw(8) << r[i].quizAvg
+               << setw(8) << r[i].midterm << setw(9) << r[i].current
                << setw(8) << r[i].needed << '\n';
 
     for (int k = 9; k >= 0; k--) {
@@ -775,7 +778,7 @@ int main() {
 }
 ```
 
-「作業次數每人不同」是這題的核心：先讀 `count`，再用 `for` 讀那麼多個，最後才讀兩個期中——**格式由檔案的欄位決定，不能假設每行一樣長**。輸出檔跟 `cout` 用法完全一樣，`setw`、`fixed` 都能用；直方圖那格用 `static_cast<int>(current) / 10` 決定落在哪一級。這是實驗課期末考多年的固定大題（原版還會再加上搜尋與排序），能寫到這裡就有一半分數了。
+「小考次數每人不同」是這題的核心：先讀 `count`，再用 `for` 讀那麼多個，最後才讀期中——**格式由檔案的欄位決定，不能假設每行一樣長**。輸出檔跟 `cout` 用法完全一樣，`setw`、`fixed` 都能用；直方圖那格用 `static_cast<int>(current) / 10` 決定落在哪一級。「至少要考幾分」是把 `60 - current` 除以期末的權重 0.4 反推回來，超過 100 就代表不可能。這個題型出自一份舊的期末考考古題（原版還會再加上搜尋與排序），能寫到這裡就有一半分數了。
 
 </details>
 
