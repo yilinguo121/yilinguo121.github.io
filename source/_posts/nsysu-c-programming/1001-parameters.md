@@ -745,7 +745,7 @@ int main() {
 </details>
 
 **Q9. 最大公因數與最小公倍數**
-反覆讀入兩個正整數，輸出它們的最大公因數與最小公倍數，讀到 `0 0` 結束；有非正數就印 `invalid`。最大公因數請用**遞迴**寫輾轉相除法：$\gcd(a, b) = \gcd(b, a \bmod b)$，$b = 0$ 時答案是 $a$。
+反覆讀入兩個正整數，輸出它們的最大公因數與最小公倍數，讀到 `0 0` 結束；有非正數就印 `invalid`。最大公因數用**輾轉相除法**（09/24 正文寫過的迴圈版）：反覆把 $(a, b)$ 換成 $(b, a \bmod b)$，直到 $b$ 變成 0，此時 $a$ 就是答案。
 
 ```text
 輸入：
@@ -766,10 +766,14 @@ gcd = 50000000000, lcm = 500000000000
 #include <iostream>
 using namespace std;
 
-// 輾轉相除法：gcd(a, b) = gcd(b, a % b)，餘數為 0 時答案就是 b
+// 輾轉相除法：反覆把 (a, b) 換成 (b, a % b)，b 變 0 時答案就是 a
 long long gcd(long long a, long long b) {
-    if (b == 0) return a;
-    return gcd(b, a % b);
+    while (b != 0) {
+        long long r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
 }
 
 long long lcm(long long a, long long b) {
@@ -791,7 +795,7 @@ int main() {
 }
 ```
 
-輾轉相除法的遞迴版只有兩行，比迴圈版更貼近數學定義，期末筆試常拿來當「看程式答輸出」。最小公倍數寫成 `a / gcd * b` 而不是 `a * b / gcd`：先乘的話 `a * b` 可能先溢位，就算最後除回來也已經錯了。「讀到 `0 0` 結束」是實驗課上機考的標準格式，寫成 `while (true)` 加 `break` 最直白。
+輾轉相除法的迴圈每圈做一次「換成 `(b, a % b)`」，`b` 變 0 就停，跟 09/24 正文那份一樣，只是型別改成 `long long` 裝得下範例的大數。最小公倍數寫成 `a / gcd * b` 而不是 `a * b / gcd`：先乘的話 `a * b` 可能先溢位，就算最後除回來也已經錯了。「讀到 `0 0` 結束」是實驗課上機考的標準格式，寫成 `while (true)` 加 `break` 最直白。
 
 </details>
 

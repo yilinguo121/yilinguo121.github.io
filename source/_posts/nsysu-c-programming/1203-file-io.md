@@ -581,7 +581,7 @@ Q6–Q8 的**題型**取自歷年考古題與去年實驗課用過的資料檔�
 1071 462
 ```
 
-讀到檔尾為止，用**遞迴**的輾轉相除法算每一行的最大公因數並印出；檔案打不開要印錯誤訊息。
+讀到檔尾為止，用輾轉相除法（10/01 Q9 那個函式）算每一行的最大公因數並印出；檔案打不開要印錯誤訊息。
 
 ```text
 輸出：
@@ -599,9 +599,9 @@ gcd(1071, 462) = 21
 #include <fstream>
 using namespace std;
 
-int gcd(int a, int b) {
-    if (b == 0) return a;
-    return gcd(b, a % b);
+int gcd(int a, int b) {                  // 輾轉相除法（迴圈版）
+    while (b != 0) { int r = a % b; a = b; b = r; }
+    return a;
 }
 
 int main() {

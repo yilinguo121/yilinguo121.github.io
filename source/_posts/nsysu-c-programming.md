@@ -54,7 +54,7 @@ mermaid: false
 | **[環境設置：把工具鏈準備好](/2026/09/09/nsysu-c-programming/setup/)** | VirtualBox、Ubuntu 20.04、g++、終端機指令、Makefile 從零到模組化 | — |
 | **[09/10｜課程介紹與環境暖身](/2026/09/09/nsysu-c-programming/0910-intro/)** | C 與 C++ 的差別、整學期地圖、第一週驗收流程、第一次編譯失敗怎麼讀訊息 | — |
 | **[09/17｜C++ 基礎（Ch 1）](/2026/09/09/nsysu-c-programming/0917-cpp-basics/)** | 型別、變數、輸入輸出、算術與整數除法陷阱、比較運算、`if`／`switch`（第一週實驗課就要用） | Ch1: 6, 8, 13；Ch2: 2, 4, 7, 8 |
-| **[09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/)** | 三元運算子、`enum`、三種迴圈、自訂函式、遞迴、作用域 | Ch3: 1, 5, 10, 11, 13 |
+| **[09/24｜流程控制與函式基礎（Ch 2、Ch 3）](/2026/09/09/nsysu-c-programming/0924-flow-control/)** | 三元運算子、`enum`、三種迴圈、自訂函式、作用域 | Ch3: 1, 5, 10, 11, 13 |
 | **[10/01｜參數傳遞與函式重載（Ch 4）](/2026/09/09/nsysu-c-programming/1001-parameters/)** | 傳值 vs 傳參考、const 參考、重載、預設引數 | Ch4: 3, 7, 8, 9, 14, 17 |
 | **[10/08｜陣列（Ch 5）](/2026/09/09/nsysu-c-programming/1008-arrays/)** | 一維與二維陣列、越界、陣列傳參、搜尋與排序 | Ch5: 4, 8, 10, 14, 17 |
 | **[10/15｜結構與類別（Ch 5–6）](/2026/09/09/nsysu-c-programming/1015-struct-class/)** | struct、class、封裝、public / private、const 成員函式 | Ch6: 1, 7, 10, 12 |
@@ -68,12 +68,12 @@ mermaid: false
 | **[12/10｜繼承（Ch 14）](/2026/09/09/nsysu-c-programming/1210-inheritance/)** | 衍生類別、protected、覆寫、建構解構順序、is-a vs has-a | Ch14: 4, 6, 8 |
 | **[12/17｜期末筆試（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1217-final-written/)** | 全學期複習表＋13 題模擬題（看程式答輸出、找錯）＋觀念快問快答 | — |
 | **[12/24｜期末上機考（範圍 Ch 1–12、Ch 14）](/2026/09/09/nsysu-c-programming/1224-final-lab/)** | 主課期末上機：應考流程＋一份 120 分鐘模擬上機考；另附實驗課期末上機考模擬 | — |
-| **[附錄：編譯選項、Makefile、錯誤訊息與名詞速查](/2026/09/09/nsysu-c-programming/appendix/)** | g++ 選項、通用 Makefile、常見錯誤訊息對照表、名詞速查表 | — |
+| **[附錄：編譯選項、Makefile、錯誤訊息與名詞速查](/2026/09/09/nsysu-c-programming/appendix/)** | g++ 選項、通用 Makefile、常見錯誤訊息對照表、名詞速查表、範圍外補充（遞迴） | — |
 
 三個從這張表就能讀出來的重點：
 
 1. **期中只考到 Ch6**，也就是基礎語法、函式、陣列、struct / class，**不含建構子**。很多人考前拚命讀建構子，方向錯了。
-2. **Ch13（Recursion）與 Ch15 之後（多型、template、STL、例外處理）都不在考試範圍**。遞迴本身 Ch3 就教過、仍然會考，但 `virtual` 不會考。
+2. **Ch13（Recursion）與 Ch15 之後（多型、template、STL、例外處理）都不在考試範圍**。所以這份筆記不教遞迴（只在附錄留一小段範圍外的補充），`virtual` 也不會考。
 3. Ch7（建構子、vector、運算子重載）的習題到期中考那週才發，代表**這塊是期末的重點**。
 
 ---

@@ -206,7 +206,7 @@ g++ -o HelloWorld HelloWorld.o          # ④ 連結，產生執行檔
 | `error: expected ';' before '}' token` | ② 編譯 | 少分號、大括號沒成對 |
 | `error: 'xxx' was not declared in this scope` | ② 編譯 | 這個名字沒先宣告過、忘了 `#include`、拼錯字 |
 | `undefined reference to 'foo()'` | ④ 連結 | 你用了某個東西，但它的內容根本沒被編進來。看到它就知道是「連結」這關出事，不是語法錯（11/26 那篇會詳細講） |
-| `Segmentation fault (core dumped)` | 執行時期 | 程式動到不該動的記憶體（陣列越界、空指標、無窮遞迴），這些名詞後面幾篇會學到 |
+| `Segmentation fault (core dumped)` | 執行時期 | 程式動到不該動的記憶體（陣列越界、空指標），這些名詞後面幾篇會學到 |
 
 **分離編譯**（[後面〈分離編譯與命名空間〉那一節](/2026/09/09/nsysu-c-programming/1126-separate-compilation/)）就是刻意把「產生 `.o`（①②③）」與「連結成執行檔（④）」拆成兩步：每個 `.cpp` 各自 `g++ -c` 編成 `.o`，改一個檔只要重編那一個，最後再一起連結。Makefile 存在的理由就是自動化這件事。
 

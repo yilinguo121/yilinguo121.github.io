@@ -698,7 +698,7 @@ Stack dtor
 
 最後兩行再次印證解構由子到父。注意 `TracedStack` 根本沒寫 `delete[]`，記憶體卻正確釋放了——因為 `~Stack()` 會被自動接著呼叫，這就是「解構子不會被繼承、但會被自動串接」的意思。
 
-`TracedStack::push` 裡呼叫 `Stack::push(x)` 是**明確指定父類別版本**；不加 `Stack::` 就會變成呼叫自己造成無窮遞迴。
+`TracedStack::push` 裡呼叫 `Stack::push(x)` 是**明確指定父類別版本**；不加 `Stack::` 就會變成呼叫自己、永遠停不下來，程式直接當掉。
 
 </details>
 

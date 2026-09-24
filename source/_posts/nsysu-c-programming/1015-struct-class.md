@@ -500,10 +500,11 @@ int main() {
 #include <iomanip>
 using namespace std;
 
-int gcd(int a, int b) {
+int gcd(int a, int b) {                  // 輾轉相除法（迴圈版）
     if (a < 0) a = -a;
     if (b < 0) b = -b;
-    return (b == 0) ? a : gcd(b, a % b);
+    while (b != 0) { int r = a % b; a = b; b = r; }
+    return a;
 }
 
 class Fraction {

@@ -136,10 +136,11 @@ class Fraction {
 private:
     long long num, den;      // 兩個 int 範圍的數相乘不會超過 long long，中間乘積才安全
 
-    static long long gcd(long long a, long long b) {
+    static long long gcd(long long a, long long b) {      // 輾轉相除法（迴圈版）
         if (a < 0) a = -a;
         if (b < 0) b = -b;
-        return (b == 0) ? a : gcd(b, a % b);
+        while (b != 0) { long long r = a % b; a = b; b = r; }
+        return a;
     }
 
     void normalize() {

@@ -295,7 +295,7 @@ public:
 
 | 現象 | 怎麼修 |
 | --- | --- |
-| `Segmentation fault (core dumped)` | 陣列越界、對 `nullptr` 解參考、無窮遞迴；用 `-fsanitize=address -g` 重編會直接指出第幾行 |
+| `Segmentation fault (core dumped)` | 陣列越界、對 `nullptr` 解參考、函式一直呼叫自己停不下來；用 `-fsanitize=address -g` 重編會直接指出第幾行 |
 | `free(): double free detected` / `double free or corruption` | 同一塊記憶體被釋放兩次：淺拷貝沒補三法則，或 `delete` 寫了兩次 |
 | `std::bad_array_new_length` | 完整訊息是 `terminate called after throwing an instance of 'std::bad_array_new_length'`。`new T[n]` 的 `n` 是負數或算到溢位——最常見就是 `int n;` 忘了 `cin >> n` 就 `new int[n]` |
 | `std::bad_alloc` | 要不到那麼多記憶體：最常見是 `new` 後面的數量算錯（乘法算爆、負數轉成超大的無號數）；虛擬機的記憶體本來就少，不必到 GB 等級就可能失敗 |
@@ -346,6 +346,85 @@ public:
 | **`protected`** | 對外面關閉、對子類別開放的存取層級 |
 | **覆寫（redefine）** | 子類別定義同名同簽名的函式，蓋掉父類別的版本 |
 | **is-a / has-a** | 「是一種」用繼承；「有一個」用組合（當成員變數） |
+
+## 補充：遞迴（不在課程與考試範圍）
+
+課本 Ch13 的遞迴（recursion）不在這門課的進度與考試範圍裡（期末範圍是 Ch 1–12、Ch 14），這一節只是給好奇的人看，跳過完全沒關係。
+
+**遞迴**就是函式呼叫自己。它必須有兩個部分：
+
+1. **終止條件（base case）**：不再呼叫自己的情況。
+2. **遞迴步驟**：呼叫自己，但問題規模要**變小**。
+
+```cpp
+int factorial(int n) {
+    if (n <= 1) return 1;            // base case
+    return n * factorial(n - 1);     // recursive step
+}
+```
+
+追蹤 `factorial(4)`：
+
+```text
+factorial(4) = 4 * factorial(3)
+             = 4 * (3 * factorial(2))
+             = 4 * (3 * (2 * factorial(1)))
+             = 4 * (3 * (2 * 1)) = 24
+```
+
+每一層 `factorial` 都有**自己的一份 `n`**（09/24 的區域變數規則），裡層把 `n` 算成什麼都不會影響外層——這是遞迴能成立的關鍵。09/24 那個迴圈版的 `gcd` 也可以寫成遞迴：
+
+```cpp
+int gcd(int a, int b) {
+    if (b == 0) return a;          // base case
+    return gcd(b, a % b);          // recursive step：問題規模變小
+}
+```
+
+忘記 base case 或問題沒變小，函式會一直呼叫自己停不下來；每呼叫一次都要多佔一點記憶體，額度用完程式就當掉——這叫**堆疊溢位（stack overflow）**，畫面上看到的是 `Segmentation fault`。
+
+經典例子是**河內塔**：三根柱子 A、B、C，A 上有 `n` 個盤子（1 最小、`n` 最大，小的在上），每次只能移動一根柱子最上面的盤子，且大盤子不能壓在小盤子上。要把 `n` 個盤子從 A 搬到 C，就「先把上面 `n-1` 個搬到 B，把最大的那個搬到 C，再把那 `n-1` 個從 B 搬到 C」——搬 `n-1` 個的方法跟搬 `n` 個一模一樣，只是柱子的角色換了，所以函式呼叫自己、只把三根柱子的順序調換；結束條件是 `n == 0`（沒盤子可搬）。總步數是 $2^n - 1$。
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int moves = 0;
+
+// 把 n 個盤子從 from 搬到 to，中途可以借用 via
+void hanoi(int n, char from, char via, char to) {
+    if (n == 0) return;                       // 沒有盤子要搬：結束條件
+    hanoi(n - 1, from, to, via);              // 先把上面 n-1 個搬到中繼柱
+    cout << "disk " << n << ": " << from << " -> " << to << '\n';
+    moves++;
+    hanoi(n - 1, via, from, to);              // 再把那 n-1 個從中繼柱搬到目的柱
+}
+
+int main() {
+    int n;
+    cin >> n;
+    if (n < 1 || n > 10) {
+        cout << "invalid\n";
+        return 0;
+    }
+    hanoi(n, 'A', 'B', 'C');
+    cout << "total moves: " << moves << '\n';
+    return 0;
+}
+```
+
+```text
+輸入： 3
+輸出：
+disk 1: A -> C
+disk 2: A -> B
+disk 1: C -> B
+disk 3: A -> C
+disk 1: B -> A
+disk 2: B -> C
+disk 1: A -> C
+total moves: 7
+```
 
 ---
 

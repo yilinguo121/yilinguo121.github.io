@@ -808,7 +808,10 @@ A * B - A = -2/9
 #include <cstdlib>          // exit
 using namespace std;
 
-int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
+int gcd(int a, int b) {                  // 輾轉相除法（迴圈版）
+    while (b != 0) { int r = a % b; a = b; b = r; }
+    return a;
+}
 
 class Fraction {
 public:
