@@ -394,7 +394,7 @@ apple comes first
 | `s + t`、`s += t`、`s += c` | 串接；`+=` 右邊可以是字串、字面值或**單一字元**，都是接在尾端 |
 | `s.clear()` | 清空字串 |
 | `s.insert(pos, t)` / `s.erase(pos, len)` | 插入 / 刪除 |
-| `stoi(s)` / `to_string(n)` | 字串與數字互轉（C++11） |
+| `stoi(s)` / `stod(s)` / `to_string(n)` | 字串轉整數／字串轉小數／數字轉字串（C++11） |
 | `string(n, c)` | 由 `n` 個字元 `c` 組成的字串，例如 `string(3, '-')` 是 `"---"` |
 
 **輸入字串的兩種方式**：
