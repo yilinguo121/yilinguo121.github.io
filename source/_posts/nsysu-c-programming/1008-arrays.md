@@ -26,7 +26,7 @@ hidden: true
 | Ch5-4 | 讀入一串字元，統計幾個母音各出現幾次、按字母序印成兩欄——計數陣列＋部分填滿 | Q4 |
 | Ch5-8 | 模擬：幾千次隨機分配生日、用陣列記有沒有撞到——陣列＋`rand`（09/24） | Q4、09/24 Q17 |
 | Ch5-10 | 代號與庫存各一個陣列，選單反覆購買到結束——陣列存狀態＋迴圈選單 | Q7 訂票系統 |
-| Ch5-14 | 評分表存二維陣列，算距離找最接近的評分者——二維陣列、`sqrt` | Q5、Q6、Q10 |
+| Ch5-14 | 二維陣列存表格資料，逐列算距離找最接近的一列——二維陣列、`sqrt` | Q5、Q6、Q10 |
 | Ch5-17 | 統計首位數字出現的次數——計數陣列＋09/24 的讀檔範例 | Q4 |
 
 </details>
@@ -664,10 +664,10 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照**去年（2025）第 5、6 週**實驗課的練習與歷年實驗課考卷的題型改寫（今年的投影片還沒出，題目可能會換）。陣列這週的實驗課一定有「二維陣列當棋盤／座位表」的題目（訂票系統、井字棋年年輪流出現），排序則要求你**印出每一輪的過程**——這是助教確認你不是呼叫 `sort` 的方法。
+以下三題的**題型**取自去年（2025）第 5、6 週實驗課的課堂練習（今年的投影片還沒出，題目可能會換）：二維陣列當座位表、井字棋、還有「排序過程逐步印出」——要求印出每一輪，是為了確認你是自己寫排序而不是呼叫 `sort`。題目不是我原創的：練的東西跟去年那幾題一樣，但規則細節、輸出格式、範例資料和解答都是我自己重寫的，不是原題。Q10、Q11 是我自己出的補充題。
 
 **Q7. 電影院訂票系統**
-座位是 10 × 10 的二維陣列，左上角是 `[0][0]`、右下角是 `[9][9]`，四個角落不開放。反覆讀入「列 行」，成功就登記成 `O`；位置已被訂、在角落或超出範圍就印 `Booking Error`。讀到 `-1` 結束並印出整張座位表。
+座位是 10 × 10 的二維陣列，左上角是 `[0][0]`、右下角是 `[9][9]`；四個角落是柱子，不開放（印成 `#`）。反覆讀入「列 行」，能訂就登記成 `O` 並印 `booked (列, 行)`；位置已被訂、是角落或超出範圍就印 `cannot book (列, 行)`。讀到 `-1` 結束，最後印出整張座位表（空位印 `.`）。
 
 ```text
 輸入：
@@ -678,8 +678,8 @@ int main() {
 -1
 輸出：
 booked (2, 3)
-Booking Error
-Booking Error
+cannot book (2, 3)
+cannot book (0, 0)
 booked (9, 5)
    0123456789
 0  #........#
@@ -730,7 +730,7 @@ int main() {
         if (r == -1) break;
         cin >> c;
         if (r < 0 || r >= N || c < 0 || c >= N || seats[r][c] != '.') {
-            cout << "Booking Error\n";
+            cout << "cannot book (" << r << ", " << c << ")\n";
             continue;
         }
         seats[r][c] = 'O';
@@ -746,20 +746,20 @@ int main() {
 </details>
 
 **Q8. 井字棋**
-3 × 3 棋盤的格子編號 0–8。兩人輪流輸入格子編號，第一回合下 `O`、第二回合下 `X`，依此輪流；下到已有棋子的格子要重新輸入（回合數不變）。每一步都印出回合數與盤面，有人連成一線印 `O win!` 或 `X win!`，九格下滿沒人贏印 `draw`。
+3 × 3 棋盤的格子編號 0–8。兩人輪流輸入格子編號，第一手下 `O`、第二手下 `X`，依此輪流；下到已有棋子的格子印 `occupied, choose again` 並重新輸入（手數不變）。遊戲開始與每一手之後都印出盤面，每一手前面印 `turn 手數: 棋子 -> 格子`；有人連成一線印 `O wins` 或 `X wins`，九格下滿沒人贏印 `tie`。
 
 ```text
 輸入： 4 0 4 2 6 3 8 5
-輸出（節錄後三步）：
-Round 6: X -> 8
+輸出（節錄後兩手）：
+turn 6: X -> 8
 X . O
 O O .
 X . X
-Round 7: O -> 5
+turn 7: O -> 5
 X . O
 O O O
 X . X
-O win!
+O wins
 ```
 
 <details>
@@ -793,26 +793,26 @@ int main() {
     for (int i = 0; i < 9; i++) board[i] = '.';
     printBoard(board);
 
-    int round = 1;
-    while (round <= 9) {
-        char mark = (round % 2 == 1) ? 'O' : 'X';
+    int turn = 1;
+    while (turn <= 9) {
+        char mark = (turn % 2 == 1) ? 'O' : 'X';
         int pos;
         cin >> pos;
         if (pos < 0 || pos > 8 || board[pos] != '.') {
-            cout << "taken, try again\n";
+            cout << "occupied, choose again\n";
             continue;                          // 回合數不變
         }
         board[pos] = mark;
-        cout << "Round " << round << ": " << mark << " -> " << pos << '\n';
+        cout << "turn " << turn << ": " << mark << " -> " << pos << '\n';
         printBoard(board);
         char w = winner(board);
         if (w != ' ') {
-            cout << w << " win!\n";
+            cout << w << " wins\n";
             return 0;
         }
-        round++;
+        turn++;
     }
-    cout << "draw\n";
+    cout << "tie\n";
     return 0;
 }
 ```
@@ -823,36 +823,36 @@ int main() {
 . . .
 . . .
 . . .
-Round 1: O -> 4
+turn 1: O -> 4
 . . .
 . O .
 . . .
-Round 2: X -> 0
+turn 2: X -> 0
 X . .
 . O .
 . . .
-taken, try again
-Round 3: O -> 2
+occupied, choose again
+turn 3: O -> 2
 X . O
 . O .
 . . .
-Round 4: X -> 6
+turn 4: X -> 6
 X . O
 . O .
 X . .
-Round 5: O -> 3
+turn 5: O -> 3
 X . O
 O O .
 X . .
-Round 6: X -> 8
+turn 6: X -> 8
 X . O
 O O .
 X . X
-Round 7: O -> 5
+turn 7: O -> 5
 X . O
 O O O
 X . X
-O win!
+O wins
 ```
 
 八條連線（三列、三行、兩對角）寫成一個 `lines[8][3]` 常數表，`winner` 只要跑一個迴圈，比寫八個 `if` 乾淨得多，也是二維陣列「當查表用」的典型例子。盤面用一維 `char board[9]` 存，印的時候每三個換行，`i % 3 == 2` 就是「這一列的最後一格」。
@@ -860,28 +860,30 @@ O win!
 </details>
 
 **Q9. 排序過程逐步印出**
-第一個輸入選排序法（1 氣泡、2 選擇），第二個輸入是數量 `n`（`1 ≤ n ≤ 100`），接著 `n` 個整數（允許負數與重複）。氣泡排序每完成一輪就印一次陣列；選擇排序每**實際交換**一次就印一次。最後印出遞增結果。兩種排序各寫一個函式。
+第一個輸入是一個字母選排序法（`b` 氣泡、`s` 選擇），第二個輸入是數量 `n`（`1 ≤ n ≤ 100`），接著 `n` 個整數（允許負數與重複）。這次請排成**由大到小**：氣泡排序每完成一輪就印一次陣列；選擇排序每**實際交換**一次就印一次。最後印出排好的結果。兩種排序各寫一個函式。
 
 ```text
 輸入：
-2 5
-7 -2 7 4 1
+s 6
+5 9 1 9 -3 4
 輸出：
-swap a[0] <-> a[1]: -2 7 7 4 1
-swap a[1] <-> a[4]: -2 1 7 4 7
-swap a[2] <-> a[3]: -2 1 4 7 7
-sorted: -2 1 4 7 7
+swap 0 <-> 1: 9 5 1 9 -3 4
+swap 1 <-> 3: 9 9 1 5 -3 4
+swap 2 <-> 3: 9 9 5 1 -3 4
+swap 3 <-> 5: 9 9 5 4 -3 1
+swap 4 <-> 5: 9 9 5 4 1 -3
+sorted: 9 9 5 4 1 -3
 ```
 
 ```text
 輸入：
-1 4
-3 1 2 0
+b 4
+1 3 0 2
 輸出：
-pass 1: 1 2 0 3
-pass 2: 1 0 2 3
-pass 3: 0 1 2 3
-sorted: 0 1 2 3
+pass 1: 3 1 2 0
+pass 2: 3 2 1 0
+pass 3: 3 2 1 0
+sorted: 3 2 1 0
 ```
 
 <details>
@@ -891,47 +893,50 @@ sorted: 0 1 2 3
 #include <iostream>
 using namespace std;
 
+const int MAX = 100;
+
 void printArray(const int a[], int n) {
     for (int i = 0; i < n; i++) cout << a[i] << (i + 1 < n ? " " : "\n");
 }
 
+// 由大到小；每完成一輪就印一次
 void bubbleSort(int a[], int n) {
-    for (int pass = 0; pass < n - 1; pass++) {
-        for (int i = 0; i + 1 < n - pass; i++)
-            if (a[i] > a[i + 1]) { int t = a[i]; a[i] = a[i + 1]; a[i + 1] = t; }
-        cout << "pass " << pass + 1 << ": ";
+    for (int pass = 1; pass < n; pass++) {
+        for (int j = 0; j + 1 < n - (pass - 1); j++)
+            if (a[j] < a[j + 1]) { int t = a[j]; a[j] = a[j + 1]; a[j + 1] = t; }
+        cout << "pass " << pass << ": ";
         printArray(a, n);
     }
 }
 
+// 由大到小；每實際交換一次就印一次
 void selectionSort(int a[], int n) {
     for (int i = 0; i < n - 1; i++) {
-        int minIdx = i;
+        int maxIdx = i;
         for (int j = i + 1; j < n; j++)
-            if (a[j] < a[minIdx]) minIdx = j;
-        if (minIdx != i) {                     // 真的有交換才印
-            int t = a[i]; a[i] = a[minIdx]; a[minIdx] = t;
-            cout << "swap a[" << i << "] <-> a[" << minIdx << "]: ";
+            if (a[j] > a[maxIdx]) maxIdx = j;
+        if (maxIdx != i) {
+            int t = a[i]; a[i] = a[maxIdx]; a[maxIdx] = t;
+            cout << "swap " << i << " <-> " << maxIdx << ": ";
             printArray(a, n);
         }
     }
 }
 
 int main() {
-    const int MAX = 100;
-    int method, n, a[MAX];
+    char method;
+    int n, a[MAX];
     cin >> method >> n;
     for (int i = 0; i < n; i++) cin >> a[i];
-
-    if (method == 1) bubbleSort(a, n);
-    else             selectionSort(a, n);
+    if (method == 'b') bubbleSort(a, n);
+    else               selectionSort(a, n);
     cout << "sorted: ";
     printArray(a, n);
     return 0;
 }
 ```
 
-跟正文的兩個排序完全相同，只是在對的位置多一行 `printArray`：氣泡排序的「一輪」是外層迴圈跑完一次，選擇排序的「一次交換」是內層找完最小值之後。`printArray` 抽成函式是因為要印很多次；`if (minIdx != i)` 讓「最小值就在原位」的那輪不印。
+跟正文的兩個排序只差兩件事：比較的方向反過來（正文是由小到大，這裡把 `<` 換成 `>`），以及在對的位置多一行 `printArray`——氣泡排序的「一輪」是外層迴圈跑完一次，選擇排序的「一次交換」是內層找完最大值之後。`printArray` 抽成函式是因為要印很多次；`if (maxIdx != i)` 讓「最大值剛好已經在該放的位置」的那輪不印。
 
 </details>
 

@@ -503,32 +503,32 @@ int main() {
 </details>
 
 **實驗課題型加練**
-下面這題照**去年（2025）第 10 週**實驗課的練習題型改寫（今年的投影片還沒出，題目可能會換）：三個同名函式各放在自己的 `namespace` 與自己的 `.cpp`，**必須用 Makefile 編譯、執行檔名指定**。這是實驗課檢查分離編譯的標準題，做完就等於期末上機考多檔案題的暖身。
+下面這題的**題型**取自去年（2025）第 10 週實驗課的課堂練習（今年的投影片還沒出，題目可能會換）：三個同名函式各放在自己的 `namespace` 與自己的 `.cpp`，**必須用 Makefile 編譯、執行檔名指定**。題目不是我原創的：練的東西跟去年那題一樣，但要做的轉換、檔名、輸出格式和解答都是我自己重寫的，不是原題。這是檢查分離編譯的標準題型，做完就等於期末上機考多檔案題的暖身。
 
-**Q4. 三種輸出格式（`namespace` + 分離編譯）**
-讀入一個整數，用三種格式輸出：左右反轉（123 → 321）、二進位（123 → 1111011）、科學記號（123 → 1.230000e+02）。三個功能分別放在 `namespace Reverse`、`Binary`、`Scientific` 裡，**函式都叫 `output`**。檔案拆成：`converter.h`（只放三個宣告）、`reverse.cpp`、`binary.cpp`、`scientific.cpp`（各自實作）、`main.cpp`；Makefile 要能編出名為 `Q4` 的執行檔，`make clean` 要能清乾淨。
+**Q4. 三種轉換（`namespace` + 分離編譯）**
+讀入一個非負整數，用三種方式輸出：左右反轉（123 → 321）、二進位（123 → 1111011）、八進位（123 → 173）。三個功能分別放在 `namespace Reverse`、`Binary`、`Octal` 裡，**函式都叫 `show`**。檔案拆成：`formats.h`（只放三個宣告）、`reverse.cpp`、`binary.cpp`、`octal.cpp`（各自實作）、`main.cpp`；Makefile 要能編出名為 `convert` 的執行檔，`make clean` 要能清乾淨。
 
 ```text
 輸入： 123
 輸出：
-reverse:    321
-binary:     1111011
-scientific: 1.230000e+02
+reverse: 321
+binary:  1111011
+octal:   173
 ```
 
 <details>
 <summary><b>參考解答</b></summary>
 
-**converter.h**
+**formats.h**
 
 ```cpp
-#ifndef CONVERTER_H
-#define CONVERTER_H
+#ifndef FORMATS_H
+#define FORMATS_H
 
-// 三個命名空間裡各有一個同名的 output：拆檔後每個放在自己的 .cpp
-namespace Reverse    { void output(int number); }
-namespace Binary     { void output(int number); }
-namespace Scientific { void output(int number); }
+// 三個命名空間裡各有一個同名的 show：拆檔後每個放在自己的 .cpp
+namespace Reverse { void show(int number); }
+namespace Binary  { void show(int number); }
+namespace Octal   { void show(int number); }
 
 #endif
 ```
@@ -537,16 +537,16 @@ namespace Scientific { void output(int number); }
 
 ```cpp
 #include <iostream>
-#include "converter.h"
+#include "formats.h"
 using namespace std;
 
-void Reverse::output(int number) {
+void Reverse::show(int number) {
     int r = 0;
     while (number > 0) {
         r = r * 10 + number % 10;
         number /= 10;
     }
-    cout << "reverse:    " << r << '\n';
+    cout << "reverse: " << r << '\n';
 }
 ```
 
@@ -555,30 +555,36 @@ void Reverse::output(int number) {
 ```cpp
 #include <iostream>
 #include <string>
-#include "converter.h"
+#include "formats.h"
 using namespace std;
 
-void Binary::output(int number) {
+void Binary::show(int number) {
     string bits;
     if (number == 0) bits = "0";
     while (number > 0) {
         bits = static_cast<char>('0' + number % 2) + bits;   // 餘數接在前面
         number /= 2;
     }
-    cout << "binary:     " << bits << '\n';
+    cout << "binary:  " << bits << '\n';
 }
 ```
 
-**scientific.cpp**
+**octal.cpp**
 
 ```cpp
 #include <iostream>
-#include "converter.h"
+#include <string>
+#include "formats.h"
 using namespace std;
 
-void Scientific::output(int number) {
-    cout << "scientific: " << scientific << number * 1.0 << '\n';
-    cout.unsetf(ios::scientific);               // 用完把格式關掉，不影響後面的輸出
+void Octal::show(int number) {
+    string digits;
+    if (number == 0) digits = "0";
+    while (number > 0) {
+        digits = static_cast<char>('0' + number % 8) + digits;   // 跟二進位同一招，只是除以 8
+        number /= 8;
+    }
+    cout << "octal:   " << digits << '\n';
 }
 ```
 
@@ -586,15 +592,15 @@ void Scientific::output(int number) {
 
 ```cpp
 #include <iostream>
-#include "converter.h"
+#include "formats.h"
 using namespace std;
 
 int main() {
     int n;
     cin >> n;
-    Reverse::output(n);
-    Binary::output(n);
-    Scientific::output(n);
+    Reverse::show(n);
+    Binary::show(n);
+    Octal::show(n);
     return 0;
 }
 ```
@@ -605,25 +611,25 @@ int main() {
 CC = g++
 FLAG = -std=c++11
 
-all: Q4
+all: convert
 
-Q4: main.o reverse.o binary.o scientific.o
-	$(CC) $(FLAG) -o Q4 main.o reverse.o binary.o scientific.o
+convert: main.o reverse.o binary.o octal.o
+	$(CC) $(FLAG) -o convert main.o reverse.o binary.o octal.o
 
-main.o: main.cpp converter.h
+main.o: main.cpp formats.h
 	$(CC) $(FLAG) -c main.cpp
 
-reverse.o: reverse.cpp converter.h
+reverse.o: reverse.cpp formats.h
 	$(CC) $(FLAG) -c reverse.cpp
 
-binary.o: binary.cpp converter.h
+binary.o: binary.cpp formats.h
 	$(CC) $(FLAG) -c binary.cpp
 
-scientific.o: scientific.cpp converter.h
-	$(CC) $(FLAG) -c scientific.cpp
+octal.o: octal.cpp formats.h
+	$(CC) $(FLAG) -c octal.cpp
 
 clean:
-	rm -f Q4 *.o
+	rm -f convert *.o
 ```
 
 ```bash
@@ -631,15 +637,15 @@ $ make
 g++ -std=c++11 -c main.cpp
 g++ -std=c++11 -c reverse.cpp
 g++ -std=c++11 -c binary.cpp
-g++ -std=c++11 -c scientific.cpp
-g++ -std=c++11 -o Q4 main.o reverse.o binary.o scientific.o
-$ echo 123 | ./Q4
-reverse:    321
-binary:     1111011
-scientific: 1.230000e+02
+g++ -std=c++11 -c octal.cpp
+g++ -std=c++11 -o convert main.o reverse.o binary.o octal.o
+$ echo 123 | ./convert
+reverse: 321
+binary:  1111011
+octal:   173
 ```
 
-三個 `output` 同名卻不衝突，就是因為各在自己的命名空間，呼叫時寫 `Reverse::output(n)`。實作檔裡函式定義寫成 `void Reverse::output(int number)`，跟成員函式的寫法一樣「用 `::` 說明它屬於誰」。`.h` 只放宣告、不放實作，否則三個 `.cpp` 都 include 它就會重複定義。二進位那段用「餘數接在字串**前面**」（`static_cast<char>('0' + number % 2) + bits`），比先存進陣列再反著印少一個步驟；科學記號用 `cout << scientific`——它跟 09/17 的 `fixed` 是同一類的格式設定，之後印出的小數都會變成 `1.230000e+02` 這種形式（`e+02` 是「乘以 10 的 2 次方」）；整數要先乘 `1.0` 變成 `double` 才會套用。印完用 `cout.unsetf(ios::scientific)` 把這個設定關掉，否則同一支程式後面所有 `double` 都會變成科學記號。
+三個 `show` 同名卻不衝突，就是因為各在自己的命名空間，呼叫時寫 `Reverse::show(n)`。實作檔裡函式定義寫成 `void Reverse::show(int number)`，跟成員函式的寫法一樣「用 `::` 說明它屬於誰」。`.h` 只放宣告、不放實作，否則三個 `.cpp` 都 include 它就會重複定義。二進位那段用「餘數接在字串**前面**」（`static_cast<char>('0' + number % 2) + bits`），比先存進陣列再反著印少一個步驟；八進位是同一個做法，只是除以 8、餘數是 0–7——兩個幾乎一樣的函式各放在自己的命名空間、各自一個檔案，呼叫端只要看 `Binary::` 還是 `Octal::` 就知道在用哪一個。Makefile 裡每個 `.o` 都把 `formats.h` 列進相依，改了宣告四個檔案才會一起重編（本篇 Q3 的實驗）。
 
 </details>
 

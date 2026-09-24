@@ -16,7 +16,7 @@ hidden: true
 
 這是主課**佔學期 40% 的關鍵一場**，通常直接決定學期成績（實驗課的期末上機考是另一場、另外算分，題型見文末〈實驗課期末上機考模擬〉）。而且還有一個好消息：
 
-> 期末上機成績較期中進步達 30 分以上者，學期總成績可獲加分 1~3 分。
+> 期末上機比期中考進步 30 分以上，學期總成績可以加 1 到 3 分（依課程大綱）。
 
 也就是說，**期中考砸了也還有救**，這場好好考回來，分數與加分一起拿。
 
@@ -97,16 +97,16 @@ Hello World From Nsysu
 nsysu from world hello
 ```
 
-**Q5. 繼承：交通工具**
-`Vehicle` 有名稱與輪子數，提供 `describe()`。派生 `Car`（多載客數）與 `Truck`（多載重噸數），各自覆寫 `describe()`。先讀一行 `車名 輪子數 載客數`（Car），再讀一行 `車名 輪子數 噸數`（Truck），各自印出描述。
+**Q5. 繼承：商品**
+`Product` 有名稱與價格（整數），提供 `describe()`。派生 `Food`（多保存天數）與 `Gadget`（多保固月數），各自覆寫 `describe()`。先讀一行 `名稱 價格 保存天數`（Food），再讀一行 `名稱 價格 保固月數`（Gadget），各自印出描述。
 
 ```text
 輸入：
-Civic 4 5
-Hino 6 3.5
+Milk 45 7
+Phone 19900 24
 輸出：
-Civic: 4 wheels, 5 seats.
-Hino: 6 wheels, 3.5 tons.
+Milk: $45, keep for 7 days.
+Phone: $19900, 24-month warranty.
 ```
 
 **Q6. 綜合：學生管理系統**
@@ -377,49 +377,48 @@ int main() {
 #include <string>
 using namespace std;
 
-class Vehicle {
+class Product {
 protected:
     string name;
-    int    wheels;
+    int    price;
 
 public:
-    Vehicle(const string& n, int w) : name(n), wheels(w) { }
+    Product(const string& n, int p) : name(n), price(p) { }
     void describe() const {
-        cout << name << " has " << wheels << " wheels.\n";
+        cout << name << ": $" << price << ".\n";
     }
 };
 
-class Car : public Vehicle {
+class Food : public Product {
 private:
-    int seats;
+    int days;
 public:
-    Car(const string& n, int w, int s) : Vehicle(n, w), seats(s) { }
+    Food(const string& n, int p, int d) : Product(n, p), days(d) { }
     void describe() const {
-        cout << name << ": " << wheels << " wheels, " << seats << " seats.\n";
+        cout << name << ": $" << price << ", keep for " << days << " days.\n";
     }
 };
 
-class Truck : public Vehicle {
+class Gadget : public Product {
 private:
-    double tons;
+    int warranty;
 public:
-    Truck(const string& n, int w, double t) : Vehicle(n, w), tons(t) { }
+    Gadget(const string& n, int p, int w) : Product(n, p), warranty(w) { }
     void describe() const {
-        cout << name << ": " << wheels << " wheels, " << tons << " tons.\n";
+        cout << name << ": $" << price << ", " << warranty << "-month warranty.\n";
     }
 };
 
 int main() {
     string n1, n2;
-    int w1, s1, w2;
-    double t2;
-    cin >> n1 >> w1 >> s1;
-    cin >> n2 >> w2 >> t2;
+    int p1, d1, p2, w2;
+    cin >> n1 >> p1 >> d1;
+    cin >> n2 >> p2 >> w2;
 
-    Car c(n1, w1, s1);
-    Truck t(n2, w2, t2);
-    c.describe();
-    t.describe();
+    Food f(n1, p1, d1);
+    Gadget g(n2, p2, w2);
+    f.describe();
+    g.describe();
     return 0;
 }
 ```
@@ -542,7 +541,7 @@ clean:
 
 ## 實驗課期末上機考模擬（另一場考試）
 
-實驗課的期末考是另一場（佔實驗課成績 40%，時間看助教公告），題型照每週練習題與歷年實驗課考卷出：括號配對、翻牌順序、讀檔排序、字典統計、通訊錄管理。五題建議 120 分鐘，同樣要求 Makefile 與零警告；Q3、Q5 會讀寫檔案，測試檔請自己照範例建立。
+實驗課的期末考是另一場（佔實驗課成績 40%，時間看助教公告），題型照每週練習題的形狀與我看過的幾份歷年考古題出（題目敘述、資料與解答是我重寫的，不是原題）：括號配對、翻牌順序、讀檔排序、字典統計、通訊錄管理。五題建議 120 分鐘，同樣要求 Makefile 與零警告；Q3、Q5 會讀寫檔案，測試檔請自己照範例建立。
 
 **Q1. 括號配對**
 反覆讀入只含 `()[]{}` 的字串直到輸入結束，判斷括號是否合法配對（同型別、順序正確）。**必須自己用鏈結串列實作堆疊**（11/19 Q7 那個），不能用 `vector` 代替。
@@ -569,9 +568,9 @@ clean:
 
 ```text
 輸入：
-7
-17 13 11 2 3 5 7
-輸出： 2 13 3 11 5 17 7
+6
+9 4 6 1 8 2
+輸出： 1 6 2 9 4 8
 ```
 
 **Q3. 學生檔多鍵排序**
@@ -600,12 +599,12 @@ B113040007 Ivy    88  92  75
 讀入一段只含英文字母與空白的文字（讀到輸入結束），大小寫視為同一個字，統計每個不同單字出現幾次，依字母順序印出（全部小寫），最後印不同單字的數量。不能用 `map`。
 
 ```text
-輸入： apple juice Banana Juice Good GOOD Good
+輸入： Tea tea COFFEE milk Milk tea juice
 輸出：
-apple: 1
-banana: 1
-good: 3
-juice: 2
+coffee: 1
+juice: 1
+milk: 2
+tea: 3
 unique words: 4
 ```
 
@@ -937,7 +936,7 @@ int main() {
 }
 ```
 
-**考點與常見扣分**：把「讀檔」「寫檔」「找編號」各抽成函式後，五個指令每個只剩三四行。寫回檔案時用 `ofstream` 預設模式**整個重寫**（不是 `ios::app`），才不會愈寫愈長。`load()` 對不存在的檔案不會報錯、只是讀不到東西，所以第一次執行也能用。這是 110 學年主課期末考的原題型，也是這門課「struct + vector + 檔案 + 選單」四樣東西的總結。
+**考點與常見扣分**：把「讀檔」「寫檔」「找編號」各抽成函式後，五個指令每個只剩三四行。寫回檔案時用 `ofstream` 預設模式**整個重寫**（不是 `ios::app`），才不會愈寫愈長。`load()` 對不存在的檔案不會報錯、只是讀不到東西，所以第一次執行也能用。這個題型出自我看過的一份主課期末考考古題（敘述與資料是重寫的），也是這門課「struct + vector + 檔案 + 選單」四樣東西的總結。
 
 </details>
 

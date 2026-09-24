@@ -351,7 +351,7 @@ int main() {
 
 ## 實驗課上機考題型（Ch 1–6 的部分）
 
-實驗課是另一門課，有自己的期末上機考（佔實驗課成績 40%），題型就是每週練習題那種，歷年考卷的共同特徵：連續輸入、讀到 `0` 或 `0 0` 結束、輸出格式要一模一樣、一題只有全對或零分。下面六題只用 Ch 1–6 的內容，期中前就可以練；主課的期中考**不是**這種題型（幾乎全從課本勾選題出），別搞混。六題建議 90 分鐘。
+實驗課是另一門課，有自己的期末上機考（佔實驗課成績 40%），題型就是每週練習題那種。我看過的幾份歷年考古題有幾個共同特徵：連續輸入、讀到 `0` 或 `0 0` 結束、輸出格式要一模一樣、一題只有全對或零分。下面六題的**題型**取自那些考古題（題目敘述、範例資料與解答是我重寫的，不是原題），只用 Ch 1–6 的內容，期中前就可以練；主課的期中考**不是**這種題型（幾乎全從課本勾選題出），別搞混。六題建議 90 分鐘。
 
 實驗課考題有個習慣要先適應：**多半不給你數量 `n`**，而是「一直讀到某個結束值」，所以大部分題目的骨架都是 `while (true) { cin >> ...; if (結束條件) break; ... }`。
 
@@ -375,34 +375,34 @@ invalid
 ```
 
 **Q2. 質數原地降冪**
-反覆讀入一串正整數（以 `0` 結尾，最多 1024 個），把其中**是質數的那些**由大到小重新排列，其他數字的位置不動；讀到空的一串（直接輸入 `0`）就印 `Finish!` 結束。
+反覆讀入一串正整數（以 `0` 結尾，最多 1024 個），把其中**是質數的那些**由大到小重新排列，其他數字的位置不動；讀到空的一串（直接輸入 `0`）就印 `done` 結束。
 
 ```text
 輸入：
-1 2 3 4 5 6 7 8 9 10 0
-2 4 6 8 3 5 7 11 13 17 19 0
-10 8 6 4 2 0
+4 7 9 2 15 11 6 0
+8 3 9 0
+12 9 0
 0
 輸出：
-1 7 5 4 3 6 2 8 9 10
-19 4 6 8 17 13 11 7 5 3 2
-10 8 6 4 2
-Finish!
+4 11 9 7 15 2 6
+8 3 9
+12 9
+done
 ```
 
 **Q3. 區間內的質數**
-反覆讀入 `x y`，印出 `x` 到 `y` 之間（含）所有質數，同一行用空白隔開；`x > y` 或有負數印 `Invalid input`；區間內沒有質數就不印任何東西；讀到 `0 0` 結束。
+反覆讀入 `x y`，印出 `x` 到 `y` 之間（含）所有質數，同一行用空白隔開；`x > y` 或有負數印 `invalid range`；區間內沒有質數就不印任何東西（連換行都不印）；讀到 `0 0` 結束。
 
 ```text
 輸入：
 10 30
-24 28
+90 96
 30 10
 1 10
 0 0
 輸出：
 11 13 17 19 23 29
-Invalid input
+invalid range
 2 3 5 7
 ```
 
@@ -424,33 +424,33 @@ Invalid input
 ```
 
 **Q5. 狀態機計算器**
-先讀 `n`，再讀 `n` 個整數。程式有五個狀態輪流切換：第 1 個數進入 `RST`（直接記下來）；之後依序 `ADD`（結果 + 輸入）、`SUB`（結果 − 輸入）、`MUL`（結果 × 輸入）、`DIV`（**輸入 ÷ 結果**，整數除法）；`DIV` 之後回到 `ADD` 循環。`DIV` 時若結果是 0，印 `division by zero => reset`，下一個數重新從 `RST` 開始。每一步印 `(State XXX) => 結果`。
+先讀 `n`，再讀 `n` 個整數。程式有五個狀態輪流切換：第 1 個數進入 `SET`（直接記下來）；之後依序 `PLUS`（結果 + 輸入）、`MINUS`（結果 − 輸入）、`TIMES`（結果 × 輸入）、`OVER`（**輸入 ÷ 結果**，整數除法）；`OVER` 之後回到 `PLUS` 循環。`OVER` 時若結果是 0，印 `[OVER] cannot divide by 0, reset`，下一個數重新從 `SET` 開始。每一步印 `[狀態] 結果`。
 
 ```text
 輸入：
 7
-3 4 1 5 10 2 6
+2 5 3 4 8 1 9
 輸出：
-(State RST) => 3
-(State ADD) => 7
-(State SUB) => 6
-(State MUL) => 30
-(State DIV) => 0
-(State ADD) => 2
-(State SUB) => -4
+[SET] 2
+[PLUS] 7
+[MINUS] 4
+[TIMES] 16
+[OVER] 0
+[PLUS] 1
+[MINUS] -8
 ```
 
 ```text
 輸入：
 6
-5 0 5 0 9 1
+4 0 4 0 7 2
 輸出：
-(State RST) => 5
-(State ADD) => 5
-(State SUB) => 0
-(State MUL) => 0
-division by zero => reset
-(State RST) => 1
+[SET] 4
+[PLUS] 4
+[MINUS] 0
+[TIMES] 0
+[OVER] cannot divide by 0, reset
+[SET] 2
 ```
 
 **Q6. 成績結構排序**
@@ -459,13 +459,13 @@ division by zero => reset
 ```text
 輸入：
 3
-80 20 30 40 50
-30 40 70 70 30
-20 30 30 100 120
+75 88 92 60 70
+90 90 85 100 95
+100 105 60 70 80
 輸出：
-30 40 70 70 30 | 240
-80 20 30 40 50 | 220
-20 30 30 100 0 | 180
+90 90 85 100 95 | 460
+75 88 92 60 70 | 385
+100 0 60 70 80 | 310
 ```
 
 <details>
@@ -542,12 +542,12 @@ int main() {
         }
         for (int i = 0; i < n; i++) cout << a[i] << (i + 1 < n ? " " : "\n");
     }
-    cout << "Finish!\n";
+    cout << "done\n";
     return 0;
 }
 ```
 
-**考點與常見扣分**：排序骨架還是選擇排序，只是「參與排序的位置」加了條件——`i` 不是質數就跳過，找最大值時也只看質數。這樣非質數自然留在原地。第三組資料只有一個質數 2，所以跟原本一樣。每一串讀完要把 `n` 歸零，這是連續輸入題最常忘的一行。
+**考點與常見扣分**：排序骨架還是選擇排序，只是「參與排序的位置」加了條件——`i` 不是質數就跳過，找最大值時也只看質數。這樣非質數自然留在原地。第二組資料只有一個質數 3、第三組一個都沒有，所以印出來跟原本一樣。每一串讀完要把 `n` 歸零，這是連續輸入題最常忘的一行。
 
 </details>
 
@@ -571,7 +571,7 @@ int main() {
         cin >> x >> y;
         if (x == 0 && y == 0) break;
         if (x < 0 || y < 0 || x > y) {
-            cout << "Invalid input\n";
+            cout << "invalid range\n";
             continue;
         }
         bool any = false;
@@ -635,33 +635,33 @@ int main() {
     int n;
     cin >> n;
     long long result = 0;
-    int state = 0;                     // 0 RST, 1 ADD, 2 SUB, 3 MUL, 4 DIV
+    int state = 0;                     // 0 SET, 1 PLUS, 2 MINUS, 3 TIMES, 4 OVER
     for (int i = 0; i < n; i++) {
         long long x;
         cin >> x;
         switch (state) {
-            case 0: result = x;          cout << "(State RST) => " << result << '\n'; break;
-            case 1: result += x;         cout << "(State ADD) => " << result << '\n'; break;
-            case 2: result -= x;         cout << "(State SUB) => " << result << '\n'; break;
-            case 3: result *= x;         cout << "(State MUL) => " << result << '\n'; break;
+            case 0: result = x;          cout << "[SET] " << result << '\n'; break;
+            case 1: result += x;         cout << "[PLUS] " << result << '\n'; break;
+            case 2: result -= x;         cout << "[MINUS] " << result << '\n'; break;
+            case 3: result *= x;         cout << "[TIMES] " << result << '\n'; break;
             case 4:
                 if (result == 0) {
-                    cout << "division by zero => reset\n";
-                    state = 0;           // 下一筆回到 RST
+                    cout << "[OVER] cannot divide by 0, reset\n";
+                    state = 0;           // 下一筆回到 SET
                     continue;            // 跳過下面的 state++
                 }
                 result = x / result;
-                cout << "(State DIV) => " << result << '\n';
+                cout << "[OVER] " << result << '\n';
                 break;
         }
-        state = (state + 1) % 5;         // RST 之後 ADD、SUB、MUL、DIV，再回 ADD
+        state = (state + 1) % 5;         // SET 之後 PLUS、MINUS、TIMES、OVER，再回 PLUS
         if (state == 0) state = 1;
     }
     return 0;
 }
 ```
 
-**考點與常見扣分**：`DIV` 是「輸入除以結果」，方向跟前面三個相反；除以零那一筆**不算一步**，狀態直接回 `RST`，所以要 `continue` 跳過 `state` 的推進。`switch` 裡每個 `case` 都有 `break`，除以零那條用 `continue` 離開的是外面的 `for`——`continue` 跳的是迴圈、不是 `switch`。
+**考點與常見扣分**：`OVER` 是「輸入除以結果」，方向跟前面三個相反；除以零那一筆**不算一步**，狀態直接回 `SET`，所以要 `continue` 跳過 `state` 的推進。`switch` 裡每個 `case` 都有 `break`，除以零那條用 `continue` 離開的是外面的 `for`——`continue` 跳的是迴圈、不是 `switch`。
 
 </details>
 

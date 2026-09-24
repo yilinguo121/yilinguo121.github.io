@@ -537,7 +537,7 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照**去年（2025）第 7 週**實驗課的練習題型改寫（今年的投影片還沒出，題目可能會換）。去年這週的三個關鍵字是 **`const` 參考參數、`static` 成員、把上一題的類別當成員再包一層**——三題其實是一路接著寫的。
+以下三題的**題型**取自去年（2025）第 7 週實驗課的課堂練習（今年的投影片還沒出，題目可能會換）。去年這週的三個關鍵字是 **`const` 參考參數、`static` 成員、把上一題的類別當成員再包一層**——三題是一路接著寫的。題目不是我原創的：練的東西跟去年那幾題一樣，但題目本身、規則、範例資料和解答都是我自己重寫的，不是原題。
 
 **Q5. 兩個日期是否相同（`const` 參考參數）**
 寫 `class Date`，建構子收年月日，`isValid()` 檢查日期存在（含閏年二月），`sameAs(const Date& other) const` 比較是否同一天。讀入兩個日期，任一不合法印 `invalid date`，否則印出比較結果。
@@ -598,20 +598,20 @@ int main() {
 
 </details>
 
-**Q6. 名冊與人數統計（`static` 成員）**
-寫 `class Member`，private 存姓名與生日（年月日），用一個 **`static`** 資料成員統計總共建立了幾個人。反覆讀入「姓名 年 月 日」，讀到 `exit` 停止；最後印出所有人與總人數。總人數要透過 `static` 成員函式 `Member::count()` 取得。
+**Q6. 售票紀錄（`static` 成員）**
+寫 `class Ticket`，private 存活動名稱、座位號、票價，另外用兩個 **`static`** 資料成員統計「總共賣出幾張」與「總收入」。反覆讀入「活動 座位 票價」，讀到 `end` 停止；最後印出所有票、賣出張數與總收入。張數與總收入要透過 `static` 成員函式 `Ticket::count()`、`Ticket::total()` 取得。
 
 ```text
 輸入：
-Amy 2006 3 14
-Ben 2005 11 2
-Cleo 2006 7 30
-exit
+Concert 12 800
+Musical 3 1200
+Concert 15 800
+end
 輸出：
-Amy (2006/3/14)
-Ben (2005/11/2)
-Cleo (2006/7/30)
-total: 3
+Concert seat 12 $800
+Musical seat 3 $1200
+Concert seat 15 $800
+sold: 3, revenue: 2800
 ```
 
 <details>
@@ -622,65 +622,69 @@ total: 3
 #include <string>
 using namespace std;
 
-class Member {
+class Ticket {
 public:
-    Member() : name("?"), year(0), month(0), day(0) {}     // 陣列需要預設建構子
-    Member(const string& n, int y, int m, int d)
-        : name(n), year(y), month(m), day(d) { total++; }   // 每建一個就數一個
+    Ticket() : event("?"), seat(0), price(0) {}              // 陣列需要預設建構子（不計數）
+    Ticket(const string& e, int s, int p)
+        : event(e), seat(s), price(p) { sold++; revenue += p; }   // 每賣一張就記一張
     void print() const {
-        cout << name << " (" << year << '/' << month << '/' << day << ")\n";
+        cout << event << " seat " << seat << " $" << price << '\n';
     }
-    static int count() { return total; }
+    static int count() { return sold; }
+    static int total() { return revenue; }
 private:
-    string name;
-    int year, month, day;
-    static int total;
+    string event;
+    int seat, price;
+    static int sold;                       // 賣出幾張：整個類別共用一份
+    static int revenue;                    // 總收入
 };
-int Member::total = 0;                    // static 資料成員要在類別外定義一次
+int Ticket::sold = 0;                      // static 資料成員要在類別外定義一次
+int Ticket::revenue = 0;
 
 int main() {
     const int MAX = 100;
-    Member list[MAX];
+    Ticket list[MAX];
     int n = 0;
-    string name;
-    while (true) {
-        cin >> name;
-        if (name == "exit") break;
-        int y, m, d;
-        cin >> y >> m >> d;
-        list[n] = Member(name, y, m, d);  // 建一個暫時物件再指派進陣列
+    string event;
+    while (cin >> event && event != "end") {
+        int seat, price;
+        cin >> seat >> price;
+        list[n] = Ticket(event, seat, price);   // 建一個暫時物件再指派進陣列
         n++;
     }
     for (int i = 0; i < n; i++) list[i].print();
-    cout << "total: " << Member::count() << '\n';
+    cout << "sold: " << Ticket::count() << ", revenue: " << Ticket::total() << '\n';
     return 0;
 }
 ```
 
-`static int total` 屬於整個類別，不屬於任何一個物件，所以「每建構一次就 `total++`」自然就是總人數。兩個細節：`int Member::total = 0;` 這行定義**一定要寫在類別外**（少了會 linker error）；`Member list[MAX];` 開陣列會對每一格呼叫**預設**建構子，所以要提供一個不計數的預設建構子，否則 100 格空位也會被算進去。
+`static int sold` 屬於整個類別，不屬於任何一張票，所以「每建構一次就 `sold++`、`revenue += p`」自然就是總張數與總收入。兩個細節：`int Ticket::sold = 0;` 這種定義**一定要寫在類別外**（少了會 linker error）；`Ticket list[MAX];` 開陣列會對每一格呼叫**預設**建構子，所以要提供一個不計數的預設建構子，否則 100 格空位也會被算成賣出去的票。
 
 </details>
 
-**Q7. 記帳程式**
-寫 `class Entry`，private 存一個 `Date`（沿用 Q5 的類別，加一個 `before()` 比先後）與金額（正數收入、負數支出），用 `static` 成員累計收支總額。讀入 `n` 筆紀錄後：依日期由早到晚印出（同一天依金額由小到大）、印出總額；再讀入一個日期，印出那天的所有紀錄。
+**Q7. 氣溫紀錄**
+寫 `class Reading`，private 存一個 `Date`（沿用 Q5 的類別，加一個 `before()` 比先後、一個 `inMonth()` 判斷是不是某年某月）與當天量到的氣溫，用 `static` 成員累計筆數與溫度總和。讀入 `n` 筆紀錄後：依日期由早到晚印出（同一天依氣溫由低到高）、印出筆數與平均氣溫；再讀入「年 月」，印出那個月的所有紀錄。氣溫一律印到小數一位。
 
 ```text
 輸入：
-4
-2026 9 12 -120
-2026 9 10 3000
-2026 9 12 -800
-2026 8 30 -450
-2026 9 12
+5
+2026 10 3 21.5
+2026 9 28 24
+2026 10 3 19
+2026 9 5 27.5
+2026 10 12 18
+2026 10
 輸出：
-2026/8/30  -450
-2026/9/10  +3000
-2026/9/12  -800
-2026/9/12  -120
-balance: 1630
-records on 2026/9/12:
-2026/9/12  -800
-2026/9/12  -120
+2026/9/5  27.5 C
+2026/9/28  24.0 C
+2026/10/3  19.0 C
+2026/10/3  21.5 C
+2026/10/12  18.0 C
+readings: 5, average: 22.0 C
+readings in 2026/10:
+2026/10/3  19.0 C
+2026/10/3  21.5 C
+2026/10/12  18.0 C
 ```
 
 <details>
@@ -688,6 +692,7 @@ records on 2026/9/12:
 
 ```cpp
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
 class Date {
@@ -701,64 +706,69 @@ public:
     bool sameAs(const Date& o) const {
         return year == o.year && month == o.month && day == o.day;
     }
+    bool inMonth(int y, int m) const { return year == y && month == m; }
     void print() const { cout << year << '/' << month << '/' << day; }
 private:
     int year, month, day;
 };
 
-class Entry {
+class Reading {
 public:
-    Entry() : amount(0) {}
-    Entry(const Date& d, int a) : date(d), amount(a) { balance += a; }
-    // 排序規則：日期早的在前；同一天金額小的在前
-    bool before(const Entry& o) const {
+    Reading() : temp(0) {}
+    Reading(const Date& d, double t) : date(d), temp(t) { count++; sum += t; }
+    // 排序規則：日期早的在前；同一天溫度低的在前
+    bool before(const Reading& o) const {
         if (!date.sameAs(o.date)) return date.before(o.date);
-        return amount < o.amount;
+        return temp < o.temp;
     }
-    bool on(const Date& d) const { return date.sameAs(d); }
+    bool inMonth(int y, int m) const { return date.inMonth(y, m); }
     void print() const {
         date.print();
-        cout << (amount >= 0 ? "  +" : "  ") << amount << '\n';
+        cout << "  " << temp << " C\n";
     }
-    static int total() { return balance; }
+    static int total() { return count; }
+    static double average() { return count == 0 ? 0 : sum / count; }
 private:
     Date date;
-    int amount;                                   // 正數收入、負數支出
-    static int balance;
+    double temp;
+    static int count;                             // 幾筆
+    static double sum;                            // 溫度總和（算平均用）
 };
-int Entry::balance = 0;
+int Reading::count = 0;
+double Reading::sum = 0;
 
 int main() {
     const int MAX = 100;
-    Entry book[MAX];
+    Reading log[MAX];
     int n;
     cin >> n;
     for (int i = 0; i < n; i++) {
-        int y, m, d, a;
-        cin >> y >> m >> d >> a;
-        book[i] = Entry(Date(y, m, d), a);
+        int y, m, d;
+        double t;
+        cin >> y >> m >> d >> t;
+        log[i] = Reading(Date(y, m, d), t);
     }
-    // 選擇排序，比較規則交給 Entry::before
+    // 選擇排序，比較規則交給 Reading::before
     for (int i = 0; i < n - 1; i++) {
         int best = i;
         for (int j = i + 1; j < n; j++)
-            if (book[j].before(book[best])) best = j;
-        Entry t = book[i]; book[i] = book[best]; book[best] = t;
+            if (log[j].before(log[best])) best = j;
+        Reading t = log[i]; log[i] = log[best]; log[best] = t;
     }
-    for (int i = 0; i < n; i++) book[i].print();
-    cout << "balance: " << Entry::total() << '\n';
+    cout << fixed << setprecision(1);
+    for (int i = 0; i < n; i++) log[i].print();
+    cout << "readings: " << Reading::total() << ", average: " << Reading::average() << " C\n";
 
-    int y, m, d;
-    cin >> y >> m >> d;
-    Date target(y, m, d);
-    cout << "records on "; target.print(); cout << ":\n";
+    int y, m;
+    cin >> y >> m;
+    cout << "readings in " << y << '/' << m << ":\n";
     for (int i = 0; i < n; i++)
-        if (book[i].on(target)) book[i].print();
+        if (log[i].inMonth(y, m)) log[i].print();
     return 0;
 }
 ```
 
-這題是前兩題的組合：`Entry` **裡面放一個 `Date`**（10/15 說的 has-a），排序規則交給 `Entry::before`，而 `Entry::before` 又把日期的部分交給 `Date::before`——每個類別只管自己那層的比較。`Date` 的建構子給了預設值 `(1, 1, 1)`，是為了 `Entry()` 這個預設建構子能編過（陣列需要它）。排序骨架還是 10/08 的選擇排序，換掉的只有比較條件和交換的型別。
+這題是前兩題的組合：`Reading` **裡面放一個 `Date`**（10/15 說的 has-a），排序規則交給 `Reading::before`，而 `Reading::before` 又把日期的部分交給 `Date::before`——每個類別只管自己那層的比較。`Date` 的建構子給了預設值 `(1, 1, 1)`，是為了 `Reading()` 這個預設建構子能編過（陣列需要它）。平均用 `static` 函式算，因為它是「全部紀錄」的性質，不屬於任何一筆；排序骨架還是 10/08 的選擇排序，換掉的只有比較條件和交換的型別。
 
 </details>
 

@@ -569,7 +569,7 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照歷年**實驗課考卷**的題型改寫（去年第 11 週實驗課只有講義沒有練習題；今年的投影片還沒出）。檔案題在實驗課的考試幾乎一定有：讀一個題目附的 `.txt`（每行固定幾欄，或用分號分隔），算完寫到另一個檔。三種基本形狀各練一題。
+Q6–Q8 的**題型**取自歷年考古題與去年實驗課用過的資料檔格式（去年第 11 週實驗課只有講義沒有練習題；今年的投影片還沒出），Q9 對應課本勾選題。檔案題在實驗課的考試很常見：讀一個題目附的 `.txt`（每行固定幾欄，或用分號分隔），算完寫到另一個檔。題目不是我原創的：練的東西跟那些題一樣，但題目敘述、資料檔內容、輸出格式和解答都是我自己重寫的，不是原題。三種基本形狀各練一題。
 
 **Q6. 讀檔算最大公因數**
 `gcd.txt` 每行兩個正整數，例如：
@@ -621,25 +621,25 @@ int main() {
 
 </details>
 
-**Q7. 分號分隔的課程檔**
-`courses.txt` 每行是「代號;課名;學分」，課名**含空白**：
+**Q7. 分號分隔的菜單檔**
+`menu.txt` 每行是「代號;品名;單價」，品名**含空白**：
 
 ```text
-CSE123;C Programming;3
-CSE124;C Programming Lab;1
-MATH101;Calculus I;4
-GE201;Introduction to Art;2
+A01;Iced Latte;120
+A02;Hot Chocolate;95
+B10;Egg Sandwich;65
+C03;Fruit Tea;110
 ```
 
-讀入後對齊印成表格，最後印總學分。提示：`getline(fin, s, ';')` 的第三個參數是「讀到哪個字元為止」，讀完會把那個分號吃掉。
+讀入後對齊印成表格（代號靠左佔 5 格、品名靠左佔 16 格、單價靠右佔 4 格），最後印平均單價（小數一位）。提示：`getline(fin, s, ';')` 的第三個參數是「讀到哪個字元為止」，讀完會把那個分號吃掉。
 
 ```text
 輸出：
-CSE123   C Programming         3
-CSE124   C Programming Lab     1
-MATH101  Calculus I            4
-GE201    Introduction to Art   2
-total credits: 10
+A01  Iced Latte       120
+A02  Hot Chocolate     95
+B10  Egg Sandwich      65
+C03  Fruit Tea        110
+average price: 97.5
 ```
 
 <details>
@@ -653,25 +653,29 @@ total credits: 10
 using namespace std;
 
 int main() {
-    ifstream fin("courses.txt");
+    ifstream fin("menu.txt");
     if (!fin) {
-        cout << "cannot open courses.txt\n";
+        cout << "cannot open menu.txt\n";
         return 1;
     }
-    string id, name, creditText;
-    int total = 0;
+    string code, name, priceText;
+    int total = 0, count = 0;
     // getline 的第三個參數是「讀到哪個字元為止」：前兩欄讀到分號，最後一欄讀到行尾
-    while (getline(fin, id, ';') && getline(fin, name, ';') && getline(fin, creditText)) {
-        int credit = stoi(creditText);
-        cout << left << setw(9) << id << setw(22) << name << credit << '\n';
-        total += credit;
+    while (getline(fin, code, ';') && getline(fin, name, ';') && getline(fin, priceText)) {
+        int price = stoi(priceText);
+        cout << left << setw(5) << code << setw(16) << name << right << setw(4) << price << '\n';
+        total += price;
+        count++;
     }
-    cout << "total credits: " << total << '\n';
+    if (count > 0) {
+        cout << fixed << setprecision(1);
+        cout << "average price: " << static_cast<double>(total) / count << '\n';
+    }
     return 0;
 }
 ```
 
-一行三欄就 `getline` 三次：前兩次以 `';'` 為界、最後一次讀到行尾（預設以換行為界）。三個 `getline` 用 `&&` 串成 `while` 的條件，任何一欄讀不到就代表檔案結束。學分讀進來是字串，`stoi` 轉成整數才能加總。這是 12/10 課程系統題的讀檔部分，先在這裡練熟。
+一行三欄就 `getline` 三次：前兩次以 `';'` 為界、最後一次讀到行尾（預設以換行為界）。三個 `getline` 用 `&&` 串成 `while` 的條件，任何一欄讀不到就代表檔案結束。單價讀進來是字串，`stoi` 轉成整數才能加總。`left`／`right` 決定 `setw` 補的空白放哪一邊（預設是靠右、空白補在左邊），設了之後會一直有效，所以印完兩個靠左的欄位要切回 `right` 再印數字。這也是 12/10 車輛檔那題的讀檔部分，先在這裡練熟。
 
 </details>
 

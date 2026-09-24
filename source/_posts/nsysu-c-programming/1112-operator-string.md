@@ -712,20 +712,20 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照**去年（2025）第 8、9 週**實驗課的練習與歷年實驗課考卷的題型改寫（今年的投影片還沒出，題目可能會換）。先用 `Date` 的比較運算子暖身（非成員函式＋`friend`，10/29 留下來的題），再做運算子重載這週實驗課的招牌題「分數類別」：四則運算全部重載成成員函式、`<<` `>>` 用 `friend`，然後在 `main` 直接寫數學算式。字串題則來自實驗課上機考。
+Q6、Q7 的**題型**取自去年（2025）第 8、9 週實驗課的課堂練習（今年的投影片還沒出，題目可能會換）：先用一題「非成員函式＋`friend` 的比較運算子」暖身（10/29 留下來的題），再做運算子重載這週的招牌題「分數類別」——四則運算全部重載成成員函式、`<<` `>>` 用 `friend`，然後在 `main` 直接寫數學算式。題目不是我原創的：練的東西跟去年那幾題一樣，但題目本身、要算的式子、範例資料和解答都是我自己重寫的，不是原題。Q8–Q11 的字串題型取自歷年考古題，題目敘述與範例資料是重寫過的。
 
-**Q6. 日期的 `<`、`>`、`==`**
-`class Date` 的年月日是 private。用**非成員函式**重載 `<`、`>`、`==`（參數都是 `const Date&`），需要的話宣告成 `friend`。讀入三個日期，印出前兩組的比較結果，並找出最早的一天。
+**Q6. 版本號的 `<`、`>`、`==`**
+`class Version` 存主版號、次版號、修訂號三個整數（private），印成 `2.10.0` 這樣。用**非成員函式**重載 `<`、`>`、`==`（參數都是 `const Version&`），需要的話宣告成 `friend`；比較規則是先比主版號、相同再比次版號、再比修訂號（都是**數字**比較，所以 `2.10.0` 比 `2.9.7` 新）。讀入三個版本號（每個三個整數），印出前兩組的比較結果，並找出最新的版本。
 
 ```text
 輸入：
-2026 9 10
-2026 9 10
-2025 12 25
+2 10 0
+2 9 7
+2 10 0
 輸出：
-2026/9/10 == 2026/9/10
-2026/9/10 > 2025/12/25
-earliest: 2025/12/25
+2.10.0 > 2.9.7
+2.9.7 < 2.10.0
+newest: 2.10.0
 ```
 
 <details>
@@ -735,48 +735,48 @@ earliest: 2025/12/25
 #include <iostream>
 using namespace std;
 
-class Date {
+class Version {
 public:
-    Date(int y, int m, int d) : year(y), month(m), day(d) {}
-    void print() const { cout << year << '/' << month << '/' << day; }
-    friend bool operator<(const Date& a, const Date& b);
-    friend bool operator==(const Date& a, const Date& b);
+    Version(int a, int b, int c) : major(a), minor(b), patch(c) {}
+    void print() const { cout << major << '.' << minor << '.' << patch; }
+    friend bool operator<(const Version& a, const Version& b);
+    friend bool operator==(const Version& a, const Version& b);
 private:
-    int year, month, day;
+    int major, minor, patch;
 };
 
-bool operator<(const Date& a, const Date& b) {
-    if (a.year != b.year)   return a.year < b.year;
-    if (a.month != b.month) return a.month < b.month;
-    return a.day < b.day;
+bool operator<(const Version& a, const Version& b) {
+    if (a.major != b.major) return a.major < b.major;
+    if (a.minor != b.minor) return a.minor < b.minor;
+    return a.patch < b.patch;
 }
-bool operator==(const Date& a, const Date& b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
+bool operator==(const Version& a, const Version& b) {
+    return a.major == b.major && a.minor == b.minor && a.patch == b.patch;
 }
-bool operator>(const Date& a, const Date& b) { return b < a; }   // 反過來問就好，不用 friend
+bool operator>(const Version& a, const Version& b) { return b < a; }   // 反過來問就好，不用 friend
 
 int main() {
-    int y, m, d;
-    cin >> y >> m >> d; Date a(y, m, d);
-    cin >> y >> m >> d; Date b(y, m, d);
-    cin >> y >> m >> d; Date c(y, m, d);
-    a.print(); cout << (a < b ? " < " : a == b ? " == " : " > "); b.print(); cout << '\n';
-    b.print(); cout << (b < c ? " < " : b == c ? " == " : " > "); c.print(); cout << '\n';
+    int a, b, c;
+    cin >> a >> b >> c; Version v1(a, b, c);
+    cin >> a >> b >> c; Version v2(a, b, c);
+    cin >> a >> b >> c; Version v3(a, b, c);
+    v1.print(); cout << (v1 < v2 ? " < " : v1 == v2 ? " == " : " > "); v2.print(); cout << '\n';
+    v2.print(); cout << (v2 < v3 ? " < " : v2 == v3 ? " == " : " > "); v3.print(); cout << '\n';
 
-    Date earliest = a;                       // 找最早的一天
-    if (b < earliest) earliest = b;
-    if (c < earliest) earliest = c;
-    cout << "earliest: "; earliest.print(); cout << '\n';
+    Version newest = v1;                     // 找最新的版本
+    if (v2 > newest) newest = v2;
+    if (v3 > newest) newest = v3;
+    cout << "newest: "; newest.print(); cout << '\n';
     return 0;
 }
 ```
 
-只有 `<` 和 `==` 真的需要碰 private 成員，所以只有它們是 `friend`；`>` 直接寫成 `b < a`，一行搞定又不用開後門。比較日期是「先比年、年相同比月、月相同比日」，這個「逐欄比較」的寫法字串、版本號都適用。
+只有 `<` 和 `==` 真的需要碰 private 成員，所以只有它們是 `friend`；`>` 直接寫成 `b < a`，一行搞定又不用開後門。「先比第一欄、相同再比下一欄」這種**逐欄比較**的寫法，日期、成績排名都適用；這題故意放 `2.10.0` 跟 `2.9.7`，是因為把版本號當字串比會得到相反的答案（`"2.10"` 的第三個字元 `'1'` 小於 `'9'`），只有一欄一欄用整數比才對。
 
 </details>
 
 **Q7. 分數類別（完整版）**
-寫 `class Fraction`，private 存分子與分母。用**成員函式**重載 `+`、`-`、`*`、`/` 與一元負號 `-`，用 **`friend`** 重載 `>>`（讀「分子 分母」）與 `<<`（印成 `a/b`）。`main` 用 `cin >> a >> b` 讀兩個分數後，算出並印出這三個式子：`A + B / A`、`A - (-B) / A`、`(A + B) * (-B)`。分母保持正數、結果請約分；分母為 0（含除以分子為 0 的分數）印 `zero denominator` 並結束。輸入的分子分母都在 ±10000 以內。
+寫 `class Fraction`，private 存分子與分母。用**成員函式**重載 `+`、`-`、`*`、`/` 與一元負號 `-`，用 **`friend`** 重載 `>>`（讀「分子 分母」）與 `<<`（印成 `a/b`）。`main` 用 `cin >> a >> b` 讀兩個分數後，算出並印出這三個式子：`A * B - A`、`(A + B) / B`、`-(A - B) * B`。分母保持正數、結果請約分；分母為 0（含除以分子為 0 的分數）印 `zero denominator` 並結束。輸入的分子分母都在 ±10000 以內。
 
 ```text
 輸入：
@@ -784,9 +784,9 @@ int main() {
 3 4
 輸出：
 A = 1/2, B = 3/4
-A + B / A = 2/1
-A - (-B) / A = 2/1
-(A + B) * (-B) = -15/16
+A * B - A = -1/8
+(A + B) / B = 5/3
+-(A - B) * B = 3/16
 ```
 
 ```text
@@ -795,9 +795,9 @@ A - (-B) / A = 2/1
 5 3
 輸出：
 A = -1/3, B = 5/3
-A + B / A = -16/3
-A - (-B) / A = -16/3
-(A + B) * (-B) = -20/9
+A * B - A = -2/9
+(A + B) / B = 4/5
+-(A - B) * B = 10/3
 ```
 
 <details>
@@ -843,14 +843,14 @@ int main() {
     Fraction a, b;
     cin >> a >> b;
     cout << "A = " << a << ", B = " << b << '\n';
-    cout << "A + B / A = " << a + b / a << '\n';
-    cout << "A - (-B) / A = " << a - (-b) / a << '\n';
-    cout << "(A + B) * (-B) = " << (a + b) * (-b) << '\n';
+    cout << "A * B - A = " << a * b - a << '\n';
+    cout << "(A + B) / B = " << (a + b) / b << '\n';
+    cout << "-(A - B) * B = " << -(a - b) * b << '\n';
     return 0;
 }
 ```
 
-看 `main` 那三行：**重載好之後，分數就能像 `int` 一樣寫進算式**，而且 `*`、`/` 比 `+`、`-` 先算的規則自動成立——優先順序是跟著運算子符號走的，重載改不了。一元負號 `operator-()` 沒有參數，跟二元的 `operator-(const Fraction&)` 靠參數個數區分。所有運算子都透過建構子產生新物件，`normalize()` 在建構子裡統一處理正負號與約分，就不用在每個運算子裡各寫一次。兩個新面孔：`cerr` 是 09/17 提過的**標準錯誤輸出**（印錯誤訊息用，用法跟 `cout` 一樣）；`exit(1)` 會**立刻結束整支程式**，括號裡的 1 是交給作業系統的離開碼、代表異常結束——它在 `<cstdlib>` 裡，跟 `main` 的 `return 1;` 效果類似，差別是在任何函式裡都能用。
+看 `main` 那三行：**重載好之後，分數就能像 `int` 一樣寫進算式**，而且 `*`、`/` 比 `+`、`-` 先算的規則自動成立——優先順序是跟著運算子符號走的，重載改不了；`-(A - B) * B` 的一元負號則作用在括號那一項上，再跟 `B` 相乘。一元負號 `operator-()` 沒有參數，跟二元的 `operator-(const Fraction&)` 靠參數個數區分。所有運算子都透過建構子產生新物件，`normalize()` 在建構子裡統一處理正負號與約分，就不用在每個運算子裡各寫一次。兩個新面孔：`cerr` 是 09/17 提過的**標準錯誤輸出**（印錯誤訊息用，用法跟 `cout` 一樣）；`exit(1)` 會**立刻結束整支程式**，括號裡的 1 是交給作業系統的離開碼、代表異常結束——它在 `<cstdlib>` 裡，跟 `main` 的 `return 1;` 效果類似，差別是在任何函式裡都能用。
 
 </details>
 
@@ -904,11 +904,11 @@ int main() {
 
 ```text
 輸入：
-   I want to   learn C++  
-Only     miss the sun     when it starts to      snow
+   keep it   simple  
+make   clean  and   make  again
 輸出：
-[I want to learn C++]
-[Only miss the sun when it starts to snow]
+[keep it simple]
+[make clean and make again]
 ```
 
 <details>
@@ -951,13 +951,13 @@ int main() {
 
 ```text
 輸入：
-hoz
-wanna
-sleep
+hello
+nsysu
+zoo
 輸出：
-h2o3z4
-w1a1n2n2a1
-s4l3e2e2p1
+h2e2l3l3o3
+n2s4y3s4u2
+z4o3o3
 ```
 
 <details>

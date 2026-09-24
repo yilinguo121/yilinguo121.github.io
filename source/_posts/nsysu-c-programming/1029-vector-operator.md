@@ -24,7 +24,7 @@ hidden: true
 | 課本題號 | 要用到的東西 | 先練 |
 | --- | --- | --- |
 | Ch7-1 | 顏色類別：預設／字元／整數三個建構子、輸入輸出函式、回傳「下一個顏色」的物件 | 10/22 Q1、Q3 |
-| Ch7-5 | 排成一圈每數到第三個就淘汰、找最後剩下的——`vector` + `erase`，索引繞圈用 `%` | Q6、12/24 Q2 |
+| Ch7-5 | 繞圈淘汰到剩最後一個——`vector` + `erase`，索引繞圈用 `%` | Q6、12/24 Q2 |
 | Ch7-6 | 訂單類別內含 `vector<Pizza>`：加披薩、印全部與總價——類別裡包 vector | Q2 |
 | Ch7-8 | 讀分數進 vector 直到 -1，找最大值後畫直方圖 | Q4、10/08 Q4 |
 | Ch7-11 | 玩家類別（姓名、分數）＋建構子，vector 存十位並排序 | Q2、10/15 Q3 |
@@ -497,38 +497,35 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照**去年（2025）第 8 週**實驗課的練習題型改寫（今年的投影片還沒出，題目可能會換）。去年這週的組合是「`vector` 裝 `struct` 做一個選單程式」與「幫 `Date` 類別重載運算子」——`+` 用成員函式這週就能寫；`<`、`==` 那種要寫成非成員函式的，需要下週的 `friend`，放在 11/12 的練習。
+以下三題的**題型**取自去年（2025）第 8 週實驗課的課堂練習（今年的投影片還沒出，題目可能會換）：`vector` 裝 `struct` 做一個選單程式、`vector` 排序與刪除、還有幫自訂類別重載 `+`（成員函式版這週就能寫；`<`、`==` 那種要寫成非成員函式的，需要下週的 `friend`，放在 11/12 的練習）。題目不是我原創的：練的東西跟去年那幾題一樣，但題目本身、規則、範例資料和解答都是我自己重寫的，不是原題。
 
-**Q5. 日記本（`vector` + 選單）**
-定義 `struct Diary { int year, month, day; string note; }`，用 `vector<Diary>` 存日記。反覆讀入指令：`1` 寫日記（讀日期與一整行內容）、`2` 讀日期並顯示那天的內容、`3` 讀日期並刪除、`4` 列出所有日記的日期與筆數，`0` 結束。日期不合法要重新輸入。
+**Q5. 待辦清單（`vector` + 選單）**
+定義 `struct Task { int priority; string title; bool done; }`，用 `vector<Task>` 存待辦事項。反覆讀入指令：`1 優先度 事項名稱` 新增（優先度要在 1–5，否則印 `priority must be 1-5` 且不新增）、`2 事項名稱` 標記完成、`3 事項名稱` 刪除、`4` 列出全部（完成的前面印 `[x]`、沒完成的印 `[ ]`）與筆數，`0` 結束。事項名稱可以含空白、一路到行尾；找不到名稱印 `no such task`。
 
-日記內容含空白，要用 `getline(cin, note)` 讀**一整行**；但 `cin >> d` 讀完日期後，那行結尾的換行還留在輸入裡，直接 `getline` 會讀到空字串，所以中間要先 `cin.ignore();` 把那個換行丟掉。（這個坑 11/12 會完整解釋，這裡先照抄。）
+事項名稱含空白，要用 `getline(cin, title)` 讀**到行尾**；但 `cin >> p` 讀完優先度後，它後面那個空白還留在輸入裡，直接 `getline` 會把那個空白也讀進名稱開頭，所以中間要先 `cin.ignore();` 把它丟掉。（這個坑 11/12 會完整解釋，這裡先照抄。）
 
 ```text
 輸入：
-1
-2026 9 10 first C++ class
-1
-2026 2 30
-2026 9 17 learned cin and cout
+1 3 buy milk
+1 9 write report
+1 1 write report
 4
-2
-2026 9 17
-3
-2026 9 10
+2 buy milk
+3 call mom
 4
 0
 輸出：
-saved
-invalid date, again
-saved
-2026/9/10
-2026/9/17
-(2 entries)
-learned cin and cout
-deleted
-2026/9/17
-(1 entries)
+added
+priority must be 1-5
+added
+[ ] P3 buy milk
+[ ] P1 write report
+(2 tasks)
+done: buy milk
+no such task
+[x] P3 buy milk
+[ ] P1 write report
+(2 tasks)
 ```
 
 <details>
@@ -540,83 +537,69 @@ deleted
 #include <vector>
 using namespace std;
 
-struct Diary { int year, month, day; string note; };
+struct Task { int priority; string title; bool done; };
 
-bool validDate(int y, int m, int d) {
-    if (y < 1 || m < 1 || m > 12 || d < 1) return false;
-    int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0) days[1] = 29;
-    return d <= days[m - 1];
-}
-
-// 一直讀到合法日期為止
-void readDate(int& y, int& m, int& d) {
-    while (true) {
-        cin >> y >> m >> d;
-        if (validDate(y, m, d)) return;
-        cout << "invalid date, again\n";
-    }
-}
-
-int find(const vector<Diary>& v, int y, int m, int d) {   // 找不到回傳 -1
+int find(const vector<Task>& v, const string& title) {     // 找不到回傳 -1
     for (size_t i = 0; i < v.size(); i++)
-        if (v[i].year == y && v[i].month == m && v[i].day == d) return i;
+        if (v[i].title == title) return i;
     return -1;
 }
 
 int main() {
-    vector<Diary> diary;
+    vector<Task> todo;
     int cmd;
     while (cin >> cmd && cmd != 0) {
-        int y, m, d;
+        string title;
         if (cmd == 1) {
-            readDate(y, m, d);
-            Diary e = { y, m, d, "" };
-            cin.ignore();                 // 丟掉日期後面那個換行，getline 才不會讀到空行
-            getline(cin, e.note);         // 讀一整行（可含空白）當日記內容
-            diary.push_back(e);
-            cout << "saved\n";
+            int p;
+            cin >> p;
+            cin.ignore();                 // 丟掉優先度後面那一個空白，getline 才不會多讀
+            getline(cin, title);          // 讀一整行（可含空白）當事項名稱
+            if (p < 1 || p > 5) {
+                cout << "priority must be 1-5\n";
+                continue;                 // 這筆不加
+            }
+            Task t = { p, title, false };
+            todo.push_back(t);
+            cout << "added\n";
         } else if (cmd == 2) {
-            readDate(y, m, d);
-            int i = find(diary, y, m, d);
-            if (i == -1) cout << "no entry\n";
-            else         cout << diary[i].note << '\n';
+            cin.ignore();
+            getline(cin, title);
+            int i = find(todo, title);
+            if (i == -1) cout << "no such task\n";
+            else { todo[i].done = true; cout << "done: " << title << '\n'; }
         } else if (cmd == 3) {
-            readDate(y, m, d);
-            int i = find(diary, y, m, d);
-            if (i == -1) cout << "no entry\n";
-            else { diary.erase(diary.begin() + i); cout << "deleted\n"; }
+            cin.ignore();
+            getline(cin, title);
+            int i = find(todo, title);
+            if (i == -1) cout << "no such task\n";
+            else { todo.erase(todo.begin() + i); cout << "deleted\n"; }
         } else if (cmd == 4) {
-            for (const Diary& e : diary)
-                cout << e.year << '/' << e.month << '/' << e.day << '\n';
-            cout << "(" << diary.size() << " entries)\n";
+            for (const Task& t : todo)
+                cout << (t.done ? "[x] " : "[ ] ") << 'P' << t.priority << ' ' << t.title << '\n';
+            cout << "(" << todo.size() << " tasks)\n";
         }
     }
     return 0;
 }
 ```
 
-三個可以重複用的零件：`validDate` 判斷合法、`readDate` 用參考參數「一直讀到合法為止」、`find` 回傳索引（找不到 `-1`）。指令 2 和 3 都先 `find` 再決定，刪除用 `erase(begin() + i)`。選單程式的骨架就是 `while (cin >> cmd && cmd != 0)` 包一串 `if / else if`，期末上機考的大題也是這個形狀。
+兩個可以重複用的零件：`find` 依名稱回傳索引（找不到 `-1`），指令 2 和 3 都先 `find` 再決定；刪除用 `erase(begin() + i)`。優先度不合法時名稱還是要先讀掉（不然那些字會留在輸入裡變成下一個指令），再 `continue` 跳過新增。選單程式的骨架就是 `while (cin >> cmd && cmd != 0)` 包一串 `if / else if`，期末上機考的大題也是這個形狀。
 
 </details>
 
 **Q6. `vector` 排序與刪除**
-讀入數量與數字存進 `vector<int>`，用選擇排序排好，每次**交換**後印一次；接著反覆讀入要刪除的數字（只刪第一個相同的，找不到印 `not found`），讀到 `-1` 停；最後印剩下的數字與 `size()`。
+反覆讀入整數存進 `vector<int>`，讀到 `0` 為止（不先給數量）。用選擇排序排成**由大到小**，每次**交換**後印一次；接著讀入一個門檻值，把所有小於門檻的數字刪掉；最後印剩下的數字與 `size()`。
 
 ```text
 輸入：
-5
-7 -2 7 4 1
-7
-99
--2
--1
+7 -2 7 4 1 0
+4
 輸出：
-round 1: -2 7 7 4 1
-round 2: -2 1 7 4 7
-round 3: -2 1 4 7 7
-99 not found
-remaining: 1 4 7
+swap 1 <-> 2: 7 7 -2 4 1
+swap 2 <-> 3: 7 7 4 -2 1
+swap 3 <-> 4: 7 7 4 1 -2
+kept (>= 4): 7 7 4
 size: 3
 ```
 
@@ -633,63 +616,58 @@ void print(const vector<int>& v) {
 }
 
 int main() {
-    int n;
-    cin >> n;
-    vector<int> v(n);
-    for (int i = 0; i < n; i++) cin >> v[i];
+    vector<int> v;
+    int x;
+    while (cin >> x && x != 0) v.push_back(x);       // 讀到 0 為止，不用先給數量
 
-    for (int i = 0; i + 1 < n; i++) {               // 選擇排序
-        int minIdx = i;
+    int n = v.size();
+    for (int i = 0; i + 1 < n; i++) {                 // 選擇排序，由大到小
+        int maxIdx = i;
         for (int j = i + 1; j < n; j++)
-            if (v[j] < v[minIdx]) minIdx = j;
-        if (minIdx != i) {
-            int t = v[i]; v[i] = v[minIdx]; v[minIdx] = t;
-            cout << "round " << i + 1 << ": ";
+            if (v[j] > v[maxIdx]) maxIdx = j;
+        if (maxIdx != i) {
+            int t = v[i]; v[i] = v[maxIdx]; v[maxIdx] = t;
+            cout << "swap " << i << " <-> " << maxIdx << ": ";
             print(v);
         }
     }
 
-    int x;
-    while (cin >> x && x != -1) {                    // 要刪的數字，-1 停
-        bool found = false;
-        for (size_t i = 0; i < v.size(); i++) {
-            if (v[i] == x) {
-                v.erase(v.begin() + i);               // 只刪第一個相同的
-                found = true;
-                break;
-            }
-        }
-        if (!found) cout << x << " not found\n";
+    int limit;
+    cin >> limit;
+    size_t i = 0;
+    while (i < v.size()) {
+        if (v[i] < limit) v.erase(v.begin() + i);     // 刪掉之後 i 不動，後面的會補上來
+        else i++;
     }
-    cout << "remaining: ";
+    cout << "kept (>= " << limit << "): ";
     print(v);
     cout << "size: " << v.size() << '\n';
     return 0;
 }
 ```
 
-跟 10/08 的 Q9 幾乎一樣，差別只在容器換成 `vector`、索引型別用 `size_t`、刪除用 `erase`。`erase` 之後後面的元素會往前補，所以 `break` 掉不要繼續掃——不然 `i` 會跳過補上來的那一個。
+跟 10/08 的 Q9 幾乎一樣，差別只在容器換成 `vector`（所以不用先知道數量，`push_back` 會自己長大）、索引型別用 `size_t`、刪除用 `erase`。刪除那段故意用 `while` 而不是 `for`：`erase` 之後後面的元素會往前補到同一個位置，所以**刪掉時 `i` 不能加**，不然會跳過補上來的那一個。
 
 </details>
 
-**Q7. 日期加天數（重載 `+`）**
-寫 `class Date`（年月日 private），用**成員函式**重載 `+`：`today + n` 回傳 `n` 天後的日期，原物件不變，要正確處理月底、年底與閏年。讀入的日期不合法要重新輸入。
+**Q7. 時間加分鐘（重載 `+`）**
+寫 `class Time`（時、分 private，24 小時制），用**成員函式**重載 `+`：`now + n` 回傳 `n` 分鐘後的時間，原物件不變；跨過午夜要繞回 `00:00`，並記下跨了幾天。讀入的時間不合法（時不在 0–23 或分不在 0–59）要重新輸入。時、分都印成兩位。
 
 ```text
 輸入：
-2024 2 30
-2024 2 27
-5
-輸出：
-invalid date, again
-2024/2/27 + 5 days = 2024/3/3
+23 50
+25
+輸出： 23:50 + 25 min = 00:15 (+1 day)
 ```
 
 ```text
 輸入：
-2026 12 25
-10
-輸出： 2026/12/25 + 10 days = 2027/1/4
+25 0
+9 5
+130
+輸出：
+invalid time, again
+09:05 + 130 min = 11:15
 ```
 
 <details>
@@ -697,53 +675,50 @@ invalid date, again
 
 ```cpp
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
-class Date {
+class Time {
 public:
-    Date(int y, int m, int d) : year(y), month(m), day(d) {}
+    Time(int h, int m) : hour(h), minute(m), days(0) {}
     bool isValid() const {
-        return month >= 1 && month <= 12 && day >= 1 && day <= daysInMonth(year, month);
+        return hour >= 0 && hour < 24 && minute >= 0 && minute < 60;
     }
-    Date operator+(int days) const {          // 回傳新日期，自己不變
-        Date r(year, month, day);          // 從自己複製一份出來改
-        for (int i = 0; i < days; i++) {      // 一天一天往後推
-            r.day++;
-            if (r.day > daysInMonth(r.year, r.month)) {
-                r.day = 1;
-                r.month++;
-                if (r.month > 12) { r.month = 1; r.year++; }
-            }
-        }
+    Time operator+(int minutes) const {         // 回傳新時間，自己不變
+        int total = hour * 60 + minute + minutes;   // 先全部換成「從 0:00 起算幾分鐘」
+        Time r(total / 60 % 24, total % 60);
+        r.days = total / (24 * 60);             // 跨了幾個午夜
         return r;
     }
-    void print() const { cout << year << '/' << month << '/' << day; }
-private:
-    int year, month, day;
-    static int daysInMonth(int y, int m) {
-        int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        bool leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
-        return (m == 2 && leap) ? 29 : days[m - 1];
+    int dayOffset() const { return days; }
+    void print() const {
+        cout << setfill('0') << setw(2) << hour << ':' << setw(2) << minute;
     }
+private:
+    int hour, minute;
+    int days;                                   // 這個時間是幾天後的
 };
 
 int main() {
-    int y, m, d;
+    int h, m;
     while (true) {
-        cin >> y >> m >> d;
-        if (Date(y, m, d).isValid()) break;
-        cout << "invalid date, again\n";
+        cin >> h >> m;
+        if (Time(h, m).isValid()) break;
+        cout << "invalid time, again\n";
     }
-    Date today(y, m, d);
+    Time now(h, m);
     int n;
     cin >> n;
-    Date later = today + n;
-    today.print(); cout << " + " << n << " days = "; later.print(); cout << '\n';
+    Time later = now + n;
+    now.print(); cout << " + " << n << " min = "; later.print();
+    if (later.dayOffset() == 1) cout << " (+1 day)";
+    else if (later.dayOffset() > 1) cout << " (+" << later.dayOffset() << " days)";
+    cout << '\n';
     return 0;
 }
 ```
 
-`operator+` 是 `const` 成員：從自己複製一份 `r`，改的是 `r`，最後回傳它——這就是「`a + b` 不該改 `a`」的意思。一天一天往後推雖然慢，但月底、年底、閏年三種進位都由同一段程式處理，不容易寫錯；`daysInMonth` 做成 private 的 `static` 函式，因為它不需要任何物件的資料。
+`operator+` 是 `const` 成員：把自己換算成「從 0:00 起算的總分鐘數」、加上 `n`，再拆回時、分做成一個**新的** `Time` 回傳——這就是「`a + b` 不該改 `a`」的意思。`total / 60 % 24` 先算出總小時數再對 24 取餘就是繞回午夜；`total / (24 * 60)` 是跨了幾天。輸入 `8 0` 與 `3000` 會印 `08:00 + 3000 min = 10:00 (+2 days)`，可以拿來驗算。
 
 </details>
 

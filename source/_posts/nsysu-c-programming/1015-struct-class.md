@@ -544,10 +544,21 @@ int main() {
 </details>
 
 **實驗課題型加練**
-以下照**去年（2025）第 6 週**實驗課的練習題型改寫（今年的投影片還沒出，題目可能會換）。去年這週的三個題型：巢狀 `struct`（結構裡放結構）、`class` 裡放陣列並自己算統計、還有一題「薪水／費用計算」把輸入、計算、輸出拆成三個成員函式。
+以下三題的**題型**取自去年（2025）第 6 週實驗課的課堂練習（今年的投影片還沒出，題目可能會換）：巢狀 `struct`（結構裡放結構）、`class` 裡放陣列並自己算統計、還有一題「計算類」把輸入、計算、輸出拆成三個成員函式。題目不是我原創的：練的東西跟去年那幾題一樣，但題目本身、規則、範例資料和解答都是我自己重寫的，不是原題。
 
-**Q5. 兩向量是否垂直（巢狀結構）**
-定義 `struct Point { int x, y; }` 與 `struct Segment { Point p1, p2; }`（結構的成員本身是另一個結構）。讀入 A、B、C、D 四個點，AB 與 CD 各構成一個向量，印出兩個向量與內積，內積為 0 就印 `perpendicular`。
+**Q5. 兩線段是否平行（巢狀結構）**
+定義 `struct Point { int x, y; }` 與 `struct Segment { Point p1, p2; }`（結構的成員本身是另一個結構）。讀入 A、B、C、D 四個點，AB 與 CD 各是一條線段，印出兩條線段的方向向量（終點減起點）與它們的**外積** $x_1 y_2 - y_1 x_2$；外積為 0 就印 `parallel`，否則印 `not parallel`。
+
+```text
+輸入：
+0 0 2 1
+3 3 7 5
+輸出：
+AB = (2, 1)
+CD = (4, 2)
+cross = 0
+parallel
+```
 
 ```text
 輸入：
@@ -556,8 +567,8 @@ int main() {
 輸出：
 AB = (2, 1)
 CD = (-2, 4)
-dot = 0
-perpendicular
+cross = 10
+not parallel
 ```
 
 <details>
@@ -570,7 +581,7 @@ using namespace std;
 struct Point { int x, y; };
 struct Segment { Point p1, p2; };        // 巢狀結構：成員本身也是 struct
 
-Point toVector(const Segment& s) {       // 線段 → 向量（終點減起點）
+Point direction(const Segment& s) {      // 線段的方向向量（終點減起點）
     Point v = { s.p2.x - s.p1.x, s.p2.y - s.p1.y };
     return v;
 }
@@ -579,39 +590,33 @@ int main() {
     Segment ab, cd;
     cin >> ab.p1.x >> ab.p1.y >> ab.p2.x >> ab.p2.y;
     cin >> cd.p1.x >> cd.p1.y >> cd.p2.x >> cd.p2.y;
-    Point u = toVector(ab), v = toVector(cd);
+    Point u = direction(ab), v = direction(cd);
     cout << "AB = (" << u.x << ", " << u.y << ")\n";
     cout << "CD = (" << v.x << ", " << v.y << ")\n";
-    int dot = u.x * v.x + u.y * v.y;
-    cout << "dot = " << dot << '\n';
-    cout << (dot == 0 ? "perpendicular" : "not perpendicular") << '\n';
+    int cross = u.x * v.y - u.y * v.x;
+    cout << "cross = " << cross << '\n';
+    cout << (cross == 0 ? "parallel" : "not parallel") << '\n';
     return 0;
 }
 ```
 
-巢狀結構的存取就是多寫一層點：`ab.p1.x`。`toVector` 接收 `const Segment&`、回傳一個 `Point`，示範結構可以像一般型別一樣進出函式。這題常見的錯是內積寫成 `u.x * v.y + u.y * v.x`——那是外積的一部分，不是內積。
+巢狀結構的存取就是多寫一層點：`ab.p1.x`。`direction` 接收 `const Segment&`、回傳一個 `Point`，示範結構可以像一般型別一樣進出函式。這題常見的錯是外積寫成 `u.x * v.x + u.y * v.y`——那是內積（判斷垂直用的），不是外積。
 
 </details>
 
-**Q6. 測驗成績類別（陣列成員）**
-寫 `class Quiz`，private 有一個長度 5 的分數陣列與一個「是否完成」旗標；public 提供 `setScore(index, score)`、`getScore(index)`、`check()`（任一分數 ≤ 0 就算未完成）、`isDone()`、`average()`、`highest()`、`lowest()`。讀入五個分數後印出完成與否（1 或 0）與三個統計值；**統計要自己用迴圈算，不能呼叫函式庫**。
+**Q6. 一週步數（陣列成員）**
+寫 `class StepLog`，private 有一個長度 7 的整數陣列，存一週七天的步數；public 提供 `set(day, steps)`、`get(day)`、`total()`、`bestDay()`（走最多的那天，同分取最早的）、`lowest()`、`daysReached(goal)`（有幾天達到目標）。讀入七天的步數與一個目標值後，印出總步數、平均、最佳的一天、最低步數、達標天數；**統計要自己用迴圈算，不能呼叫函式庫**。
 
 ```text
-輸入： 80 95 70 100 88
+輸入：
+6500 12000 8000 4000 9100 12000 7300
+8000
 輸出：
-done: 1
-average: 86.6
-highest: 100
-lowest: 70
-```
-
-```text
-輸入： 80 0 70 100 88
-輸出：
-done: 0
-average: 67.6
-highest: 100
-lowest: 0
+total: 58900
+average: 8414.29
+best day: 2 (12000 steps)
+lowest: 4000
+days reaching 8000: 4
 ```
 
 <details>
@@ -621,60 +626,60 @@ lowest: 0
 #include <iostream>
 using namespace std;
 
-const int SIZE = 5;
+const int DAYS = 7;
 
-class Quiz {
+class StepLog {
 public:
-    void setScore(int index, int score) { scores[index] = score; }
-    int getScore(int index) const { return scores[index]; }
-    void check() {                       // 有任何一題 <= 0 就算未完成
-        done = true;
-        for (int i = 0; i < SIZE; i++)
-            if (scores[i] <= 0) done = false;
-    }
-    bool isDone() const { return done; }
-    double average() const {
+    void set(int day, int steps) { record[day] = steps; }
+    int get(int day) const { return record[day]; }
+    int total() const {
         int sum = 0;
-        for (int i = 0; i < SIZE; i++) sum += scores[i];
-        return static_cast<double>(sum) / SIZE;
+        for (int i = 0; i < DAYS; i++) sum += record[i];
+        return sum;
     }
-    int highest() const {
-        int best = scores[0];
-        for (int i = 1; i < SIZE; i++) if (scores[i] > best) best = scores[i];
+    int bestDay() const {                    // 走最多的那天（同分取最早的）
+        int best = 0;
+        for (int i = 1; i < DAYS; i++) if (record[i] > record[best]) best = i;
         return best;
     }
     int lowest() const {
-        int worst = scores[0];
-        for (int i = 1; i < SIZE; i++) if (scores[i] < worst) worst = scores[i];
-        return worst;
+        int low = record[0];
+        for (int i = 1; i < DAYS; i++) if (record[i] < low) low = record[i];
+        return low;
+    }
+    int daysReached(int goal) const {        // 有幾天達標
+        int count = 0;
+        for (int i = 0; i < DAYS; i++) if (record[i] >= goal) count++;
+        return count;
     }
 private:
-    int scores[SIZE];
-    bool done;
+    int record[DAYS];
 };
 
 int main() {
-    Quiz q;
-    for (int i = 0; i < 5; i++) {
+    StepLog week;
+    for (int i = 0; i < DAYS; i++) {
         int s;
         cin >> s;
-        q.setScore(i, s);
+        week.set(i, s);
     }
-    q.check();
-    cout << "done: " << (q.isDone() ? 1 : 0) << '\n';
-    cout << "average: " << q.average() << '\n';
-    cout << "highest: " << q.highest() << '\n';
-    cout << "lowest: " << q.lowest() << '\n';
+    int goal;
+    cin >> goal;
+    cout << "total: " << week.total() << '\n';
+    cout << "average: " << static_cast<double>(week.total()) / DAYS << '\n';
+    cout << "best day: " << week.bestDay() + 1 << " (" << week.get(week.bestDay()) << " steps)\n";
+    cout << "lowest: " << week.lowest() << '\n';
+    cout << "days reaching " << goal << ": " << week.daysReached(goal) << '\n';
     return 0;
 }
 ```
 
-陣列當資料成員時，成員函式可以直接用它，不必再把陣列當參數傳來傳去——這正是「把資料和操作包在一起」的好處。`average` 要先 `static_cast<double>` 再除，否則整數除法會把 86.6 截成 86。三個唯讀函式都加 `const`，`check()` 會改 `done` 所以不能加。
+陣列當資料成員時，成員函式可以直接用它，不必再把陣列當參數傳來傳去——這正是「把資料和操作包在一起」的好處。平均要先 `static_cast<double>` 再除，否則整數除法會把 8414.29 截成 8414。`bestDay` 回傳的是**索引**（0 起算），印的時候才加 1 變成「第幾天」；比較時用 `>` 而不是 `>=`，同分才會留住最早的那天。所有不改資料的函式都加 `const`。
 
 </details>
 
 **Q7. 週薪計算**
-寫 `class Salary`，private 存一週七天的每日工時；`set()` 讀入七個整數，`calculate()` 算薪水，`show()` 印出結果。計算規則：每天前 8 小時時薪 190；第 9、10 小時時薪乘 1.33；第 11 小時起乘 1.66。輸出要列出三種時段各累積了幾小時。`main` 固定是：
+寫 `class Salary`，private 存一週七天的每日工時；`set()` 讀入七個整數，`calculate()` 算薪水，`show()` 印出結果。計算規則：每天前 8 小時時薪 200；第 9、10 小時時薪乘 1.25；第 11 小時起乘 1.5。輸出要先列出三種時段各累積了幾小時，再印薪水（小數一位）。`main` 固定是：
 
 ```cpp
 Salary sa;
@@ -686,8 +691,8 @@ sa.show();
 ```text
 輸入： 8 9 10 11 8 0 0
 輸出：
-working hours: 40 x 1 + 5 x 1.33 + 1 x 1.66
-salary: 9178.9
+regular: 40 h, extra: 5 h, overtime: 1 h
+salary: 9550.0
 ```
 
 <details>
@@ -699,7 +704,7 @@ salary: 9178.9
 using namespace std;
 
 const int DAYS = 7;
-const int RATE = 190;      // 基本時薪
+const int RATE = 200;      // 基本時薪
 
 class Salary {
 public:
@@ -714,11 +719,10 @@ public:
             if (h > 8)  { extra += h - 8; h = 8; }        // 第 9、10 小時
             normal += h;                                  // 前 8 小時
         }
-        total = normal * RATE + extra * RATE * 1.33 + overtime * RATE * 1.66;
+        total = normal * RATE + extra * RATE * 1.25 + overtime * RATE * 1.5;
     }
     void show() const {
-        cout << "working hours: " << normal << " x 1 + "
-             << extra << " x 1.33 + " << overtime << " x 1.66\n";
+        cout << "regular: " << normal << " h, extra: " << extra << " h, overtime: " << overtime << " h\n";
         cout << fixed << setprecision(1);
         cout << "salary: " << total << '\n';
     }
@@ -737,7 +741,7 @@ int main() {
 }
 ```
 
-「先扣超過 10 的、再扣超過 8 的、剩下是正常時數」由高往低剝，每天三行就分完。時薪、天數這種固定值放在檔案開頭的 `const`，題目改成時薪 200 只改一處。`set`／`calculate`／`show` 三段式是這門課從這週開始一路用到期末的物件寫法：**輸入、計算、輸出分開**，每個函式只做一件事。
+「先扣超過 10 的、再扣超過 8 的、剩下是正常時數」由高往低剝，每天三行就分完。時薪、天數這種固定值放在檔案開頭的 `const`，題目換了時薪只改一處。`set`／`calculate`／`show` 三段式是這門課從這週開始一路用到期末的物件寫法：**輸入、計算、輸出分開**，每個函式只做一件事。
 
 </details>
 
