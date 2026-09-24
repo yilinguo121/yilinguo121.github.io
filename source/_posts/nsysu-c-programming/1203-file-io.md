@@ -16,6 +16,19 @@ hidden: true
 
 > 對應課本習題：Ch12: 2, 3, 5
 
+<details>
+<summary><b>這幾題各要用到什麼（動手前先看）</b></summary>
+
+主課的上機考幾乎就是這些題目，所以每一題都自己寫過。下表是每題需要的東西（我的歸納，不是題目本文）與本系列對應的練習：
+
+| 課本題號 | 要用到的東西 | 先練 |
+| --- | --- | --- |
+| Ch12-2 | 檔案裡一堆 `double`，算平均印到螢幕 | Q1 |
+| Ch12-3 | 已排序的檔案算中位數：先讀一遍數個數、關檔重開再讀到中間；再延伸算四分位 | Q9 |
+| Ch12-5 | 讀整數檔檢查是不是等差數列，符合的寫到輸出檔、遇到不符就停 | Q6、Q8 |
+
+</details>
+
 **這週要會什麼**
 
 ```text
@@ -759,6 +772,57 @@ int main() {
 ```
 
 「作業次數每人不同」是這題的核心：先讀 `count`，再用 `for` 讀那麼多個，最後才讀兩個期中——**格式由檔案的欄位決定，不能假設每行一樣長**。輸出檔跟 `cout` 用法完全一樣，`setw`、`fixed` 都能用；直方圖那格用 `static_cast<int>(current) / 10` 決定落在哪一級。這是實驗課期末考多年的固定大題（原版還會再加上搜尋與排序），能寫到這裡就有一半分數了。
+
+</details>
+
+**Q9. 讀兩遍算中位數（不用 vector）**
+`sorted.txt` 裡是一串**已排好序**的數字。不把它們存進陣列或 `vector`，直接算中位數：先讀一遍數有幾個，`close()` 後重新開檔，再讀到正中間那個（偶數個就取中間兩個的平均），印出個數與中位數（一位小數）。
+
+```text
+sorted.txt: 3 7 11 15 20 24
+輸出： count = 6, median = 13.0
+
+sorted.txt: 3 7 11 15 20
+輸出： count = 5, median = 11.0
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    ifstream fin("sorted.txt");
+    if (!fin) { cout << "cannot open sorted.txt\n"; return 1; }
+
+    int count = 0;
+    double x;
+    while (fin >> x) count++;              // 第一遍：只數有幾個
+    fin.close();                           // 關掉再重開，才能從頭讀
+
+    if (count == 0) { cout << "empty file\n"; return 0; }
+
+    fin.open("sorted.txt");
+    double median;
+    if (count % 2 == 1) {                  // 奇數個：讀到正中間那個
+        for (int i = 0; i <= count / 2; i++) fin >> x;
+        median = x;
+    } else {                               // 偶數個：中間兩個的平均
+        double a, b;
+        for (int i = 0; i < count / 2; i++) fin >> a;   // 讀完第 count/2 個時 a 是前一個
+        fin >> b;
+        median = (a + b) / 2;
+    }
+    cout << "count = " << count << ", median = " << fixed << setprecision(1) << median << '\n';
+    return 0;
+}
+```
+
+讀到檔尾之後串流就停在「失敗」狀態，**`close()` 再 `open()`** 才能從頭再讀一次——這就是正文說「分開寫 `open` 真正的用途」。中間位置的算法：6 個取第 3、4 個，5 個取第 3 個（索引從 0 起算是 `count / 2`）。
 
 </details>
 

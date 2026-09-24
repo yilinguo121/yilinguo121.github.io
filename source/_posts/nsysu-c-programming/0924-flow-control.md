@@ -14,7 +14,22 @@ hidden: true
 
 [← 09/17｜C++ 基礎（Ch 1）](/2026/09/09/nsysu-c-programming/0917-cpp-basics/) ｜ [回總覽](/2026/09/09/nsysu-c-programming/) ｜ [10/01｜參數傳遞與函式重載（Ch 4） →](/2026/09/09/nsysu-c-programming/1001-parameters/)
 
-> 對應課本習題：Ch3: 1, 5, 10, 11, 13
+> 對應課本習題：Ch3: 1, 5, 10, 11, 13（Ch2 那幾題的對照表在 09/17，學完本週的迴圈就全部寫得出來）
+
+<details>
+<summary><b>這幾題各要用到什麼（動手前先看）</b></summary>
+
+主課的上機考幾乎就是這些題目，所以每一題都自己寫過。下表是每題需要的東西（我的歸納，不是題目本文）與本系列對應的練習：
+
+| 課本題號 | 要用到的東西 | 先練 |
+| --- | --- | --- |
+| Ch3-1 | 單位換算包成函式，換算常數用全域 `const`——自訂函式、全域常數 | Q1、Q2 |
+| Ch3-5 | 三個公式各寫成回傳 `double` 的函式；做完問「要不要再算一次」——函式＋本週〈再一次？〉那種 `do-while` | Q11、Q12 |
+| Ch3-10 | 函式收三個參數算預估值；呎、吋換算用整數除法與 `%`——函式、`/` `%` | Q3、Q11 |
+| Ch3-11 | 擲骰子遊戲：`rand`、每回合一個函式、讀 `r`／`h` 字元決定動作 | Q5、Q12 |
+| Ch3-13 | 隨機抽幾個不重複的號碼——`rand`＋重抽直到不重複 | Q15 |
+
+</details>
 
 **這週要會什麼**
 
@@ -96,6 +111,39 @@ do {
 請輸入正整數：7      ← 讀到正數才離開迴圈
 ```
 
+另一個課本很愛用的形狀——**做完問使用者要不要再一次**：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    char again;
+    do {
+        double r;
+        cout << "radius: ";
+        cin >> r;
+        cout << "area = " << 3.14159 * r * r << '\n';
+        cout << "again? (y/n) ";
+        cin >> again;
+    } while (again == 'y');       // 使用者回 y 才再來一次
+    cout << "bye\n";
+    return 0;
+}
+```
+
+```text
+radius: 2
+area = 12.5664
+again? (y/n) y
+radius: 1
+area = 3.14159
+again? (y/n) n
+bye
+```
+
+課本 Ch3、Ch4 的勾選題好幾題都要求「讓使用者可以重複算到說不要為止」，就是這個寫法：把整段工作包在 `do { } while (回答 == 'y')` 裡。
+
 **`for`：把初始化、條件、更新寫在一起**。
 
 ```cpp
@@ -157,15 +205,47 @@ for (int i = 1; i <= 100; i++) {
 
 `break` 只跳出**最內層**的迴圈——以上面的九九乘法表為例，內層的 `break` 只會讓那一列提早結束，外層的 `i` 照樣往下跑。想一次跳出兩層，最乾淨的做法是把雙層迴圈包成一個函式，找到答案就直接 `return`（`return` 會立刻結束整個函式，兩層一起離開），這招等下一章〈自訂函式〉學完就會用了。
 
-> **先認個長相：從檔案讀**
-> 課本在 Ch2 最後就介紹了 `ifstream`，[後面〈檔案輸入輸出〉那一節](/2026/09/09/nsysu-c-programming/1203-file-io/)會完整講：
-> ```cpp
-> #include <fstream>
-> ifstream fin("input.txt");      // 括號裡放要開啟的檔名
-> int x;
-> while (fin >> x) { /* ... */ }  // 意思是「成功讀到一個數就繼續，讀到檔尾就停」
-> ```
-> 括號放初值、串流能當條件，原理分別在 10/22 與 12/03，現在認得長相就好。
+### 從檔案讀入（先會用，原理 12/03 講）
+
+課本在 Ch2 最後就介紹了 `ifstream`，而且 Ch4、Ch5、Ch6 各有一題勾選題要從檔案讀資料（Ch4-17、Ch5-17、Ch6-12），所以這個形狀現在就要會用。假設跟程式同一個資料夾裡有個 `scores.txt`：
+
+```text
+Amy 90
+Bob 72
+Cat 85
+```
+
+```cpp
+#include <iostream>
+#include <fstream>       // 檔案輸入要多這一行
+#include <string>
+using namespace std;
+
+int main() {
+    ifstream fin("scores.txt");        // 打開同一個資料夾裡的 scores.txt 來讀
+    if (!fin) {                        // 開不起來（檔名打錯、檔案不在這個資料夾）就結束
+        cout << "cannot open scores.txt\n";
+        return 1;
+    }
+    string name;
+    int score, sum = 0, count = 0;
+    while (fin >> name >> score) {     // 一次讀「名字 分數」，讀不到就停
+        sum += score;
+        count++;
+    }
+    fin.close();
+    cout << count << " students, total " << sum << '\n';
+    return 0;
+}
+```
+
+輸出：
+
+```text
+3 students, total 247
+```
+
+照抄的四件事：`#include <fstream>`；`ifstream fin("檔名");` 打開檔案，`fin` 之後就跟 `cin` 一樣用；`if (!fin)` 先確認真的打開了；`while (fin >> ...)` 讀到檔尾自動停（不用自己數有幾行）。括號放初值、串流能當條件，原理分別在 10/22 與 12/03；[〈檔案輸入輸出〉那一節](/2026/09/09/nsysu-c-programming/1203-file-io/)會完整講。
 
 ## Ch3：把程式切成函式
 
@@ -973,6 +1053,38 @@ int main() {
 ```
 
 這是遞迴的經典題，想法只有三行：要把 `n` 個盤子從 A 搬到 C，就「先把上面 `n-1` 個搬到 B，把最大的那個搬到 C，再把那 `n-1` 個從 B 搬到 C」。搬 `n-1` 個的方法跟搬 `n` 個一模一樣，只是柱子的角色換了——所以函式呼叫自己，只把三根柱子的順序調換。結束條件是 `n == 0`（沒盤子可搬）。總步數是 $2^n - 1$，`n = 10` 就是 1023 行。
+
+</details>
+
+**Q15. 抽不重複的號碼**
+用 `rand()` 從 1–10 抽出三個**不重複**的號碼印出來。這週還沒有陣列，用三個變數：第一個直接抽，第二個抽到跟第一個相同就重抽，第三個跟前兩個任一相同就重抽。
+
+```text
+某一次的輸出（每次不同）： 5 3 2
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+int main() {
+    srand(time(nullptr));
+    int a = rand() % 10 + 1;                    // 第一個直接抽
+    int b;
+    do { b = rand() % 10 + 1; } while (b == a);            // 跟 a 撞到就重抽
+    int c;
+    do { c = rand() % 10 + 1; } while (c == a || c == b);  // 跟 a 或 b 撞到就重抽
+    cout << a << ' ' << b << ' ' << c << '\n';
+    return 0;
+}
+```
+
+「抽到重複就重抽」用 `do-while` 最順：至少要抽一次，抽完才知道要不要重來。號碼一多（例如抽 10 個）就不能靠變數一個個比，10/08 學了陣列後改成「用陣列記哪些抽過」。
 
 </details>
 

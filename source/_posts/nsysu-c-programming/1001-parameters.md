@@ -16,6 +16,20 @@ hidden: true
 
 > 對應課本習題：Ch4: 3, 7, 8, 9, 14, 17
 
+<details>
+<summary><b>這幾題各要用到什麼（動手前先看）</b></summary>
+
+主課的上機考幾乎就是這些題目，所以每一題都自己寫過。下表是每題需要的東西（我的歸納，不是題目本文）與本系列對應的練習：
+
+| 課本題號 | 要用到的東西 | 先練 |
+| --- | --- | --- |
+| Ch4-3 | 印菜單、讀代金券金額；用**參考參數**在函式裡扣款；迴圈到剩額買不起最便宜的為止 | Q5、Q7、Q10 |
+| Ch4-7／8／9 | 單位換算：輸入、計算、輸出各一個函式，`if-else` 決定換算方向，重複到使用者結束 | Q10 |
+| Ch4-14 | 兩個「時分連寫」的整數算相差幾分鐘，跨過午夜要補一天——`/ 100`、`% 100`、函式回傳 `int` | 09/17 Q6、Q2 |
+| Ch4-17 | 從分數檔找某個人的分數、跟全部平均比——09/24 的〈從檔案讀入〉＋函式回傳值 | 09/24 讀檔範例、Q2 |
+
+</details>
+
 **這週要會什麼**
 
 ```text
@@ -771,6 +785,63 @@ int main() {
 ```
 
 輾轉相除法的遞迴版只有兩行，比迴圈版更貼近數學定義，期末筆試常拿來當「看程式答輸出」。最小公倍數寫成 `a / gcd * b` 而不是 `a * b / gcd`：先乘的話 `a * b` 可能先溢位，就算最後除回來也已經錯了。「讀到 `0 0` 結束」是實驗課上機考的標準格式，寫成 `while (true)` 加 `break` 最直白。
+
+</details>
+
+**Q10. 換算選單：輸入、計算、輸出各一個函式**
+反覆讀入選項：`1` 攝氏轉華氏、`2` 華氏轉攝氏（選完再讀一個溫度）、`0` 結束，其他印 `unknown choice`。規定拆成四個函式：`readTemp()` 讀一個溫度並回傳、`cToF(double)`、`fToC(double)`、`printResult(...)` 負責印，`main` 只做選單。結果印到小數一位。
+
+```text
+輸入：
+1 100
+2 98.6
+3
+0
+輸出：
+100.0C = 212.0F
+98.6F = 37.0C
+unknown choice
+```
+
+<details>
+<summary><b>參考解答</b></summary>
+
+```cpp
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+double readTemp() {                       // 輸入：讀一個溫度
+    double t;
+    cin >> t;
+    return t;
+}
+double cToF(double c) { return c * 9.0 / 5.0 + 32; }      // 計算
+double fToC(double f) { return (f - 32) * 5.0 / 9.0; }
+void printResult(double from, char unitFrom, double to, char unitTo) {   // 輸出
+    cout << fixed << setprecision(1) << from << unitFrom << " = " << to << unitTo << '\n';
+}
+
+int main() {
+    int choice;
+    while (true) {
+        cin >> choice;
+        if (choice == 0) break;                          // 0 結束
+        if (choice == 1) {
+            double c = readTemp();
+            printResult(c, 'C', cToF(c), 'F');
+        } else if (choice == 2) {
+            double f = readTemp();
+            printResult(f, 'F', fToC(f), 'C');
+        } else {
+            cout << "unknown choice\n";
+        }
+    }
+    return 0;
+}
+```
+
+課本 Ch4 有一組連續三題就是這個骨架：先各寫一個方向的換算，再用 `if-else` 把兩個方向合成選單，最後包進「重複到使用者結束」的迴圈。`main` 裡每個分支只有兩行——讀、算＋印——因為工作都拆給函式了。
 
 </details>
 

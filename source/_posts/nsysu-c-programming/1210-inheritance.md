@@ -16,6 +16,19 @@ hidden: true
 
 > 對應課本習題：Ch14: 4, 6, 8
 
+<details>
+<summary><b>這幾題各要用到什麼（動手前先看）</b></summary>
+
+主課的上機考幾乎就是這些題目，所以每一題都自己寫過。下表是每題需要的東西（我的歸納，不是題目本文）與本系列對應的練習：
+
+| 課本題號 | 要用到的東西 | 先練 |
+| --- | --- | --- |
+| Ch14-4 | Student → ScienceStudent，成員裡還有另一個類別的物件；要寫拷貝建構子與指派運算子 | Q4、正文〈哪些東西不會被繼承〉 |
+| Ch14-6 | Payment → CashPayment／CreditCardPayment，各自重新定義描述函式 | Q2、Q5 |
+| Ch14-8 | 部落格：Viewer 與 Owner 用繼承，`vector<string>` 存文章，各自有選單 | Q5＋10/29 Q5 的選單 |
+
+</details>
+
 **這週要會什麼**
 
 ```text
