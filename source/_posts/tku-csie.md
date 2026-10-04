@@ -1,5 +1,5 @@
 ---
-title: 115 特殊選材：淡江資工
+title: 115 特殊選才：淡江資工
 date: 2025-12-10
 updated: 2025-12-10
 cover: /images/淡江大學.jpg

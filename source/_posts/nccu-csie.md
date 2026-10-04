@@ -1,5 +1,5 @@
 ---
-title: 115 特殊選材：政治資科
+title: 115 特殊選才：政治資科
 date: 2025-12-15
 updated: 2025-12-15
 cover: /images/政治大學.JPG

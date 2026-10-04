@@ -1,5 +1,5 @@
 ---
-title: 115 特殊選材：中山資工
+title: 115 特殊選才：中山資工
 date: 2025-12-10
 updated: 2025-12-10
 cover: /images/中山大學.jpg
